@@ -22,16 +22,11 @@ class HomeRequest(models.Model):
     DateSend = models.DateField(default = date.today())
     YearRound = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='Requester')
 
-    # ข้อมูลพื้นฐานส่วนตัว    
+    # ข้อมูลพื้นฐานส่วนตัว ณ ช่วงเวลาที่ขอ
     Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True)
-    FullName = models.CharField(max_length = 255, verbose_name="ยศ - ชื่อ - นามสกุล", null = False, default = '.')
-    AFID = models.CharField(max_length = 15, null = True, verbose_name = "เลขประจำตัว ทอ.")
-    PersonID = models.CharField(max_length = 13, null=False, blank=False,default = '-' ,verbose_name="เลขบัตรประชาชน")
+    FullName = models.CharField(max_length = 255, verbose_name="ยศ - ชื่อ - นามสกุล", null = False, default = '')
     Position = models.CharField(max_length = 200, null=True, verbose_name="ตำแหน่ง")
     Unit = models.ForeignKey(TheUnit, models.SET_NULL, null = True, verbose_name="สังกัด", related_name='Unit')
-    OfficePhone = models.CharField(max_length = 20, null=True, verbose_name="เบอร์ที่ทำงาน")
-    MobilePhone = models.CharField(max_length = 30, null=True, verbose_name="มือถือ")
-    RTAFEMail = models.EmailField(null=True, verbose_name = "email ทอ.")
 
     Salary = models.IntegerField(verbose_name="เงินเดือน(ปัจจุบัน)")
     AddSalary = models.IntegerField(verbose_name="เงินเพิ่ม")
@@ -60,17 +55,17 @@ class HomeRequest(models.Model):
     RentProvince = models.CharField(max_length = 50, null=True, verbose_name="จังหวัด")
     GooglePlusCodes2 = models.CharField(max_length = 20, null=True, verbose_name="Google Plus Codes 2")
 
-    RentStartDate = models.DateField(verbose_name = "วันเริ่มสัญญาเช่าบ้าน", default=None)
-    RentEndDate = models.DateField(verbose_name = "วันสิ้นสุดสัญญาเช่าบ้าน", default=None)
-    RentOwner = models.CharField(max_length = 255, verbose_name = "ชื่อผู้ให้เช่า")
-    RentOwnerPID = models.CharField(max_length = 13, verbose_name = "PID ผู้ให้เช่า")
-    RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน")
+    RentStartDate = models.DateField(verbose_name = "วันเริ่มสัญญาเช่าบ้าน", default=None, null=True, blank=True)
+    RentEndDate = models.DateField(verbose_name = "วันสิ้นสุดสัญญาเช่าบ้าน", default=None, null=True, blank=True)
+    RentOwner = models.CharField(max_length = 255, verbose_name = "ชื่อผู้ให้เช่า", null=True, blank=True)
+    RentOwnerPID = models.CharField(max_length = 13, verbose_name = "PID ผู้ให้เช่า", null=True, blank=True)
+    RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน", null=True, blank=True)
 
     # คู่สมรส
     Status = models.IntegerField(choices=PERSON_STATUS_CHOICE, verbose_name="สถานภาพ")
-    SpouseName = models.CharField(max_length=100, null=False, blank=False, verbose_name="ชื่อคู่สมรส")
-    SpousePID = models.CharField(max_length=13, null=False, blank=False, verbose_name="PID คู่สมรส")
-    SpouseAFID = models.CharField(max_length=12, null=False, blank=False, verbose_name="เลขประจำตัว ทอ.")
+    SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
+    SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
+    SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ.")
     IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานภรรยาและบุตรในประวัติราชการ')
 
     # ยืนยันข้อมูล
@@ -117,22 +112,22 @@ class HomeRequest(models.Model):
                                    (4, 'อนุมัติ'),
                                    (5, 'ไม่อนุมัติ'),]
 
-    FormStatus = models.CharField(max_length=20, 
+    FormStatus = models.IntegerField(
         choices=HomeRequestFormStatusChoice, 
-        default='ฉบับร่าง', 
+        default= 1, 
         verbose_name="สถานะของเอกสาร")
 
-    ProcedureStatusChoice = [('1', 'ขรก.กรอกฟอร์มแล้ว'), 
-                             ('2', 'นขต.รับเรื่องแล้ว'), 
-                             ('3', 'กพ.ทอ.รับเรื่องแล้ว'), 
-                             ('4', 'อนุมัติ'), 
-                             ('5', 'ไม่อนุมัติ'), ]
-    ProcedureStatus = models.CharField(max_length=20, 
+    ProcedureStatusChoice = [(1, 'ขรก.กรอกฟอร์มแล้ว'), 
+                             (2, 'นขต.รับเรื่องแล้ว'), 
+                             (3, 'กพ.ทอ.รับเรื่องแล้ว'), 
+                             (4, 'อนุมัติ'), 
+                             (5, 'ไม่อนุมัติ'), ]
+    ProcedureStatus = models.IntegerField(
         choices=ProcedureStatusChoice, 
-        default='ขรก.กรอกฟอร์มแล้ว', 
+        default= 1 , 
         verbose_name="สถานะขอบ้าน")
 
-    Comment = models.TextField(null=True, verbose_name="หมายเหตุ")
+    Comment = models.TextField(null=True, blank = True, verbose_name="หมายเหตุ")
 
     UnitApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.CASCADE, related_name='UnitApprover')
     PersonApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.CASCADE, related_name='PersonApprover')

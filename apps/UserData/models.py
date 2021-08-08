@@ -22,10 +22,15 @@ class User(AbstractUser):
         verbose_name_plural = "User : ผู้ใช้งานระบบ"         
         permissions = USER_PERMISSION
 
+    AFID = models.CharField(max_length = 15, null = True, verbose_name = "เลขประจำตัว ทอ.")
+    PersonID = models.CharField(max_length = 13, null=False, blank=False,default = '' ,verbose_name="เลขบัตรประชาชน")
     Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True)
     Position  =  models.CharField(max_length=250, null = True, blank = True)
-    OfficePhone =  models.CharField(max_length=10, null = True, blank = True)
-    MobileTel =  models.CharField(max_length=20, null = True, blank = True)
+
+    OfficePhone = models.CharField(max_length = 20, null=True, verbose_name="เบอร์ที่ทำงาน")
+    MobilePhone = models.CharField(max_length = 30, null=True, verbose_name="มือถือ")
+    RTAFEMail = models.EmailField(null=True, verbose_name = "email ทอ.")
+
     Unit =  models.ForeignKey(Unit, models.SET_NULL, null = True, verbose_name="สังกัด")
  
     @property

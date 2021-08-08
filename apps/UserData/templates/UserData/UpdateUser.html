@@ -1,0 +1,15 @@
+{% extends '_minbase.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+ข้อมูลพื้นฐานบุคคล
+{% endblock %}
+{% block content %}
+
+<form method = "POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type = "submit">
+</form>
+
+{% endblock %}

@@ -4,6 +4,8 @@ from django import forms
 from django.utils.translation import gettext as _
 from django.contrib.auth.forms import UserCreationForm
 
+from .models import User
+
 class MyAuthForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
@@ -27,7 +29,12 @@ class MyAuthForm(AuthenticationForm):
                     })
     )
 
-class MyLoginView(LoginView):    
-    authentication_form = MyAuthForm
-    # template_name = 'registration/login.html'
-    # form_class = MyAuthForm
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields =  ['Rank','first_name', 'last_name', 'email', 
+                  'PersonID', 'AFID', 'Position', 'Unit', 'OfficePhone',
+                  'MobilePhone', 'RTAFEMail' ]
+                  
+

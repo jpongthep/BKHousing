@@ -13,7 +13,8 @@ urlpatterns = [
     path('', BlankView.as_view(), name = 'blank'),
 
     path('hr/', include('apps.HomeRequest.urls')),
-
+    path('pf/', include('apps.UserData.urls')),
+    path('tr/', include('apps.Trouble.urls')),
     path('admin/', admin.site.urls),
 ] 
 

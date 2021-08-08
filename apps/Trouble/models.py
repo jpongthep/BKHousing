@@ -74,7 +74,7 @@ class FilledForm(models.Model):
                                                 ).annotate(sum = Sum('choice_selected__score'))[0]['sum']
         self.save()
 
-        return self.TotalScore
+        return self.total_score
 
     def __str__(self):
             return f'2564-2 :[{self.type}] : {self.home_request_form.FullName}'
