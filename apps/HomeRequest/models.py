@@ -63,14 +63,14 @@ class HomeRequest(models.Model):
     RentStartDate = models.DateField(verbose_name = "วันเริ่มสัญญาเช่าบ้าน", default=None)
     RentEndDate = models.DateField(verbose_name = "วันสิ้นสุดสัญญาเช่าบ้าน", default=None)
     RentOwner = models.CharField(max_length = 255, verbose_name = "ชื่อผู้ให้เช่า")
-    RentOwnerPID = models.CharField(max_length = 13, verbose_name = "เลขบัตร ปชช. ผู้ให้เช่า")
+    RentOwnerPID = models.CharField(max_length = 13, verbose_name = "PID ผู้ให้เช่า")
     RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน")
 
     # คู่สมรส
     Status = models.IntegerField(choices=PERSON_STATUS_CHOICE, verbose_name="สถานภาพ")
     SpouseName = models.CharField(max_length=100, null=False, blank=False, verbose_name="ชื่อคู่สมรส")
-    SpousePID = models.CharField(max_length = 13, null=False, blank=False, verbose_name="เลขบัตรประชาชนคู่สมรส")
-    SpouseAFID = models.CharField(max_length = 12, null=False, blank=False, verbose_name="เลขประจำตัว ทอ.")
+    SpousePID = models.CharField(max_length=13, null=False, blank=False, verbose_name="PID คู่สมรส")
+    SpouseAFID = models.CharField(max_length=12, null=False, blank=False, verbose_name="เลขประจำตัว ทอ.")
     IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานภรรยาและบุตรในประวัติราชการ')
 
     # ยืนยันข้อมูล
@@ -92,7 +92,7 @@ class HomeRequest(models.Model):
     # ความต้องการบ้านประเภทต่าง ๆ 
     IsHomeNeed = models.BooleanField(default = False, verbose_name = 'ต้องการบ้านพัก')
     IsFlatNeed = models.BooleanField(default = False, verbose_name = 'ต้องการแฟลต')
-    IsShophouseNeed = models.BooleanField(default = False, verbose_name = 'ต้องการห้องแถว')
+    IsShopHouseNeed = models.BooleanField(default = False, verbose_name = 'ต้องการห้องแถว')
 
     # ลำดับความต้องการบ้านเขตต่าง ๆ 
     ZoneRequestPriority1 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 1")
@@ -108,17 +108,17 @@ class HomeRequest(models.Model):
     SpouseDeathRegistration = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, verbose_name='มรณบัตรคู่สมรส (ถ้ามี)')
     HomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName)
     SpouseHomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName)
-    SalaryBill = models.FileField(default = None,  null = True, blank = True,upload_to = UploadFolderName, verbose_name='สลิปเงินเดือนล่าสุด')
-    SpouseApproved = models.FileField(default = None,  null = True, blank = True,upload_to = UploadFolderName, verbose_name='หนังสือรับรองจากคู่สมรส')
+    SalaryBill = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, verbose_name='สลิปเงินเดือนล่าสุด')
+    SpouseApproved = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, verbose_name='หนังสือรับรองจากคู่สมรส')
 
-    FormStatusChoice = [('1', 'ฉบับร่าง'), 
-                        ('2', 'เอกสารไม่ครบ'), 
-                        ('3', 'รอดำเนินการ'), 
-                        ('4', 'อนุมัติ'), 
-                        ('5', 'ไม่อนุมัติ'), ]
+    HomeRequestFormStatusChoice = [(1, 'ฉบับร่าง'),
+                                   (2, 'เอกสารไม่ครบ'),
+                                   (3, 'รอดำเนินการ'),
+                                   (4, 'อนุมัติ'),
+                                   (5, 'ไม่อนุมัติ'),]
 
     FormStatus = models.CharField(max_length=20, 
-        choices=FormStatusChoice, 
+        choices=HomeRequestFormStatusChoice, 
         default='ฉบับร่าง', 
         verbose_name="สถานะของเอกสาร")
 
@@ -127,11 +127,11 @@ class HomeRequest(models.Model):
                              ('3', 'กพ.ทอ.รับเรื่องแล้ว'), 
                              ('4', 'อนุมัติ'), 
                              ('5', 'ไม่อนุมัติ'), ]
-
     ProcedureStatus = models.CharField(max_length=20, 
         choices=ProcedureStatusChoice, 
         default='ขรก.กรอกฟอร์มแล้ว', 
         verbose_name="สถานะขอบ้าน")
+
     Comment = models.TextField(null=True, verbose_name="หมายเหตุ")
 
     UnitApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.CASCADE, related_name='UnitApprover')
@@ -165,6 +165,7 @@ class CoResident(models.Model):
     BirthDay = models.DateField(verbose_name="วันเกิด")
     Relation = models.CharField(max_length = 20, verbose_name="ความสัมพันธ์")
     Occupation = models.CharField(max_length = 20, verbose_name="อาชีพ")
+    Salary = models.IntegerField(verbose_name="รายได้", default = 0)
     IsAirforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
     Education = models.IntegerField(choices=EDUCATION_CHOICE, verbose_name="การศึกษา")
 

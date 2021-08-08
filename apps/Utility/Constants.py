@@ -1,13 +1,13 @@
 USER_PERMISSION = (
-            ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
-            ("RTAF_HOME_USER", "RTAF_home_user"),
-            ("PERSON_UNIT_USER", "Person_unit_user"),
-            ("PERSON_ADMIN", "Person_admin"),
-            ("HOME_EXAMINE_OFFICER", "Home_examine_officer"),
-            ("MP_OFFICER", "MP_officer"),
-            ("FINANCIAL_OFFICER", "Financial_officer"),
-            ("CIVIL_OFFICER", "Civil_officer"),
-        )
+    ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
+    ("RTAF_HOME_USER", "RTAF_home_user"),
+    ("PERSON_UNIT_USER", "Person_unit_user"),
+    ("PERSON_ADMIN", "Person_admin"),
+    ("HOME_EXAMINE_OFFICER", "Home_examine_officer"),
+    ("MP_OFFICER", "MP_officer"),
+    ("FINANCIAL_OFFICER", "Financial_officer"),
+    ("CIVIL_OFFICER", "Civil_officer"),
+)
 
 CHOICE_Rank = (
     ( 30101 ,  'พล.อ.อ.*' ) ,
@@ -87,21 +87,27 @@ HOMEZONE_CHOICE = [
     (8, 'เขต 8 : บางซื่อ'),
 ]
 
+PERSON_STATUS_CHOICE = [
+    (1, 'โสด'),
+    (2, 'สมรส-อยู่ร่วมกัน'),
+    (3, 'สมรส-แยกกันอยู่'),
+    (4, 'หย่า'),
+    (5, 'ม่าย'), ]
 
-PERSON_STATUS_CHOICE = [(1, 'โสด'),
-                        (2, 'สมรส-อยู่ร่วมกัน'),
-                        (3, 'สมรส-แยกกันอยู่'),
-                        (4, 'หย่า'),
-                        (5, 'ม่าย'), ]
+EDUCATION_CHOICE =  [
+    (0, 'Nursery'),
+    (1, 'ประถมต้น'),
+    (2, 'ประถมต้น'),
+    (3, 'ประถมปลาย'),
+    (4, 'มัธยมต้น'),
+    (5, 'มัธยมปลาย'),
+    (6, 'อุดมศึกษา'),
+    (7, 'บัณฑิตศึกษา'),
+    (8, 'ปวช.'), 
+    (9, 'ปวส.'), 
+    (10, 'อนุปริญญา'), ]
 
-EDUCATION_CHOICE =  [(0, 'Nursery'),
-                     (1, 'ประถมต้น'),
-                     (2, 'ประถมต้น'),
-                     (3, 'ประถมปลาย'),
-                     (4, 'มัธยมต้น'),
-                     (5, 'มัธยมปลาย'),
-                     (6, 'อุดมศึกษา'),
-                     (7, 'บัณฑิตศึกษา'),
-                     (8, 'ปวช.'), 
-                     (9, 'ปวส.'), 
-                     (10, 'อนุปริญญา'), ]
+FillFormTypeChoice = [
+    ('Self', 'ประเมินตนเอง'),
+    ('Unit', 'นขต.ประเมิน'),
+    ('HR', 'กพ.ทอ.ประเมิน')]

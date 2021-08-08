@@ -25,7 +25,7 @@ class AnsweredFormInline(admin.TabularInline):
     extra = 1
 
 class FilledFormAdmin(admin.ModelAdmin):
-    search_fields = ['HomeRequestForm__FirstName', 'HomeRequestForm__LastName']
+    search_fields = ['home_request_form__FirstName', 'home_request_form__LastName']
     inlines = [AnsweredFormInline,]
 
 admin.site.register(SetForm, SetFormAdmin)
