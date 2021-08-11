@@ -1,3 +1,6 @@
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
 USER_PERMISSION = (
     ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
     ("RTAF_HOME_USER", "RTAF_home_user"),
@@ -69,6 +72,7 @@ CHOICE_Rank = (
     ( 0 ,  '' )
 ) 
 
+# ขั้นตอนการปฏิบัติใน 1 วงรอบ
 YEARROUND_PROCESSSTEP = [
     (0, 'รอเปิด'),
     (1, 'ส่งคำร้อง'),
@@ -77,6 +81,19 @@ YEARROUND_PROCESSSTEP = [
     (4, 'จบวงรอบ'),
 ]
 
+# ขั้นตอนของเอกสาร
+class HomeRequestProcessStep(models.TextChoices):
+    REQUESTER_PROCESS = 'RP', _('RequesterProcess')
+    REQUESTER_SENDED = 'RS', _('RequesterSended')
+    UNIT_PROCESS = 'UP', _('UnitProcess')
+    UNIT_SENDED = 'US', _('RequesterSended')
+    PERSON_PROCESS = 'PP', _('PersonProcess')
+    PERSON_REPORTED = 'PR', _('PersonProcess')
+    GET_HOUSE = 'GH', _('GetHouse')
+    REQUESTER_CANCEL = 'RC', _('RequesterCalcel')
+    ROUND_FINISHED = 'RF', _('RoundFinished')
+
+# Zone บ้านพัก
 HOMEZONE_CHOICE = [
     (0, 'ไม่ระบุ'),
     (1, 'เขต 1 : ท่าดินแดง'),
@@ -87,6 +104,7 @@ HOMEZONE_CHOICE = [
     (8, 'เขต 8 : บางซื่อ'),
 ]
 
+# สถานภาพสมรส
 PERSON_STATUS_CHOICE = [
     (1, 'โสด'),
     (2, 'สมรส-อยู่ร่วมกัน'),
@@ -94,19 +112,21 @@ PERSON_STATUS_CHOICE = [
     (4, 'หย่า'),
     (5, 'ม่าย'), ]
 
+# การศึกษาของผู้พักอาศัยร่วม
 EDUCATION_CHOICE =  [
     (0, 'Nursery'),
-    (1, 'ประถมต้น'),
+    (1, 'อนุบาล'),
     (2, 'ประถมต้น'),
     (3, 'ประถมปลาย'),
     (4, 'มัธยมต้น'),
     (5, 'มัธยมปลาย'),
     (6, 'อุดมศึกษา'),
     (7, 'บัณฑิตศึกษา'),
-    (8, 'ปวช.'), 
-    (9, 'ปวส.'), 
-    (10, 'อนุปริญญา'), ]
+    (8, 'ปวช.หรือเทียบเท่า'), 
+    (9, 'ปวส.หรือเทียบเท่า'), 
+    (10, 'อนุปริญญาหรือเทียบเท่า'), ]
 
+# ผู้ประเมินความเดือดร้อน
 FillFormTypeChoice = [
     ('Self', 'ประเมินตนเอง'),
     ('Unit', 'นขต.ประเมิน'),

@@ -9,6 +9,8 @@ class CoResidentInline(admin.TabularInline):
 class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
     list_display = ['YearRound', 'FullName', 'Unit']
+    list_display_links = ['FullName']
+
     inlines = [CoResidentInline,]
     # fieldsets = (
     #     ('Standard info', {
@@ -32,12 +34,10 @@ class HomeRequestAdmin(admin.ModelAdmin):
 #     pass
     # list_display = ['YearRound', 'FullName', 
     #                 'Affiliation', 'FormStatus', 'ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']
-    # search_fields = ['FullName']
     # list_display_links = ['FullName']
     # list_editable = ['FormStatus','ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']
 
 
     # list_filter = ['Type']
     # list_editable = ['Type','NumDay']
-    # list_display_links = ['Person']
 admin.site.register(HomeRequest, HomeRequestAdmin)

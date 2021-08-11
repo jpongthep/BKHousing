@@ -37,7 +37,7 @@ class QuestionList(models.Model):
 
     set_form = models.ForeignKey(SetForm, on_delete = models.CASCADE)
     number = models.IntegerField(default = 1, verbose_name = 'ข้อที่')
-    question = models.ForeignKey(Question, on_delete = models.CASCADE)
+    question = models.ForeignKey(Question, on_delete = models.SET_NULL, null = True)
 
     def __str__(self):
             return f'{self.set_form.code} : {self.number}. {self.question.text}'
@@ -69,12 +69,15 @@ class FilledForm(models.Model):
     total_score = models.IntegerField(default = 0)
 
     def CalculateScore(self):
-        self.total_score = AnsweredForm.objects.filter(filled_form = self
+        total_score = AnsweredForm.objects.filter(filled_form = self
                                                 ).values('filled_form'
-                                                ).annotate(sum = Sum('choice_selected__score'))[0]['sum']
+                                                ).annotate(sum = Sum('choice_selected__score')
+                                                ).aggregate(Sum('sum'))['sum__sum']
+
+        self.total_score =  total_score
         self.save()
 
-        return self.total_score
+        return total_score
 
     def __str__(self):
             return f'2564-2 :[{self.type}] : {self.home_request_form.FullName}'

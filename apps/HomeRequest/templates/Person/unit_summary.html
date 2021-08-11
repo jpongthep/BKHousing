@@ -1,0 +1,173 @@
+{% extends '_minbase.html' %}
+{% load thaidate %}
+
+{% block title %}
+รายการขอบ้านพัก
+{% endblock %}
+
+{% block header %}
+รายการขอบ้านพัก
+{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <style>
+    .icon-size {font-size: 20px;}
+    .check-size {font-size: 10px;}
+
+    thead tr:first-child{
+        text-align: center;
+    }
+
+    table td:not(:nth-child(6)):not(:last-child){
+        text-align: center;
+    }
+
+
+  </style>
+{% endblock %}
+
+{% block content%}
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row mb-2">
+                    <div class="col-sm-10"><h4>จนท.กพ.ทอ.</h4>  {{ request.user.FullName}}</div>
+                    <div class="col-sm-2">
+                        <a href = '{% url 'HomeRequest:create' %}'type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New</a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped">
+                    <col width="40">                    
+                    <col width="40">
+                    <col width="40">
+                    <col width="120">
+                    <col width="120">
+                    <col width="320">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        
+                        <th>#</th>
+                        <th>#</th>
+                        <th>วันส่ง</th>
+                        <th>หน่วยงาน</th>
+                        <th>เจ้าหน้าที่หน่วย</th>
+                        <th colspan = 2>ผู้ขอ</th>
+                        <th colspan = 2>นขต.</th>
+                        <th colspan = 2>กพ.ทอ.</th>
+                        <th><i class="fa fa-hourglass text-warning icon-size" ></th>
+                        <th><i class="fa fa-home text-primary icon-size" ></th>
+                        <th>                            
+                            <span class="fa-stack">
+                                <i class="fas fa-home text-primary  " style="margin-top: 13px; margin-left: -6px;"></i>                                
+                                <i class="fas fa-home text-primary  " style="margin-top: 2px; margin-left: -10px;"></i>                                
+                            </span>
+                        </th>                        
+                        <th><i class="fa fa-building text-primary icon-size" ></th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>                        
+                        <td>{{ forloop.counter }}</td>                        
+                        <td><a href = "#"><i class="fa fa-list text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
+                        <td>{{ object.DateSend|thaidate:"d M y" }}</td>
+                        
+                        <td>{{ object.Unit }}</td>
+                        <td>{{ object.Requester.UnitApprover.FullName }} ({{ object.Requester.UnitApprover.OfficePhone }})</td>
+                        <td><a href = "#" class = "font-weight-bold text-warning strong">3</a></td>
+                        <td><a href = "#" class = "font-weight-bold text-success strong">12</a></td>
+                        <td><a href = "#" class = "font-weight-bold text-warning strong">10</a></td>
+                        <td><a href = "#" class = "font-weight-bold text-success strong">-</a></td>                        
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>      
+                {% endfor %}
+                    <tr>
+                        <td>2</td>
+                        <td><a href = "#"><i class="fa fa-list text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
+                        <td>{{ object.DateSend }}</td>
+                        
+                        <td>กบ.ทอ.</td>
+                        <td>2-1215</td>
+                        <td><a href = "#"><i class="fa fa-check text-success icon-size" ></i></a></td>
+                        <td><a href = "#"><i class="fa fa-check text-success icon-size" ></i></a></td>
+                        </td>
+                        <td><a href = "#"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td>{{ object.DateSend }}</td>
+                        
+                        <td>ยศ.ทอ.</td>
+                        <td>2-1122</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td>{{ object.DateSend }}</td>
+                        
+                        <td>ยศ.ทอ.</td>
+                        <td>2-1122</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

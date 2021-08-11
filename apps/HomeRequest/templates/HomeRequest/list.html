@@ -1,4 +1,5 @@
 {% extends '_minbase.html' %}
+{% load thaidate %}
 
 {% block title %}
 รายการขอบ้านพัก
@@ -18,9 +19,10 @@
         text-align: center;
     }
 
-    table td:not(:nth-child(5)){
+    table td:not(:nth-child(6)){
         text-align: center;
     }
+
   </style>
 {% endblock %}
 
@@ -28,8 +30,8 @@
     <div class="table-responsive">
         <div class="table-wrapper">
             <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-10"><h3>Employee <b>Details</b></h3></div>
+                <div class="row mb-2">
+                    <div class="col-sm-10"><h4>จนท.ศซว.ทอ.</h4>  {{ request.user.FullName}}</div>
                     <div class="col-sm-2">
                         <a href = '{% url 'HomeRequest:create' %}'type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New</a>
                     </div>
@@ -39,7 +41,8 @@
                     <col width="40">
                     <col width="40">
                     <col width="40">
-                    <col width="150">
+                    <col width="40">
+                    <col width="120">
                     <col width="350">
                     <col width="120">
                     <col width="60">
@@ -48,9 +51,10 @@
                     <col width="40">
                     <col width="40">
                     <col width="40">
-                    <col width="150">
-                <thead>
+                    <col width="120">
+                    <col width="120">               <thead>
                     <tr>
+                        <th>#</th>
                         <th>#</th>
                         <th>#</th>
                         <th>#</th>
@@ -63,7 +67,7 @@
                         <th>กพ.ทอ.</th>
                         <th>ประเมิน</th>
                         <th>อนุมัติ</th>
-                        <th>หมายเหตุ</th>
+                        <th colspan = 2>หมายเหตุ</th>                        
                     </tr>
                 </thead>
                 <tbody>
@@ -72,7 +76,8 @@
                         <td>{{ forloop.counter }}</td>
                         <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
                         <td><a href = "{% url 'HomeRequest:detail' object.id %}"><i class="fa fa-eye text-info icon-size" ></i></a></td>
-                        <td>{{ object.DateSend|date:'d M y' }}</td>
+                        <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td>{{ object.DateSend|thaidate:"d M y" }}</td>
                         <td>{{ object.FullName }}</td>
                         <td>{{ object.Unit }}</td>
                         <td>{{ object.Requester.OfficePhone }}</td>
@@ -80,20 +85,38 @@
                         <td><a href = "#"><i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i></a></td>
                         <td></td>
                         <td>
-                            <span class="fa-stack" style="vertical-align: top;">
-                                <i class="far fa-tasks  icon-size"></i>
-                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
-                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 20px;"></i>
-                            </span>
+                            <a href = "{% url 'Trouble:eval' object.id 'Unit' %}" target = "_blank">
+                                {% if object.UnitApprover and object.PersonApprover  %}
+                                    <strong>10</strong>
+                                {% else %}
+                                    <span class="fa-stack" style="vertical-align: top;">
+                                        <i class="far fa-tasks  icon-size"></i>
+                                            {% if object.UnitApprover %}
+                                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>                                                
+                                            {% else %}
+                                                <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                                            {% endif %}
+                                            {% if object.PersonApprover %}
+                                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                                                <span class="badge">5</span>
+                                            {% else %}
+                                                <i class="fas fa-question text-danger fa-stack-1x check-size"  style="margin-top: 10px;margin-left: 20px;"></i>
+                                            {% endif %}
+                                    </span>
+                                {% endif %}
+                            </a>
                         </td>
                         <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
-                        <td></td>
+                        <td><button type="button" class="btn btn-outline-primary btn-sm">รับเรื่อง</button></td>
+                        <td><button type="button" class="btn btn-outline-success btn-sm">ส่งเรื่อง</button></td>
+                      
                     </tr>      
                 {% endfor %}
-                    <tr >
+                    <tr class = "text-muted">
                         <td>2</td>
                         <td><a href = "#"><i class="fa fa-times text-danger icon-size" ></i></a></td>
                         <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
                         <td>{{ object.DateSend }}</td>
                         <td><span class="text-decoration-line-through">น.ท.ทัพฟ้า  รักษ์ไทย<span></td>                        
                         <td>กบ.ทอ.</td>
@@ -109,19 +132,20 @@
                                 <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 20px;"></i>
                             </span>
                         </td>
-                        <td><a href = "#"><i class="fa fa-question text-dark icon-size"></i></a></td>
                         <td></td>
+                        <td colspan = 2>ผู้ขอยกเลิกคำขอ</td>
                     </tr>
                     <tr>
                         <td>3</td>
                         <td><a href = "#"><a href = "#"><i class="fa fa-edit text-danger icon-size" ></i></a></i></a></td>
                         <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
                         <td>{{ object.DateSend }}</td>
                         <td>น.ต.สายัญ ขยันงาน</td>
                         <td>ยศ.ทอ.</td>
                         <td>2-1122</td>
                         <td><a href = "#"><i class="fa fa-check text-success icon-size" ></i></a></td>
-                        <td><a href = "#"><i class="fa  fa-spinner fa-spin  text-success icon-size" ></i></a></td>
+                        <td><a href = "#"><i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i></a></td>
                         <td></td>
                         <td>
                             <span class="fa-stack" style="vertical-align: top;">
@@ -137,6 +161,7 @@
                         <td>4</td>
                         <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
                         <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
                         <td>{{ object.DateSend }}</td>
                         <td>ร.อ.หญิง เหมือนฝัน  หมั่นศึกษา</td>
                         <td>ยศ.ทอ.</td>

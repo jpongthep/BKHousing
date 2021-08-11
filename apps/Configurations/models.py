@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 
+# from apps.Trouble.models import SetForm
 from apps.Utility.Constants import YEARROUND_PROCESSSTEP
 
 class YearRound(models.Model):
@@ -14,12 +15,6 @@ class YearRound(models.Model):
     Step1 = models.DateField(verbose_name = 'ส่งคำร้อง')
     Step2 = models.DateField(verbose_name = 'นขต.ประเมิน')
     Step3 = models.DateField(verbose_name = 'กพ.ดำเนินการ')
-    # TroubleForm = models.ForeignKey(
-    #             TroupleSetForm,
-    #             null=True,
-    #             blank=True,
-    #             on_delete=models.CASCADE,
-    #             verbose_name = 'แบบฟอร์มที่ใช้ในการประเมิน'
-    #         )
+    # TroubleForm = models.ForeignKey('SetForm', null=True,  blank=True, on_delete = models.SET_NULL, verbose_name = 'ฟอร์มประเมิน')
     def __str__(self):
         return f'{self.Year}-{self.Round}'

@@ -6,11 +6,15 @@ from django.conf.urls.static import static
 
 from django.views.generic import TemplateView
 
-class BlankView(TemplateView):
+class minView(TemplateView):
     template_name = "_minbase.html"
 
+class blankView(TemplateView):
+    template_name = "_blank.html"
+
 urlpatterns = [
-    path('', BlankView.as_view(), name = 'blank'),
+    path('', blankView.as_view(), name = 'blank'),
+    path('min', minView.as_view(), name = 'blank'),
 
     path('hr/', include('apps.HomeRequest.urls')),
     path('pf/', include('apps.UserData.urls')),
