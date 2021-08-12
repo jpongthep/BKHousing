@@ -73,24 +73,24 @@ CHOICE_Rank = (
 ) 
 
 # ขั้นตอนการปฏิบัติใน 1 วงรอบ
-YEARROUND_PROCESSSTEP = [
-    (0, 'รอเปิด'),
-    (1, 'ส่งคำร้อง'),
-    (2, 'นขต.ประเมิน'),
-    (3, 'กพ.ดำเนินการ'),
-    (4, 'จบวงรอบ'),
-]
+
+class YEARROUND_PROCESSSTEP(models.TextChoices):
+    NOT_OPEN = 'NO', _('NotOpen')
+    REQUEST_SENDED = 'RS', _('RequestSended')
+    UNIT_PROCESS = 'UP', _('UnitProcess')    
+    PERSON_PROCESS = 'PP', _('PersonProcess')    
+    YR_CLOSE = 'CL', _('YearRoundClose')
 
 # ขั้นตอนของเอกสาร
 class HomeRequestProcessStep(models.TextChoices):
     REQUESTER_PROCESS = 'RP', _('RequesterProcess')
     REQUESTER_SENDED = 'RS', _('RequesterSended')
     UNIT_PROCESS = 'UP', _('UnitProcess')
-    UNIT_SENDED = 'US', _('RequesterSended')
+    UNIT_SENDED = 'US', _('UnitSended')
     PERSON_PROCESS = 'PP', _('PersonProcess')
-    PERSON_REPORTED = 'PR', _('PersonProcess')
+    PERSON_REPORTED = 'PR', _('PersonReported') # ออกรายงาน
     GET_HOUSE = 'GH', _('GetHouse')
-    REQUESTER_CANCEL = 'RC', _('RequesterCalcel')
+    REQUESTER_CANCEL = 'RC', _('RequesterCancel')
     ROUND_FINISHED = 'RF', _('RoundFinished')
 
 # Zone บ้านพัก

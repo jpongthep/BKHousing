@@ -116,6 +116,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login'
 AUTHENTICATION_BACKENDS = ['apps.UserData.AFAuthentications.SettingsBackend']
 SESSION_COOKIE_AGE = 60*60*24
 
@@ -123,7 +125,7 @@ AUTH_USER_MODEL = 'UserData.User'
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join('static'),)
+# STATICFILES_DIRS = (os.path.join('static'),)
 STATIC_ROOT = ''
 STATICFILES_DIRS = [
     BASE_DIR / 'static'

@@ -8,8 +8,9 @@ class CoResidentInline(admin.TabularInline):
 
 class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
-    list_display = ['YearRound', 'FullName', 'Unit']
+    list_display = ['year_round', 'FullName', 'Unit']
     list_display_links = ['FullName']
+    save_as = True
 
     inlines = [CoResidentInline,]
     # fieldsets = (
@@ -32,7 +33,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
 
 # class HomeRequestAdmin(admin.ModelAdmin):
 #     pass
-    # list_display = ['YearRound', 'FullName', 
+    # list_display = ['year_round', 'FullName', 
     #                 'Affiliation', 'FormStatus', 'ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']
     # list_display_links = ['FullName']
     # list_editable = ['FormStatus','ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']

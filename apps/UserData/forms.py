@@ -16,7 +16,7 @@ class MyAuthForm(AuthenticationForm):
             attrs = { 'autofocus': True,
                     'class' : 'form-control',
                     'id' : 'floatingInput',
-                    'placeholder' : 'RTAF email account ไม่ต้องมี @rtaf.mi.th',
+                    'placeholder' : 'RTAF email ไม่ต้องมี @rtaf.mi.th',
                     'size' : 30}))
     password = forms.CharField(
         label=_("Password"),
@@ -34,7 +34,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields =  ['Rank','first_name', 'last_name', 'email', 
-                  'PersonID', 'AFID', 'Position', 'Unit', 'OfficePhone',
+                  'PersonID', 'AFID', 'Position', 'CurrentUnit', 'OfficePhone',
                   'MobilePhone', 'RTAFEMail' ]
                   
 

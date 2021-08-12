@@ -18,11 +18,9 @@ from apps.UserData.models import User, Unit as TheUnit
 class HomeRequest(models.Model):
     class Meta:
         verbose_name_plural = "HomeRequest : คำร้องขอมีบ้านพัก"
-        ordering = ["id"]  
 
     Requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Requester')
-    DateSend = models.DateField(default = date.today)
-    YearRound = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='Requester')
+    year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='Requester')
 
     # ข้อมูลพื้นฐานส่วนตัว ณ ช่วงเวลาที่ขอ
     Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True)
@@ -33,18 +31,13 @@ class HomeRequest(models.Model):
     Salary = models.IntegerField(verbose_name="เงินเดือน(ปัจจุบัน)", null=True, blank=True)
     AddSalary = models.IntegerField(verbose_name="เงินเพิ่ม", null=True, blank=True)
 
-    # การบรรจุครั้งแรก
-    PlacementUnit = models.ForeignKey(TheUnit, models.SET_NULL, null = True, verbose_name="สังกัดบรรจุ", related_name='PlacementUnit')
-    command_of_placement = models.CharField(max_length = 100, null = True,verbose_name="ที่คำสั่งบรรจุ")
-    PlacementCommandDate = models.DateField(null = True,verbose_name="ลงวันที่")
-    PlacementDate = models.DateField(null = True,verbose_name="เริ่มบรรจุเมื่อ")
 
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
-    SubDistinct = models.CharField(max_length = 50, null=True, verbose_name="ตำบล")
-    Distinct = models.CharField(max_length = 50, null=True, verbose_name="อำเภอ")    
-    Province = models.CharField(max_length = 50, null=True, verbose_name="จังหวัด")
-    GooglePlusCodes1 = models.CharField(max_length = 20, null=True, verbose_name="Google Plus Codes 1")
+    SubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
+    Distinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="อำเภอ")    
+    Province = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
+    GooglePlusCodes1 = models.CharField(max_length = 20, null=True, blank=True, verbose_name="Google Plus Codes 1")
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
@@ -64,7 +57,7 @@ class HomeRequest(models.Model):
     RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน", null=True, blank=True)
 
     # คู่สมรส
-    Status = models.IntegerField(choices=PERSON_STATUS_CHOICE, null=True, verbose_name="สถานภาพ")
+    Status = models.IntegerField(choices=PERSON_STATUS_CHOICE, null=True, blank=True, verbose_name="สถานภาพ")
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
     SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ.")
@@ -110,22 +103,25 @@ class HomeRequest(models.Model):
 
     Comment = models.TextField(verbose_name="หมายเหตุ", null=True, blank = True)
 
-    ProcessStep = models.CharField(verbose_name="ขั้นตอนเอกสาร", max_length = 2, choices=HomeRequestProcessStep.choices,default = HomeRequestProcessStep.REQUESTER_PROCESS)
+    ProcessStep = models.CharField(verbose_name="ขั้นตอนเอกสาร", max_length = 2, choices = HomeRequestProcessStep.choices,default = HomeRequestProcessStep.REQUESTER_PROCESS)
+
+    # วันที่ส่งเอกสารของผู้ขอบ้าน
+    IsSended = models.BooleanField(verbose_name = 'ผู้ขอส่งเอกสาร', default = False)
+    RequesterDateSend = models.DateField(default = date.today)
 
     # ผู้รับและวันที่รับเอกสารของ นขต.
-    UnitApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.CASCADE, related_name='UnitApprover')
+    UnitApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='UnitApprover')
     UnitDateApproved = models.DateField(verbose_name = "วันที่หน่วยรับเอกสาร", default=None, null=True, blank=True)
     
     # ผู้รับและวันที่รับเอกสารของ กพ.ทอ.
-    PersonApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.CASCADE, related_name='PersonApprover')
+    PersonApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='PersonApprover')
     PersonDateApproved = models.DateField(verbose_name = "วันที่กำลังพลรับเอกสาร", default=None, null=True, blank=True)
-
 
     # แบบประเมินความเดือดร้อน 2 ส่วน หน่วยงาน และ กพ.ทอ.
     IsTroubleUnit = models.BooleanField(verbose_name = 'นขต.ประเมินเรียบร้อย', default = False)
     IsTroublePerson =  models.BooleanField(verbose_name = 'กพ.ทอ.ประเมินเรียบร้อย', default = False)
     #คะแนนประเมินล่าสุด
-    TroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน", null=True)
+    TroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน", null=True,blank = True)
 
     def get_absolute_url(self):
         return reverse('HomeRequest:detail', kwargs={"pk": self.pk})
@@ -139,7 +135,7 @@ class HomeRequest(models.Model):
         return today.year - self.PlacementDate.year
 
     def __str__(self):
-        return f'{self.YearRound} : {self.Requester}'
+        return f'{self.year_round} : {self.Requester}'
 
 
 # ผู้ที่พักอาศัยอยู่ร่วมกัน

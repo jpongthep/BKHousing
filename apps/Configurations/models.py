@@ -11,7 +11,7 @@ class YearRound(models.Model):
     Year  = models.IntegerField(default = datetime.date.today().year,verbose_name = 'ปีปัจจุบัน')
     Round = models.IntegerField(default = 1,verbose_name = 'วงรอบ')
 
-    CurrentStep = models.IntegerField(choices=YEARROUND_PROCESSSTEP, default=0,verbose_name = 'การทำงานในขณะนี้')
+    CurrentStep = models.CharField(verbose_name = 'การทำงานในขณะนี้', max_length = 2, choices=YEARROUND_PROCESSSTEP.choices, default = YEARROUND_PROCESSSTEP.NOT_OPEN)
     Step1 = models.DateField(verbose_name = 'ส่งคำร้อง')
     Step2 = models.DateField(verbose_name = 'นขต.ประเมิน')
     Step3 = models.DateField(verbose_name = 'กพ.ดำเนินการ')

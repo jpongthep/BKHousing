@@ -1,4 +1,5 @@
 {% load static %}
+{% load common_tags %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -11,7 +12,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link href="{% static 'assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    
     {% block style %}
       
     {% endblock %}
@@ -27,13 +49,73 @@
       .footer {
         grid-row-start: 2;
         grid-row-end: 3;
-      }
+      }      
     </style>
 
  </head>
   <body>
+    <main>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Fifth navbar example">
+    <div class="container-fluid">      
+    
+      <a class="navbar-brand" href="#">ARMIS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExample05">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            {% if request.resolver_match.url_name == 'Home' %}
+              <a href="#" class="nav-link text-white"></a>
+            {% else %}
+              <a href="{% url 'HomeRequest:af_person'%}" class="nav-link text-secondary"></a>
+            {% endif %}
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-edit"></i> คำขอบ้านพัก</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown05">
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}"><i class="fa fa-fw fa-user"></i> คำขอบุคคล</a></li>
+            {% if request.user|has_group:"PERSON_UNIT_USER" %}
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:list'%}"><i class="fa fa-fw fa-users"></i> คำขอหน่วยงาน</a></li>
+            {% endif %}
+            {% if request.user|has_group:"PERSON_ADMIN" %}
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> หน่วยงาน ทอ.</a></li>
+            {% endif %}
+            </ul>
+          </li>          
+
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">คำขอบ้านพัก</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown05">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" target = "_blank" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> logout</a>
+          </li>
+          {% if request.user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link" target = "_blank" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
+          </li>
+          {% endif %}
+        </ul>
+        <form>
+          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </form>
+      </div>
+    </div>
+  </nav>
+    
     <div class="container-fluid">
+    
     {% include "DisplayMessage.html" %}
+    
       <div class="row justify-content-center">
         <div class="col-xl-12">
           <h3 class="mt-2">{% block header %}Bootstrap 4.6.0 Blank Template{% endblock %}</h3>
@@ -43,9 +125,8 @@
         </div>
       </div>
     </div>
-
+</main>
     {% include "footer.html" %}
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <script src="{% static 'assets/dist/js/bootstrap.bundle.min.js' %}"></script>
   </body>
 </html>

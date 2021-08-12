@@ -24,7 +24,13 @@
 {% endblock %}
 
 {% block content%}
+    <strong>ผู้ขอ</strong><br>
     {{ object.FullName }}<br>
     {{ object.Position }}<br>
     {{ object.Unit }}<br>
+
+    <strong>ผู้อาศัยร่วม</strong><br>
+    {% for cr in co_residence %}
+      {{ cr }}<br>
+    {% endfor %}
 {% endblock %}

@@ -2,12 +2,13 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
+
 from .models import HomeRequest, CoResident
 
 class HomeRequestForm(forms.ModelForm):
     class Meta:
         model = HomeRequest
-        fields = ['Rank' ,'FullName', 'Position', 'HouseRegistration','HomeRent6006']
+        fields = ['Rank' ,'FullName', 'Position', 'Salary', 'AddSalary', 'HouseRegistration','HomeRent6006']
         # fileds = '__all__'
         # exclude = ['Requester', 'DateSend', 'YearRound', 'UnitApprover', 
         #            'PersonApprover', 'IsTroubleSelf', 'IsTroubleUnit', 'IsTroublePerson']
@@ -21,6 +22,7 @@ class HomeRequestForm(forms.ModelForm):
                         'rows' : 4
                 }),
         }
+
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         CoResident,  # inline-form

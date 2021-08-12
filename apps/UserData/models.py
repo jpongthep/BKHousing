@@ -31,8 +31,14 @@ class User(AbstractUser):
     MobilePhone = models.CharField(max_length = 30, null=True, verbose_name="มือถือ")
     RTAFEMail = models.EmailField(null=True, verbose_name = "email ทอ.")
 
-    Unit =  models.ForeignKey(Unit, models.SET_NULL, null = True, verbose_name="สังกัด")
+    CurrentUnit =  models.ForeignKey(Unit, models.SET_NULL, null = True, verbose_name="สังกัด", related_name='CurrentUser')
  
+     # การบรรจุครั้งแรก อาจนำไปใส่ไว่้ใน User เนื่องจากข้อมูลชุดนี้ไม่เปลี่ยนแปลงตลอดอายุราชการ
+    PlacementUnit = models.ForeignKey(Unit, models.SET_NULL, null = True, verbose_name="สังกัดบรรจุ", related_name='PlacementUnit')
+    command_of_placement = models.CharField(max_length = 100, null = True,verbose_name="ที่คำสั่งบรรจุ")
+    PlacementCommandDate = models.DateField(null = True,verbose_name="ลงวันที่")
+    PlacementDate = models.DateField(null = True,verbose_name="เริ่มบรรจุเมื่อ")
+
     @property
     def FullName(self):
         RankDisplay = self.get_Rank_display()

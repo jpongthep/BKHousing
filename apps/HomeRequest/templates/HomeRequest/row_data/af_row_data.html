@@ -1,0 +1,42 @@
+{% load thaidate %}
+
+{% if object.year_round.get_CurrentStep_display != 'YearRoundClose' %}
+    <tr>
+        <td>
+        {{ forloop.counter }}</td>
+        <td><a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a></td>
+        <td><a href = "{% url 'HomeRequest:detail' object.id %}"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+        <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word icon-size"></i></a></td>
+        <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
+        <td>{{ object.FullName }}</td>
+        <td>{{ object.Unit }}</td>
+        <td>{{ object.Requester.MobilePhone }}</td>
+        <td>
+            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="requester" %}
+        </td>
+        <td>
+            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="UnitPerson" %}
+        </td>
+        <td>
+            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
+        </td>
+        <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
+        <td><button type="button" class="btn btn-outline-danger btn-sm">ยกเลิก</button></td>
+    </tr>  
+{% else %}
+    <tr>                        
+        <td>{{ forloop.counter }}</td>
+        <td><i class="fa fa-ban text-dark icon-size" ></td>
+        <td><a href = "{% url 'HomeRequest:detail' object.id %}"><i class="fa fa-eye text-secondary icon-size" ></i></a></td>
+        <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word text-secondary  icon-size"></i></a></td>
+        <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
+        <td>{{ object.FullName }}</td>
+        <td>{{ object.Unit }}</td>
+        <td>{{ object.Requester.MobilePhone }}</td>
+        <td><i class="fa fa-check text-secondary icon-size" ></i></td>
+        <td><i class="fa fa-check text-secondary icon-size" ></i></td>
+        <td><i class="fa fa-check text-secondary icon-size" ></i></td>
+        <td><i class="fa fa-times-circle text-secondary"></i></td>
+        <td>หมดวงรอบ</td>
+    </tr>
+{% endif %}

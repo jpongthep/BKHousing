@@ -6,15 +6,20 @@ from django.conf.urls.static import static
 
 from django.views.generic import TemplateView
 
+from apps.UserData.views import MyLoginView
+from django.contrib.auth.views import LogoutView
 class minView(TemplateView):
     template_name = "_minbase.html"
 
-class blankView(TemplateView):
-    template_name = "_blank.html"
+# class blankView(TemplateView):
+#     template_name = "_blank.html"
 
 urlpatterns = [
-    path('', blankView.as_view(), name = 'blank'),
-    path('min', minView.as_view(), name = 'blank'),
+    # path('', blankView.as_view(), name = 'blank'),
+    path('', minView.as_view(), name = 'blank'),
+
+    path('login/', MyLoginView.as_view(), name = 'login'),
+    path('logout/', LogoutView.as_view(), name = 'logout'),
 
     path('hr/', include('apps.HomeRequest.urls')),
     path('pf/', include('apps.UserData.urls')),

@@ -39,11 +39,13 @@ class SettingsBackend(ModelBackend):
         # print('Username = ',username)
         try:
             user = User.objects.get(username=username)
+            print(user)
+            print(username)
 
             if not user.is_active:
                 return None
 
-            if username in ['test_user',]:
+            if username in ['pongthep', 'test_user','test_user2',]:
                 return user
 
             # if not re.search("@rtaf.mi.th$",user.email):

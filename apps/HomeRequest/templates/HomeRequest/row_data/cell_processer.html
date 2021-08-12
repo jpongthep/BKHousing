@@ -1,0 +1,19 @@
+{% if processer == 'requester'%}
+    {% if object.get_ProcessStep_display == 'RequesterSended' %}
+        <a href = "#"><i class="fa fa-check text-success icon-size" ></i></a>
+    {% elif  object.get_ProcessStep_display == 'RequesterProcess' %}
+        <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+    {% endif %}
+{% elif processer == "UnitPerson" %}
+    {% if object.get_ProcessStep_display == 'UnitSended' %}
+        <a href = "#"><i class="fa fa-check text-success icon-size" ></i></a>
+    {% elif  object.get_ProcessStep_display == 'UnitProcess' %}
+        <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+    {% endif %}
+{% elif processer == "PersonAdmin" %}    
+    {% if object.get_ProcessStep_display == 'PersonReported' or  object.get_ProcessStep_display == 'GetHouse' %}
+        <a href = "#"><i class="fa fa-check text-success icon-size" ></i></a>
+    {% elif  object.get_ProcessStep_display == 'PersonProcess' %}
+        <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+    {% endif %}   
+{% endif %}
