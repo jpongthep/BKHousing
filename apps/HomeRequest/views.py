@@ -22,6 +22,15 @@ from .forms import HomeRequestForm, CoResidentFormSet
 from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep)
 from apps.Configurations.models import YearRound
 
+
+def get_current_year():
+    CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
+                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
+                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+
+    CurrentYear = CurrentYearRound[0].Year
+    return CurrentYear
+
 class HousingUserPassesTestMixin(UserPassesTestMixin):
     allow_groups = []
 
@@ -137,11 +146,6 @@ class HomeRequestUnitListView(LoginRequiredMixin, HousingUserPassesTestMixin, Li
     allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_USER']
 
     def get_queryset(self, *args, **kwargs):
-        CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
-
-        CurrentYear = CurrentYearRound[0].Year
 
         if self.request.user.groups.filter(name='PERSON_UNIT_USER').exists():
                 queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
@@ -151,7 +155,7 @@ class HomeRequestUnitListView(LoginRequiredMixin, HousingUserPassesTestMixin, Li
             if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
                     queryset = HomeRequest.objects.filter(Unit_id = unit_id)
         
-        queryset = queryset.filter(year_round__Year = CurrentYear)
+        queryset = queryset.filter(year_round__Year = get_current_year())
         queryset = queryset.order_by("-year_round__Year")
         return queryset    
 
@@ -173,34 +177,34 @@ class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMi
         DateSended = Max('UnitDateApproved')
         UnitApprover = Max('UnitApprover__first_name')
         
+        queryset = HomeRequest.objects.filter(year_round__Year = get_current_year())
 
-        queryset = HomeRequest.objects.exclude(
-                                            Q(ProcessStep = HomeRequestProcessStep.REQUESTER_CANCEL) 
-                                            | Q(ProcessStep = HomeRequestProcessStep.ROUND_FINISHED)
-                                      ).values('Unit'
-                                      ).annotate(
-                                            DateSended = DateSended,
-                                            UnitApprover = UnitApprover,
-                                            Num_RP = Num_RP,
-                                            Num_RS = Num_RS,
-                                            Num_UP = Num_UP,
-                                            Num_US = Num_US,
-                                            Num_PP = Num_PP,
-                                            Num_PR = Num_PR,
-                                            Num_GH = Num_GH
-                                      ).values(
-                                            'Unit',
-                                            'Unit__ShortName',
-                                            'DateSended',
-                                            'UnitApprover',
-                                            'Num_RP',
-                                            'Num_RS',
-                                            'Num_UP',
-                                            'Num_US',
-                                            'Num_PP',
-                                            'Num_PR',
-                                            'Num_GH'
-                                      )
+        queryset = queryset.exclude(
+                                    Q(ProcessStep = HomeRequestProcessStep.REQUESTER_CANCEL) 
+                                ).values('Unit'
+                                ).annotate(
+                                    DateSended = DateSended,
+                                    UnitApprover = UnitApprover,
+                                    Num_RP = Num_RP,
+                                    Num_RS = Num_RS,
+                                    Num_UP = Num_UP,
+                                    Num_US = Num_US,
+                                    Num_PP = Num_PP,
+                                    Num_PR = Num_PR,
+                                    Num_GH = Num_GH
+                                ).values(
+                                    'Unit',
+                                    'Unit__ShortName',
+                                    'DateSended',
+                                    'UnitApprover',
+                                    'Num_RP',
+                                    'Num_RS',
+                                    'Num_UP',
+                                    'Num_US',
+                                    'Num_PP',
+                                    'Num_PR',
+                                    'Num_GH'
+                                )
         
         return queryset
 

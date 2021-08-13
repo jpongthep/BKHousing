@@ -1,4 +1,5 @@
 {% load thaidate %}
+{% load humanize %}
 
 {% if object.year_round.get_CurrentStep_display != 'YearRoundClose' %}
     <tr>
@@ -10,7 +11,18 @@
         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
         <td>{{ object.FullName }}</td>
         <td>{{ object.Unit }}</td>
-        <td>{{ object.Requester.MobilePhone }}</td>
+        <td>
+            {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
+            {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
+        </td>
+        <td></td>
+        <td>
+            {% if object.CoResident.all.count == 0%}
+                - 
+            {% else %}
+                {{ object.CoResident.all.count }}
+            {% endif %}
+        </td>
         <td>
             {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="requester" %}
         </td>
@@ -20,8 +32,10 @@
         <td>
             {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
         </td>
-        <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
-        <td><button type="button" class="btn btn-outline-danger btn-sm">ยกเลิก</button></td>
+        <td>
+            {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
+        </td>
+        <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="return prompt('กรอกเหตุผลการยกเลิกขอบ้าน');">ยกเลิก</button></td>
     </tr>  
 {% else %}
     <tr>                        
@@ -32,7 +46,18 @@
         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
         <td>{{ object.FullName }}</td>
         <td>{{ object.Unit }}</td>
-        <td>{{ object.Requester.MobilePhone }}</td>
+        <td>
+            {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
+            {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
+        </td>
+        <td></td>
+        <td>
+            {% if object.CoResident.all.count == 0%}
+                - 
+            {% else %}
+                {{ object.CoResident.all.count }}
+            {% endif %}
+        </td>
         <td><i class="fa fa-check text-secondary icon-size" ></i></td>
         <td><i class="fa fa-check text-secondary icon-size" ></i></td>
         <td><i class="fa fa-check text-secondary icon-size" ></i></td>

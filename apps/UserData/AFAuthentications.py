@@ -37,6 +37,10 @@ class SettingsBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None):
         pass
         # print('Username = ',username)
+
+        if re.search("@rtaf.mi.th$",username.lower()):
+            username =  username[0:-11]            
+
         try:
             user = User.objects.get(username=username)
             print(user)
