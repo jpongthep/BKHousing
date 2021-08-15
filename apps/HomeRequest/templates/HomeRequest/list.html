@@ -28,6 +28,9 @@
 
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 {% block content%}
+    {% if not object_list %}
+        <h3>ไม่มีข้าราชการส่งรายงานขอบ้านพักในระบบ</h3>
+    {% else %}
     <div class="table-responsive">
         <div class="table-wrapper">
             <div class="table-title">
@@ -116,4 +119,5 @@
             </table>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

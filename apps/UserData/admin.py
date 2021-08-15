@@ -10,6 +10,7 @@ class UnitAdmin(admin.ModelAdmin):
 class UserAdmin(BaseUserAdmin):
 
     list_display = ('username', 'CurrentUnit', 'FullName','MobilePhone', 'OfficePhone')
+    ordering = ('CurrentUnit','Rank',)
     fieldsets = (
     (None, {'fields': ('username', 'password')}),
     ('Personal info', {'fields': (('Rank', 'first_name', 'last_name'), 'PersonID', 'email', 'MobilePhone')}),
@@ -21,10 +22,10 @@ class UserAdmin(BaseUserAdmin):
     (None, {
         'classes': ('wide',),
         'fields': ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')}),)
-    list_filter = ('is_staff', 'is_superuser')
-    search_fields = ('username', 'first_name', 'last_name', 'CurrentUnit__ShortName', 'email')
-    ordering = ('CurrentUnit','username',)
-    filter_horizontal = ('groups', 'user_permissions',)
+    list_filter = ('CurrentUnit', 'Rank')
+    search_fields = ('first_name', 'last_name', 'CurrentUnit__ShortName')
+    
+    # filter_horizontal = ('groups', 'user_permissions',)
     save_as = True
 
 admin.site.register(User, UserAdmin)

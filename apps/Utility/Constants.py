@@ -49,7 +49,7 @@ CHOICE_Rank = (
     ( 30812 ,  'จ.อ.หญิง' ) ,
     ( 30821 ,  'จ.ท.' ) ,
     ( 30822 ,  'จ.ท.หญิง' ) ,
-    ( 30831 ,  'จ.ท.' ) ,
+    ( 30831 ,  'จ.ต.' ) ,
     ( 30832 ,  'จ.ต.หญิง' ) ,
     ( 30841 ,  'กห.ป.' ) ,
     ( 30842 ,  'กห.ป.หญิง' ) ,
@@ -72,6 +72,59 @@ CHOICE_Rank = (
     ( 0 ,  '' )
 ) 
 
+# HomeDataType,
+
+# 1234
+#1 H = บ้าน  F = แฟลต R = เรือนแถว
+#2 G = นายพล O = สัญญาบัตร N = ประทวน
+#34 5 = น.5 F = ครอบครัว SF = โสดหญิง  SM = โสดชาย
+class HomeDataType(models.TextChoices):
+    NA = '-', _('ไม่ระบุ')
+    HG = 'HG', _('นายพล')
+    HO5 = 'HO5', _('น.5 หลัง (เรือนแถว)')
+    HOF = 'HOF', _('น.บ้านเดี่ยว')    
+    RNF = 'RNF', _('เรือนแถวประทวน')    
+    FNF = 'FNF', _('แฟลตประทวน')
+    FNSF = 'FNSF', _('แฟลตประทวน (โสด ญ.)')
+    FNSM = 'FNSM', _('แฟลตประทวน (โสด)')
+    FOF = 'FOF', _('แฟลตสัญญาบัตร')
+    FOSF = 'FOSF', _('แฟลตสัญญาบัตร(โสด ญ.)')
+    FOSM = 'FOSM', _('แฟลตสัญญาบัตร(โสด)')
+    RF = 'RF', _('เรือนแถวสัญญาบัตร')
+    
+class HomeZone(models.TextChoices):
+    Z1 = '1', _('เขต 1 : ท่าดินแดง')
+    Z2 = '2', _('เขต 2 : ท่าดินแดง')
+    Z3 = '3', _('เขต 3 : ท่าดินแดง')
+    Z6Train = '6T', _('เขต 6 : รถไฟ')
+    Z6Sekan = '6S', _('เขต 6 : สีกัน')
+    Z7 = '7S', _('เขต 7 : ลาดเป็ด')
+    ZBangsue = 'BS', _('บางซื่อ')
+
+class HomeDataStatus(models.TextChoices):
+    STAY = 'ST', _('พักอาศัย')
+    WAIT = 'WT', _('รอจัดสรร')
+    WAITCHECK = 'WC', _('รอตรวจสอบ')
+    WAITFIX = 'WF', _('รอซ่อม')
+    FIX = 'FX', _('ซ่อม')
+    REMOVE = 'RM', _('รื้อถอน')
+
+class HomeDataGrade(models.TextChoices):    
+    NO = '?', _('?')
+    A = 'A', _('A')
+    A_Minus = 'A-', _('A-')
+    B_Plus = 'B+', _('B+')
+    B = 'B', _('B')
+    B_Minus = 'B-', _('B-')
+    C = 'C', _('C')
+    
+class OwnerLeaveType(models.TextChoices):
+    STAY = '-', _('-')
+    RetiredAF = 'RA', _('เกษียณ - ใน ทอ.')
+    WAITCHECK = 'WC', _('รอตรวจสอบ')
+    WAITFIX = 'WF', _('รอซ่อม')
+    FIX = 'FX', _('ซ่อม')
+
 # ขั้นตอนการปฏิบัติใน 1 วงรอบ
 
 class YEARROUND_PROCESSSTEP(models.TextChoices):
@@ -88,21 +141,10 @@ class HomeRequestProcessStep(models.TextChoices):
     UNIT_PROCESS = 'UP', _('UnitProcess')
     UNIT_SENDED = 'US', _('UnitSended')
     PERSON_PROCESS = 'PP', _('PersonProcess')
-    PERSON_REPORTED = 'PR', _('PersonReported') # ออกรายงาน
+    PERSON_ACCEPTED = 'PA', _('PersonAccepted') # ออกรายงาน
     GET_HOUSE = 'GH', _('GetHouse')
     REQUESTER_CANCEL = 'RC', _('RequesterCancel')
     ROUND_FINISHED = 'RF', _('RoundFinished')
-
-# Zone บ้านพัก
-HOMEZONE_CHOICE = [
-    (0, 'ไม่ระบุ'),
-    (1, 'เขต 1 : ท่าดินแดง'),
-    (2, 'เขต 2 : ท่าดินแดง'),
-    (3, 'เขต 3 : ท่าดินแดง'),
-    (6, 'เขต 6 : รถไฟและสีกัน'),
-    (7, 'เขต 7 : ลาดเป็ด'),
-    (8, 'เขต 8 : บางซื่อ'),
-]
 
 # สถานภาพสมรส
 PERSON_STATUS_CHOICE = [
@@ -112,6 +154,13 @@ PERSON_STATUS_CHOICE = [
     (4, 'หย่า'),
     (5, 'ม่าย'), ]
 
+class PERSON_STATUS(models.IntegerChoices):
+    SINGLE = 1, _('โสด')
+    MARRIES_TOGETHER = 2, _('สมรส-อยู่ร่วมกัน')
+    MARRIES_SEPARATE = 3, _('สมรส-แยกกันอยู่')
+    DIVOTE = 4, _('หย่า')
+    WIDOW = 5, _('ม่าย')
+    
 # การศึกษาของผู้พักอาศัยร่วม
 EDUCATION_CHOICE =  [
     (0, 'Nursery'),

@@ -5,6 +5,7 @@ from io import StringIO, BytesIO
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.conf import settings
@@ -25,8 +26,8 @@ from apps.Configurations.models import YearRound
 
 def get_current_year():
     CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
+                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
 
     CurrentYear = CurrentYearRound[0].Year
     return CurrentYear
@@ -90,7 +91,7 @@ class CreateHomeRequestView(CreateView):
                                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
                                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
 
-        self.object.YearRound = CurrentYearRound[0]
+        self.object.year_round = CurrentYearRound[0]
         self.object.Unit = self.request.user.CurrentUnit
         self.object.ProcessStep = HomeRequestProcessStep.REQUESTER_PROCESS
         self.object.save()
@@ -172,7 +173,7 @@ class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMi
         Num_UP = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.UNIT_PROCESS))
         Num_US = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.UNIT_SENDED))
         Num_PP = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.PERSON_PROCESS))
-        Num_PR = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.PERSON_REPORTED))
+        Num_PA = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.PERSON_ACCEPTED))
         Num_GH = Count('ProcessStep', filter = Q(ProcessStep = HomeRequestProcessStep.GET_HOUSE))
         DateSended = Max('UnitDateApproved')
         UnitApprover = Max('UnitApprover__first_name')
@@ -190,7 +191,7 @@ class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMi
                                     Num_UP = Num_UP,
                                     Num_US = Num_US,
                                     Num_PP = Num_PP,
-                                    Num_PR = Num_PR,
+                                    Num_PA = Num_PA,
                                     Num_GH = Num_GH
                                 ).values(
                                     'Unit',
@@ -202,7 +203,7 @@ class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMi
                                     'Num_UP',
                                     'Num_US',
                                     'Num_PP',
-                                    'Num_PR',
+                                    'Num_PA',
                                     'Num_GH'
                                 )
         
@@ -219,10 +220,27 @@ class HomeRequestDetail(DetailView):
         return context
 
 
+@login_required
+@permission_required('User.Person_unit_user', 'User.Person_admin')
+def update_process_step(request, home_request_id, process_step):
+    home_request = HomeRequest.objects.get(id = home_request_id)
+    unit_id = home_request.Unit.id
+    home_request.ProcessStep = process_step
+    home_request.save()
+    home_request.update_process_step(process_step, request.user)
+
+    if process_step in [ HomeRequestProcessStep.UNIT_PROCESS, 
+                         HomeRequestProcessStep.UNIT_SENDED]:
+        return HttpResponseRedirect("/hr/list")
+    elif process_step in [ HomeRequestProcessStep.PERSON_PROCESS, 
+                           HomeRequestProcessStep.PERSON_ACCEPTED]:
+        return HttpResponseRedirect(f"/hr/{unit_id}/list")
+
+
 def TestDocument(request,home_request_id):
 
     # testdoc = static('documents/test_doc.docx')
-    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/test_doc.docx')
+    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/request_data.docx')
 
     document = Document(testdoc)
 
@@ -236,18 +254,28 @@ def TestDocument(request,home_request_id):
         department_name = home_request.Unit.FullName
     else:
         department_name = "ยังไม่ระบุ"
+    dic = {
+            'FullName':home_request.FullName,
+            'PersonID':home_request.Requester.PersonID,
+            'Position':home_request.Position,
+            'UnitFN':home_request.Unit.FullName,
+            'UnitStN':home_request.Unit.ShortName,
+            'OfficePhone':home_request.Requester.OfficePhone,
+            'MobilePhone':home_request.Requester.MobilePhone,
+            'Salary':str(home_request.Salary),
+            'AddSalary':str(home_request.AddSalary),
+            }
+    print(dic)
 
-    # replace function
-    def find_replace(paragraph_keyword, draft_keyword, paragraph):
-        if paragraph_keyword in paragraph.text:
-            paragraph.text = paragraph.text.replace(paragraph_keyword, draft_keyword)
-
-    #replace #my_sentense# with our sentense
-    for paragraph in document.paragraphs:
-        find_replace("#time_and_date#", time_and_date, paragraph)
-        find_replace("#employee_name#", employee_name, paragraph)
-        find_replace("#manager_name#", manager_name, paragraph)
-        find_replace("#department_name#", department_name, paragraph)
+    for para in document.paragraphs:
+        for key, value in dic.items():
+            if key in para.text:
+                inline = para.runs
+                # Loop added to work with runs (strings with same style)
+                for i in range(len(inline)):
+                    if key in inline[i].text:
+                        text = inline[i].text.replace(key, value)
+                        inline[i].text = text
 
     # Prepare document for download        
     # -----------------------------

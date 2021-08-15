@@ -1,3 +1,4 @@
+{% load static %}
 {% load thaidate %}
 {% load humanize %}
 
@@ -15,7 +16,7 @@
             {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
             {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
         </td>
-        <td></td>
+        <td><img src = "{% static 'my_images/together.jpg' %}" width = 30></td>
         <td>
             {% if object.CoResident.all.count == 0%}
                 - 

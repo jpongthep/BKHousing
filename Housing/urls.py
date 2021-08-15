@@ -21,6 +21,7 @@ urlpatterns = [
     path('login/', MyLoginView.as_view(), name = 'login'),
     path('logout/', LogoutView.as_view(), name = 'logout'),
 
+    path('hm/', include('apps.Home.urls')),
     path('hr/', include('apps.HomeRequest.urls')),
     path('pf/', include('apps.UserData.urls')),
     path('tr/', include('apps.Trouble.urls')),

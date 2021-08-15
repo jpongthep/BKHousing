@@ -29,6 +29,7 @@
           font-size: 3.5rem;
         }
       }
+
     </style>
 
     
@@ -52,6 +53,10 @@
       }      
     </style>
 
+    <script>
+      {% block script %}
+      {% endblock %}
+    </script>  
  </head>
   <body>
     <main>
@@ -118,7 +123,7 @@
     <div class="container-fluid">
     
     {% include "DisplayMessage.html" %}
-    
+    {{request.resolver_match}}
       <div class="row mt-2">
         <div class="col-xl-9">
           <h3>{% block header %}Bootstrap 4.6.0 Blank Template{% endblock %}</h3>          
@@ -141,6 +146,9 @@
     </div>
 </main>
     {% include "footer.html" %}
+
+
+
     <script src="{% static 'assets/dist/js/bootstrap.bundle.min.js' %}"></script>
   </body>
 </html>

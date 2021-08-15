@@ -42,10 +42,17 @@
             </a>
         </td>
         <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
+    {% if request.resolver_match.url_name == 'list' %}
         <td>
-            <button type="button" class="btn btn-outline-primary btn-sm">รับเรื่อง</button>
-            <button type="button" class="btn btn-outline-success btn-sm">ส่งเรื่อง</button>
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'UP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'US'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
         </td>
+    {% elif request.resolver_match.url_name == 'person_unit_list' %}
+        <td>
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'PP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'PA'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
+        </td>
+    {% endif %}
         
     </tr>      
 

@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'thaidate',
     # My Owner APP
     'apps.UserData',
+    'apps.Home',
+    'apps.Command',
     'apps.HomeRequest',
     'apps.Trouble',
     'apps.Configurations',

@@ -5,10 +5,10 @@ from django.urls import reverse
 
 
 from apps.Utility.UploadData import UploadFolderName
-from apps.Utility.Constants import ( PERSON_STATUS_CHOICE, 
+from apps.Utility.Constants import ( PERSON_STATUS,
                                      EDUCATION_CHOICE, 
                                      CHOICE_Rank,
-                                     HOMEZONE_CHOICE,
+                                     HomeZone,
                                      HomeRequestProcessStep)
 
 from apps.Configurations.models import YearRound
@@ -57,7 +57,7 @@ class HomeRequest(models.Model):
     RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน", null=True, blank=True)
 
     # คู่สมรส
-    Status = models.IntegerField(choices=PERSON_STATUS_CHOICE, null=True, blank=True, verbose_name="สถานภาพ")
+    Status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
     SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ.")
@@ -85,12 +85,12 @@ class HomeRequest(models.Model):
     IsShopHouseNeed = models.BooleanField(default = False, verbose_name = 'ต้องการห้องแถว')
 
     # ลำดับความต้องการบ้านเขตต่าง ๆ 
-    ZoneRequestPriority1 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 1")
-    ZoneRequestPriority2 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 2")
-    ZoneRequestPriority3 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 3")
-    ZoneRequestPriority4 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 4")
-    ZoneRequestPriority5 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 5")
-    ZoneRequestPriority6 = models.IntegerField(choices = HOMEZONE_CHOICE, null=True, blank = True, verbose_name = "ลำดับ 6")
+    ZoneRequestPriority1 = models.CharField(verbose_name = "ลำดับ 1", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
+    ZoneRequestPriority2 = models.CharField(verbose_name = "ลำดับ 2", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
+    ZoneRequestPriority3 = models.CharField(verbose_name = "ลำดับ 3", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
+    ZoneRequestPriority4 = models.CharField(verbose_name = "ลำดับ 4", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
+    ZoneRequestPriority5 = models.CharField(verbose_name = "ลำดับ 5", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
+    ZoneRequestPriority6 = models.CharField(verbose_name = "ลำดับ 6", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
 
     #เอกสารหลักฐาน    
     HouseRegistration = models.FileField(verbose_name='ทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName)
@@ -106,15 +106,19 @@ class HomeRequest(models.Model):
     ProcessStep = models.CharField(verbose_name="ขั้นตอนเอกสาร", max_length = 2, choices = HomeRequestProcessStep.choices,default = HomeRequestProcessStep.REQUESTER_PROCESS)
 
     # วันที่ส่งเอกสารของผู้ขอบ้าน
-    IsSended = models.BooleanField(verbose_name = 'ผู้ขอส่งเอกสาร', default = False)
-    RequesterDateSend = models.DateField(default = date.today)
+     
+    RequesterDateSend = models.DateField(verbose_name = 'วันที่ขรก.ส่งเอกสาร',default = None)
 
-    # ผู้รับและวันที่รับเอกสารของ นขต.
-    UnitApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='UnitApprover')
-    UnitDateApproved = models.DateField(verbose_name = "วันที่หน่วยรับเอกสาร", default=None, null=True, blank=True)
-    
-    # ผู้รับและวันที่รับเอกสารของ กพ.ทอ.
-    PersonApprover = models.ForeignKey(User, null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='PersonApprover')
+    # ผู้รับส่งและวันที่รับส่งเอกสารของ นขต.
+    UnitReciever = models.ForeignKey(User, verbose_name = "ผู้รับเอกสาร(นขต.)", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='UnitReciever')
+    UnitDateRecieved = models.DateField(verbose_name = "วันที่หน่วยรับเอกสาร(นขต.)", default=None, null=True, blank=True)
+    UnitApprover = models.ForeignKey(User, verbose_name = "ผู้ส่งเอกสาร(นขต.)", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='UnitApprover')
+    UnitDateApproved = models.DateField(verbose_name = "วันที่หน่วยส่งเอกสาร", default=None, null=True, blank=True)    
+
+    # ผู้รับส่งและวันที่รับส่งเอกสารของ กพ.ทอ.
+    PersonReciever = models.ForeignKey(User, verbose_name = "ผู้รับเอกสาร(กพ.ทอ.)", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='PersonReciever')
+    PersonDateRecieved = models.DateField(verbose_name = "วันที่หน่วยรับเอกสาร(กพ.ทอ.)", default=None, null=True, blank=True)
+    PersonApprover = models.ForeignKey(User, verbose_name = "ผู้ส่งเอกสาร(กพ.ทอ.)", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='PersonApprover')
     PersonDateApproved = models.DateField(verbose_name = "วันที่กำลังพลรับเอกสาร", default=None, null=True, blank=True)
 
     # แบบประเมินความเดือดร้อน 2 ส่วน หน่วยงาน และ กพ.ทอ.
@@ -123,27 +127,64 @@ class HomeRequest(models.Model):
     #คะแนนประเมินล่าสุด
     TroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน", null=True,blank = True)
 
+    OriginProcessStep = None
+
+    def update_process_step(self, ProcessStep, user):
+
+        if ProcessStep != self.OriginProcessStep:
+            if ProcessStep == HomeRequestProcessStep.REQUESTER_SENDED:
+                self.RequesterDateSend = date.today()
+
+            if ProcessStep == HomeRequestProcessStep.UNIT_PROCESS:
+                self.UnitReciever = user
+                self.UnitDateRecieved = date.today()
+
+            if ProcessStep == HomeRequestProcessStep.UNIT_SENDED:
+                self.UnitApprover = user
+                self.UnitDateApproved = date.today()
+
+            if ProcessStep == HomeRequestProcessStep.PERSON_PROCESS:
+                self.PersonReciever = user
+                self.PersonDateRecieved = date.today()
+
+            if ProcessStep == HomeRequestProcessStep.PERSON_ACCEPTED:
+                self.PersonApprover = user
+                self.PersonDateApproved = date.today()
+
+            self.OriginProcessStep = ProcessStep
+            self.save()
+
+
+    def __init__(self, *args, **kwargs):
+        super(HomeRequest, self).__init__(*args, **kwargs)
+        self.OriginProcessStep = self.ProcessStep
+
     def get_absolute_url(self):
         return reverse('HomeRequest:detail', kwargs={"pk": self.pk})
 
-    def __str__(self):
-        return f'{self.Requester.FullName}'
+    @property
+    def RequesterSended(self):
+        return self.RequesterDateSend
 
     @property
     def WorkYear(self):
         today = date.today()
         return today.year - self.PlacementDate.year
 
+    def status_icon(self):
+        if self.Status == 'โสด':
+            return 'my_images/together.jpg'
+
     def __str__(self):
-        return f'{self.year_round} : {self.Requester}'
+        return f'{self.year_round} : {self.Requester.FullName}'
 
 
 # ผู้ที่พักอาศัยอยู่ร่วมกัน
 class CoResident(models.Model):
-    home_request = models.ForeignKey(HomeRequest, on_delete=models.CASCADE, related_name='CoResident')    
+    home_request = models.ForeignKey(HomeRequest, on_delete=models.CASCADE, related_name='CoResident')
     PersonID = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     FullName = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
-    BirthDay = models.DateField(verbose_name="วันเกิด")
+    BirthDay = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
     Relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
     Occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
     Salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
