@@ -12,6 +12,16 @@ USER_PERMISSION = (
     ("CIVIL_OFFICER", "Civil_officer"),
 )
 
+
+class RTAFUnitSection(models.TextChoices):    
+    Commander = '1', _('ส่วนบังคับบัญชา')
+    AFHeadquater = '2', _('กองทัพอากาศ (กองบัญชาการ)')
+    Headquater = '3', _('ส่วนบัญชาการ')
+    Fighter = '4', _('ส่วนกำลังรบ')
+    Support = '5', _('ส่วนส่งกำลังบำรุง')
+    Education = '6', _('ส่วนการศึกษา')
+    Special = '7', _('ส่วนกิจการพิเศษ')
+
 CHOICE_Rank = (
     ( 30101 ,  'พล.อ.อ.*' ) ,
     ( 30102 ,  'พล.อ.อ.*หญิง' ) ,
@@ -146,13 +156,16 @@ class HomeRequestProcessStep(models.TextChoices):
     REQUESTER_CANCEL = 'RC', _('RequesterCancel')
     ROUND_FINISHED = 'RF', _('RoundFinished')
 
-# สถานภาพสมรส
-PERSON_STATUS_CHOICE = [
-    (1, 'โสด'),
-    (2, 'สมรส-อยู่ร่วมกัน'),
-    (3, 'สมรส-แยกกันอยู่'),
-    (4, 'หย่า'),
-    (5, 'ม่าย'), ]
+
+# ขั้นตอนของเอกสาร
+class CoResidenceRelation(models.TextChoices):
+    HUSBAND = '1-HB', _('สามี')
+    WIFE = '2-WF', _('ภรรยา')
+    CHILD = '3-CH', _('บุตร')
+    FATHER = '4-FA', _('บิดา')
+    MOTHER = '5-MO', _('มารดา')
+    RELATIVE = '6-RE', _('ญาติ') 
+    INHABITANT = '7-IH', _('ผู้อาศัย')    
 
 class PERSON_STATUS(models.IntegerChoices):
     SINGLE = 1, _('โสด')
@@ -162,18 +175,18 @@ class PERSON_STATUS(models.IntegerChoices):
     WIDOW = 5, _('ม่าย')
     
 # การศึกษาของผู้พักอาศัยร่วม
-EDUCATION_CHOICE =  [
-    (0, 'Nursery'),
-    (1, 'อนุบาล'),
-    (2, 'ประถมต้น'),
-    (3, 'ประถมปลาย'),
-    (4, 'มัธยมต้น'),
-    (5, 'มัธยมปลาย'),
-    (6, 'อุดมศึกษา'),
-    (7, 'บัณฑิตศึกษา'),
-    (8, 'ปวช.หรือเทียบเท่า'), 
-    (9, 'ปวส.หรือเทียบเท่า'), 
-    (10, 'อนุปริญญาหรือเทียบเท่า'), ]
+class EDUCATION(models.IntegerChoices):
+    Nursery = 0, _('Nursery')
+    KindleGarden = 1, _('อนุบาล')
+    JuniorElementary = 2, _('ประถมต้น')
+    SeniorElementary = 3, _('ประถมปลาย')
+    JuniorHighSchool = 4, _('มัธยมต้น')
+    SeniorHighSchool = 5, _('มัธยมปลาย')
+    Bachelor = 6, _('อุดมศึกษา')
+    Graduate = 7, _('บัณฑิตศึกษา')
+    Vocational = 8, _('ปวช.หรือเทียบเท่า'),
+    HighVocational  = 9, _('ปวส.หรือเทียบเท่า'),
+    MiniBachelor = 10, _('อนุปริญญาหรือเทียบเท่า'), 
 
 # ผู้ประเมินความเดือดร้อน
 FillFormTypeChoice = [

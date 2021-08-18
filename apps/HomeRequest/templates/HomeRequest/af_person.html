@@ -1,14 +1,37 @@
 {% extends '_minbase.html' %}
+{% load static %}
 {% load thaidate %}
+
 
 {% block title %}
 คำขอบ้านพัก
 {% endblock %}
 
 
+{% block scriptlink %}
+    <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
+  
+{% endblock %}
+
+
+{% block script %}
+    window.onload = function(){                 
+
+        document.querySelectorAll('.af_detail').forEach(item => {
+            hr_id = item.getAttribute('data-hr_id');
+            console.log('hr_id = ',hr_id);
+            item.addEventListener('click', event => { 
+                urltext = "{% url 'HomeRequest:md' 99999 %}"
+                new_urltext = urltext.replace("99999",hr_id)
+                fetch_show_modal(new_urltext);
+            })
+        })
+    }
+   
+{% endblock %}
 
 {% block style %}
-  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  
   <style>
     .icon-size {font-size: 20px;}
     .check-size {font-size: 10px;}
@@ -31,8 +54,12 @@
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block content%}
-    <div >
-        <div >
+    <div>
+        <div>      
+        {% if not has_request %}  
+        <a class = "btn btn-info  mb-3 shadow" href = "{% url 'HomeRequest:create'%}" >สร้างรายงานขอบ้านพัก</a>
+        {% endif %}
+
         {% if not object_list %}
             <h3>ไม่มีประวัติคำขอบ้านพักในระบบ</h3>
         {% else %}
@@ -79,11 +106,14 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% comment %} <a href="{% url 'HomeRequest:md' %}" data-toggle="modal" data-target="#theModal">Lab 6</a> {% endcomment %}
         {% endif %}
         </div>
     </div>
+
+<button href = "#" id = "btn1">tst</button>
+<span id = "demo"></span>
 {% endblock %}
 
-{% block script %}
-
-{% endblock %}
+{% block modal %}
+{% endblock modal %}

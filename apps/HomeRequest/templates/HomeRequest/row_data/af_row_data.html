@@ -6,8 +6,22 @@
     <tr>
         <td>
         {{ forloop.counter }}</td>
-        <td><a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a></td>
-        <td><a href = "{% url 'HomeRequest:detail' object.id %}"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+        <td>
+            {% if object.RequesterSended %}
+                <i class="fa fa-lock text-dark icon-size" >
+            {% else %}
+                <a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a>
+            {% endif %}
+        </td>
+        <td>
+                <a 
+                    href = "#"
+                    class = "af_detail" 
+                    data-hr_id = "{{object.id}}"
+                >
+                    <i class="fa fa-eye text-info icon-size" ></i>
+                </a>
+        </td>
         <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word icon-size"></i></a></td>
         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
         <td>{{ object.FullName }}</td>

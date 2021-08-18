@@ -4,6 +4,6 @@ from .views import (HomeDetailView,HomeOwnerDetailView)
 
 app_name = 'HomeData'
 urlpatterns = [
-    path('<pk>/dt', HomeDetailView.as_view(), name = 'detail'),
-    path('<pk>/hm_own', HomeOwnerDetailView.as_view(), name = 'owner_detail'),
+    path('<hm_id>/dt', HomeDetailView.as_view(), name = 'detail'),
+    path('<hmowner_id>/hm_own', HomeOwnerDetailView.as_view(), name = 'owner_detail'),
 ] 

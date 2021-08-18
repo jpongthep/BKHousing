@@ -6,10 +6,11 @@ from django.urls import reverse
 
 from apps.Utility.UploadData import UploadFolderName
 from apps.Utility.Constants import ( PERSON_STATUS,
-                                     EDUCATION_CHOICE, 
+                                     EDUCATION, 
                                      CHOICE_Rank,
                                      HomeZone,
-                                     HomeRequestProcessStep)
+                                     HomeRequestProcessStep,
+                                     CoResidenceRelation)
 
 from apps.Configurations.models import YearRound
 from apps.UserData.models import User, Unit as TheUnit
@@ -41,8 +42,8 @@ class HomeRequest(models.Model):
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
-    RentPermission = models.BooleanField(default = False, verbose_name="มีสิทธิ์เบิกค่าเช่าบ้าน")
-    IsHomeRent = models.BooleanField(default = False, verbose_name="เบิกค่าเช่าบ้านอยู่ก่อน")
+    RentPermission = models.BooleanField(default = True, verbose_name="มีสิทธิ์เบิกค่าเช่าบ้าน")
+    IsHomeRent = models.BooleanField(default = True, verbose_name="เบิกค่าเช่าบ้านอยู่ก่อน")
 
     RentAddress = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
     RentSubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
@@ -60,24 +61,22 @@ class HomeRequest(models.Model):
     Status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
-    SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ.")
-    IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานภรรยาและบุตรในประวัติราชการ')
+    SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ. (ถ้าเป็น)")
+    IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานคู่สมรสและบุตรในประวัติราชการ')
 
     # ยืนยันข้อมูล
     IsNotBuyHome = models.BooleanField(default = False, verbose_name = 'ไม่เป็นผู้เบิกค่าเช่าซื้อ')
     IsNotOwnHome = models.BooleanField(default = False, verbose_name = 'ไม่มีกรรมสิทธิ์บ้านรัศมี 20 กม.')
-    IsNotRTAFHome = models.BooleanField(default = False, verbose_name = 'ไม่เป็นเจ้าของบ้านพัก ทอ.')
+    IsNotRTAFHome = models.BooleanField(default = False, verbose_name = 'ตนเองและคู่สมรสไม่เป็นเจ้าของบ้านพัก ทอ.')
     IsNeverRTAFHome = models.BooleanField(default = False, verbose_name = 'ไม่เคยเป็นเจ้าของบ้านพัก ทอ.')
-    RTAFHomeLeaveReason = models.CharField(max_length = 150, null=True, blank=True, verbose_name = "สาเหตุการออกจากบ้านพักครั้งก่อน")
-    RTAFHomeFireReason = models.CharField(max_length = 150, null=True, blank=True, verbose_name = "สาเหตุการถูกไล่ออกจากบ้านพักครั้งก่อน")
-
+    RTAFHomeLeaveReason = models.TextField(null=True, blank=True, verbose_name = "ข้อมูลบ้านหลังเดิม และสาเหตุการออก/ถูกไล่ออกจากบ้านพัก (ถ้าเคย)")
+    
     # ความเดือดร้อนเบื้องต้น
     IsHomelessDisaster = models.BooleanField(default = False, verbose_name = 'เป็นผู้ไร้บ้านจากอุบัติภัยธรรมชาติ')
-    IsHomelessEvict = models.BooleanField(default = False, verbose_name = 'เป็นผู้ไร้บ้านจากการโดนไล่ที่')
-    ExRTAFHome = models.CharField(max_length = 150, null=True, blank=True, verbose_name="ข้อมูลบ้านพัก ทอ. หลังเดิม")
+    IsHomelessEvict = models.BooleanField(default = False, verbose_name = 'เป็นผู้ไร้บ้านจากการโดนไล่ที่')    
     IsMoveFromOtherUnit = models.BooleanField(default = False, verbose_name = 'เป็นผู้โยกย้ายจากภายนอกพื้นที่')
     ImportanceDuty = models.BooleanField(default = False, verbose_name = 'เป็นผู้ปฏิบัติหน้าที่สำคัญ')
-    OtherTrouble  = models.CharField(max_length = 150, null=True, blank=True, verbose_name='เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ (ระบุ) ')
+    OtherTrouble  = models.TextField(null=True, blank=True, verbose_name='เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ (ระบุ) ')
 
     # ความต้องการบ้านประเภทต่าง ๆ 
     IsHomeNeed = models.BooleanField(default = False, verbose_name = 'ต้องการบ้านพัก')
@@ -93,7 +92,7 @@ class HomeRequest(models.Model):
     ZoneRequestPriority6 = models.CharField(verbose_name = "ลำดับ 6", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
 
     #เอกสารหลักฐาน    
-    HouseRegistration = models.FileField(verbose_name='ทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName)
+    HouseRegistration = models.FileField(verbose_name='สำเนาทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName)
     DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName)
     SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName)
     HomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName)
@@ -107,7 +106,7 @@ class HomeRequest(models.Model):
 
     # วันที่ส่งเอกสารของผู้ขอบ้าน
      
-    RequesterDateSend = models.DateField(verbose_name = 'วันที่ขรก.ส่งเอกสาร',default = None)
+    RequesterDateSend = models.DateField(verbose_name = 'วันที่ขรก.ส่งเอกสาร',default = None,null = True, blank = True)
 
     # ผู้รับส่งและวันที่รับส่งเอกสารของ นขต.
     UnitReciever = models.ForeignKey(User, verbose_name = "ผู้รับเอกสาร(นขต.)", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='UnitReciever')
@@ -185,11 +184,11 @@ class CoResident(models.Model):
     PersonID = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     FullName = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
     BirthDay = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
-    Relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
+    Relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 4, choices = CoResidenceRelation.choices)
     Occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
     Salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
     IsAirforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
-    Education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION_CHOICE, null = True, blank = True)
+    Education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
 
     def __str__(self):
         return self.FullName

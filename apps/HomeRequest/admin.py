@@ -10,6 +10,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
     list_display = ['year_round', 'FullName', 'Unit']
     list_display_links = ['FullName']
+    # raw_id_fields = ('owner','home')
     save_as = True
 
     inlines = [CoResidentInline,]

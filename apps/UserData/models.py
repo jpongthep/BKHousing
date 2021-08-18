@@ -3,13 +3,15 @@ import re
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from apps.Utility.Constants import (USER_PERMISSION, CHOICE_Rank )
+from apps.Utility.Constants import (USER_PERMISSION, CHOICE_Rank, RTAFUnitSection )
 # Create your models here.
 
 class Unit(models.Model):
 
     class Meta:
         verbose_name_plural = "Unit : หน่วยขึ้นตรง ทอ." 
+
+    UnitGroup =  models.CharField(max_length = 1, default = None, choices = RTAFUnitSection.choices)        
     ShortName = models.CharField(max_length = 20, blank = False)
     FullName = models.CharField(max_length = 90, blank = False)
     
@@ -54,7 +56,7 @@ class User(AbstractUser):
         
     @property
     def FullName(self):        
-        RankDisplay = self.get_Rank_display()
+        RankDisplay = str(self.get_Rank_display())
         if RankDisplay == '':
             return  '??'
 

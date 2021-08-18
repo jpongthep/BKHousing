@@ -14,7 +14,7 @@
     <!-- Bootstrap CSS -->
     <link href="{% static 'assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -32,12 +32,8 @@
 
     </style>
 
-    
     <!-- Custom styles for this template -->
     
-    {% block style %}
-      
-    {% endblock %}
     <style>
       html {
         height: 100%;
@@ -51,8 +47,16 @@
         grid-row-start: 2;
         grid-row-end: 3;
       }      
-    </style>
 
+ 
+    </style>
+   {% block style %}
+      
+    {% endblock %}
+    
+    {% block scriptlink %}
+
+    {% endblock %}
     <script>
       {% block script %}
       {% endblock %}
@@ -108,10 +112,11 @@
           <li class="nav-item float-right">
             <a class="nav-link" target = "_blank" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
           </li>
+          {% endif %}          
           <li class="nav-item">
             <a class="nav-link" target = "_blank" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> logout</a>
           </li>
-          {% endif %}
+
         </ul>
         <form>
           <input class="form-control" type="text" placeholder="Search" aria-label="Search">
@@ -123,7 +128,8 @@
     <div class="container-fluid">
     
     {% include "DisplayMessage.html" %}
-    {{request.resolver_match}}
+    {% comment %} {{request.resolver_match}} {% endcomment %}
+
       <div class="row mt-2">
         <div class="col-xl-9">
           <h3>{% block header %}Bootstrap 4.6.0 Blank Template{% endblock %}</h3>          
@@ -137,7 +143,10 @@
           <hr class="mt-0 mb-4">       
         </div>
       </div>      
-      <div>
+      {% block CardRow %}
+
+      {% endblock %}
+      <div class="mt-4">
         <div class="col-xl-12">
           {% block content %}
           {% endblock %}
@@ -147,8 +156,9 @@
 </main>
     {% include "footer.html" %}
 
-
-
     <script src="{% static 'assets/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+    {% block modal %}
+    {% endblock modal %}
   </body>
 </html>

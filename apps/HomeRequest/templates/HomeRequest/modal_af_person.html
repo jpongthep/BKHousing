@@ -1,0 +1,58 @@
+{% load thaidate %}
+<div class="modal  fade" tabindex="-1">
+  <div class="modal-dialog  modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">คำขอบ้านพัก {{ object.FullName }} วงรอบ {{ object.year_round }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+         <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-4">{{ object.FullName }}</div>
+              <div class="col-md-4">{{ object.Position }}</div>
+              <div class="col-md-4">{{ object.Unit }}</div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-2">ชื่อ</div>
+                <div class="col-2">ความสัมพันธ์</div>
+                <div class="col-2">PersonID</div>
+                <div class="col-2">วันเกิด</div>
+                <div class="col-2">อาชีพ</div>
+                <div class="col-1">รายได้</div>
+                <div class="col-1">การศึกษา</div>
+            </div>
+            <div class="row">
+            {% for cr in co_residence %}
+              <div class="col-md-2">{{ cr.FullName }}</div>
+              <div class="col-2">
+                  {{ cr.get_Relation_display }}
+              </div>
+              <div class="col-2">
+                  {{ cr.PersonID }}
+              </div>
+              <div class="col-2">
+                  {{ cr.BirthDay|thaidate:"d M y"  }}
+              </div>
+              <div class="col-2">
+                  {{ cr.Occupation }}
+              </div>
+              <div class="col-1">
+                  {{ cr.Salary }}
+              </div>
+              <div class="col-1">
+                  {{ cr.get_Education_display }}
+              </div>
+            {% endfor %}
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger me-auto" data-bs-dismiss="modal">ยกเลิกคำขอ</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">ส่งรายงาน</button>
+      </div>
+    </div>
+  </div>
+</div>

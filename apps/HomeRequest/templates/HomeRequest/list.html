@@ -27,6 +27,18 @@
 {% endblock %}
 
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
+
+{% block CardRow %}
+    <div class = "row">
+        {% include "project/card.html" with color="secondary" awesome="fa-pen" number="12" text="เริ่มกรอก"%}  
+        {% include "project/card.html" with color="warning" awesome="fa-list" number="04" text="ส่งหน่วย"%}
+        {% include "project/card.html" with color="info" awesome="fa-circle-notch fa-spin" number="08" text="ดำเนินการ"%}
+        {% include "project/card.html" with color="success" awesome="fa-check" number="4" text="รอจัดสรร"%}
+        {% include "project/card.html" with color="primary" awesome="fa-home" number="12" text="รับจัดสรร"%}  
+        {% include "project/card.html" with color="danger" awesome="fa-home" number="12" text="รับจัดสรร"%}  
+    </div>
+{% endblock %}
+
 {% block content%}
     {% if not object_list %}
         <h3>ไม่มีข้าราชการส่งรายงานขอบ้านพักในระบบ</h3>

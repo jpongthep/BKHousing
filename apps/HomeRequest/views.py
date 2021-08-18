@@ -28,31 +28,44 @@ def get_current_year():
     CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
                                               | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
                                               | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
-
     CurrentYear = CurrentYearRound[0].Year
+    print('CurrentYear = ',CurrentYear)
     return CurrentYear
 
-class HousingUserPassesTestMixin(UserPassesTestMixin):
+
+class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = '/login' 
     allow_groups = []
 
     def test_func(self):
         for ag in self.allow_groups:
             if self.request.user.groups.filter(name=ag).exists():
-                return True
-                
+                return True                
         return False
 
+    def has_home_request(self):
+        queryset = HomeRequest.objects.filter(Requester = self.request.user)
+        queryset = queryset.filter(year_round__Year = get_current_year())
+        return queryset.exists()
 
-class CreateHomeRequestView(CreateView):
+
+class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
+    allow_groups = ['RTAF_NO_HOME_USER']
     model = HomeRequest
     form_class = HomeRequestForm
     template_name = "HomeRequest/CreateHomeRequest.html"
+
+    # ทดสอบเพิ่มเติมว่าถ้าปีนี้มีการส่งคำขอแล้ว ก็ส่งอีกไม่ได้
+    def test_func(self):
+        if super().test_func() == False:
+            return False
+        else:
+            return not super().has_home_request()
 
     def get(self, request, *args, **kwargs):
         self.object = None
         # form_class = self.get_form_class()
         # form = self.get_form(form_class)
-
         initial_value = {
                             'Rank': request.user.Rank,
                             'FullName': request.user.FullName,
@@ -88,8 +101,8 @@ class CreateHomeRequestView(CreateView):
         # กำหนดค่าเริ่มต้นให้ form    
         self.object.Requester = self.request.user
         CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                                        | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+                                                  | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
+                                                  | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
 
         self.object.year_round = CurrentYearRound[0]
         self.object.Unit = self.request.user.CurrentUnit
@@ -100,37 +113,65 @@ class CreateHomeRequestView(CreateView):
         for cr in co_resident:
             cr.home_request = self.object
             cr.save()
-            
+
         messages.success(self.request, f'เพิ่มข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
 
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, co_resident_formset):
-
         return self.render_to_response(
                  self.get_context_data(form=form,
                                        co_resident_formset=co_resident_formset
                                        )
         )
 
-class UpdateHomeRequestView(UpdateView):
+class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
+    allow_groups = ['RTAF_NO_HOME_USER']
     model = HomeRequest
     form_class = HomeRequestForm
     template_name = "HomeRequest/CreateHomeRequest.html"
 
+    #ในกรณีที่ส่งรายงานแล้ว จะไม่สามารถแก้ไขข้อมูลได้
+    def test_func(self):
+        if super().test_func() == False:
+            return False
+        else:
+            self.object = self.get_object()
+            return not self.object.RequesterSended
+            
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        co_resident_formset = CoResidentFormSet(instance=self.object)
+        home_request = self.object
+        co_resident_formset = CoResidentFormSet(instance = home_request, 
+                                                queryset = home_request.CoResident.order_by("Relation"))
 
         return self.render_to_response(
                   self.get_context_data(form = HomeRequestForm(instance=self.object),
-                                        co_resident_formset = co_resident_formset,
+                                        co_resident_formset = co_resident_formset)
                                         )
-                                     )
 
-    
-class AFPersonListView(LoginRequiredMixin, HousingUserPassesTestMixin,ListView):
-    login_url = '/login'
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data["co_resident"] = CoResidentFormSet(self.request.POST, instance=self.object)
+        else:
+            data["co_resident"] = CoResidentFormSet(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        co_resident = context["co_resident"]
+        self.object = form.save()
+        if co_resident.is_valid():
+            co_resident.home_request = self.object
+            co_resident.save()
+        else:
+            print('co_resident.errors = ',co_resident.errors)
+        return super().form_valid(form)
+
+
+class AFPersonListView(AuthenUserTestMixin,ListView):
     template_name = "HomeRequest/af_person.html"
     allow_groups = ['RTAF_NO_HOME_USER']
 
@@ -139,9 +180,13 @@ class AFPersonListView(LoginRequiredMixin, HousingUserPassesTestMixin,ListView):
         queryset = queryset.order_by("-year_round__Year")
         return queryset
 
+    def get_context_data(self, **kwargs):        
+        context = super().get_context_data(**kwargs)
+        context['has_request'] = super().has_home_request(**kwargs)
+        return context        
 
-class HomeRequestUnitListView(LoginRequiredMixin, HousingUserPassesTestMixin, ListView):
-    login_url = '/login'
+
+class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
     model = HomeRequest    
     template_name = "HomeRequest/list.html"
     allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_USER']
@@ -161,8 +206,7 @@ class HomeRequestUnitListView(LoginRequiredMixin, HousingUserPassesTestMixin, Li
         return queryset    
 
 
-class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMixin,ListView):
-    login_url = '/login' 
+class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
     template_name = "Person/unit_summary.html"
     allow_groups = ['PERSON_ADMIN']
 
@@ -209,13 +253,14 @@ class HomeRequestUnitSummaryListView(LoginRequiredMixin, HousingUserPassesTestMi
         
         return queryset
 
-class HomeRequestDetail(DetailView):
+class HomeRequestDetail(AuthenUserTestMixin, DetailView):
+    allow_groups = ['RTAF_NO_HOME_USER']
     model = HomeRequest
     template_name = "HomeRequest/Detail.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super(HomeRequestDetail, self).get_context_data(*args, **kwargs)            
-        co_residence = CoResident.objects.filter(home_request=self.object)
+        co_residence = CoResident.objects.filter(home_request=self.object).order_by("Relation")
         context["co_residence"] = co_residence
         return context
 
@@ -238,7 +283,6 @@ def update_process_step(request, home_request_id, process_step):
 
 
 def TestDocument(request,home_request_id):
-
     # testdoc = static('documents/test_doc.docx')
     testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/request_data.docx')
 
@@ -262,8 +306,9 @@ def TestDocument(request,home_request_id):
             'UnitStN':home_request.Unit.ShortName,
             'OfficePhone':home_request.Requester.OfficePhone,
             'MobilePhone':home_request.Requester.MobilePhone,
-            'Salary':str(home_request.Salary),
-            'AddSalary':str(home_request.AddSalary),
+            'AddSalary':"{:,}".format(home_request.AddSalary),
+            'Salary':"{:,}".format(home_request.Salary),
+            
             }
     print(dic)
 
@@ -294,10 +339,8 @@ def TestDocument(request,home_request_id):
 
 
 def TestExcel(request,unit_id):
-
     # testdoc = static('documents/test_doc.docx')
     testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/test_xls.xlsx')
-
     # Start by opening the spreadsheet and selecting the main sheet
     workbook = load_workbook(filename=testxls)
     xls_title= f"Unit.xlsx"
@@ -323,4 +366,4 @@ def TestExcel(request,unit_id):
     print('xls = ',xls_title)
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(xls_title)
     response['Content-Length'] = length
-    return response    
+    return response

@@ -10,6 +10,7 @@ from .views import (CreateHomeRequestView,
                     AFPersonListView,
                     update_process_step)
 
+from .views_modals import af_person_data_detailview
 app_name = 'HomeRequest'
 urlpatterns = [
     path('cr', CreateHomeRequestView.as_view(), name = 'create'),
@@ -20,6 +21,8 @@ urlpatterns = [
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),
+
+    path('<pk>/md',af_person_data_detailview.as_view(), name = 'md'),
 
     path('<unit_id>/xls', TestExcel, name = 'xls'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),

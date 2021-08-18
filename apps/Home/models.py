@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
 from django.urls import reverse
 
 from apps.Utility.UploadData import UploadFolderName
@@ -6,11 +7,12 @@ from apps.Utility.Constants import ( HomeDataType,
                                      HomeZone, 
                                      HomeDataStatus, 
                                      HomeDataGrade,
-                                     OwnerLeaveType)
+                                     OwnerLeaveType,
+                                     CoResidenceRelation,
+                                     EDUCATION)
 
 from apps.UserData.models import User, Unit
 from apps.Command.models import Command
-
 
 class HomeData(models.Model):
     class Meta:
@@ -58,3 +60,72 @@ class HomeOwner(models.Model):
             return 'พักอาศัย | ' + self.owner.FullName + ' : ' + self.home.__str__()
         else:
             return 'ย้ายออก | ' + self.owner.FullName + ' : ' + self.home.__str__()
+
+
+# ผู้ที่พักอาศัยอยู่ร่วมกัน
+class CoResident(models.Model):
+    home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='CoResident')
+    person_id = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
+    full_name = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
+    birth_day = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
+    relation =  models.CharField(verbose_name="ความสัมพันธ์", max_length = 4, choices = CoResidenceRelation.choices)
+    occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
+    salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
+    is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
+    education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
+
+    def __str__(self):
+        return self.full_name
+
+    def get_absolute_url(self):
+        hm_ownid = self.home_owner.id
+        return reverse('Home:detail', kwargs={"pk": hm_ownid})
+
+# ข้อมูลสัตว์เลี้ยง
+class PetData(models.Model):    
+    home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='pet', default = None)
+    type = models.CharField(verbose_name="ชนิดสัตว์เลี้ยง", max_length = 5, default = "dog")
+    name = models.CharField(verbose_name="ชื่อ", max_length = 50, null = False, blank = True, default = '')
+    birth_year = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
+    sex = models.CharField(verbose_name="เพศ", max_length = 5,default = "male")
+    appearances = models.TextField(verbose_name="สี-รูปร่าง-ลักษณะ", null = True)
+    # relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
+    # occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
+    # salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
+    # is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
+    # education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
+
+    # def __str__(self):
+    #     return self.full_name
+
+    # def get_absolute_url(self):
+    #     hm_ownid = self.home_owner.id
+    #     return reverse('Home:detail', kwargs={"pk": hm_ownid})
+
+# ข้อมูลยานพาหนะ รถยนต์ รถจักรยานยนต์ 
+class VehicalData(models.Model):
+    class Meta:
+        UniqueConstraint(fields=['plate', 'province'], name='plate_province')
+        
+    home_parker = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='HomeParker', null = True)
+    plate = models.CharField(verbose_name="เลขทะเบียนรถ", max_length = 10, null = True)
+    province = models.CharField(verbose_name="จังหวัด", max_length = 10, null = True)
+    type = models.IntegerField(verbose_name="ประเภท", null = True)
+    brand = models.CharField(verbose_name="ยี่ห้อ", max_length = 15, null = True)
+    color = models.CharField(verbose_name="สี", max_length = 10, null = True)
+    registration = models.FileField(verbose_name="สำเนาทะเบียนรถ", null = True)
+
+
+    # birth_day = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
+    # relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
+    # occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
+    # salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
+    # is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
+    # education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
+
+    # def __str__(self):
+    #     return self.full_name
+
+    # def get_absolute_url(self):
+    #     hm_ownid = self.home_owner.id
+    #     return reverse('Home:detail', kwargs={"pk": hm_ownid})    
