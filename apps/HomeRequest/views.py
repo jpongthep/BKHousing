@@ -7,6 +7,7 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
 
@@ -168,7 +169,19 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
             co_resident.save()
         else:
             print('co_resident.errors = ',co_resident.errors)
+
+        if 'save' in self.request.POST:
+            messages.info(self.request, f'บันทึกการแก้ไขข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+        elif 'send' in self.request.POST:
+            self.object.update_process_step(
+                                    HomeRequestProcessStep.REQUESTER_SENDED, 
+                                    self.request.user)
+            messages.success(self.request, f'บันทึกการแก้ไขและส่งข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+        
         return super().form_valid(form)
+
+    def get_success_url(self):        
+        return reverse('HomeRequest:af_person')
 
 
 class AFPersonListView(AuthenUserTestMixin,ListView):
@@ -189,11 +202,11 @@ class AFPersonListView(AuthenUserTestMixin,ListView):
 class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
     model = HomeRequest    
     template_name = "HomeRequest/list.html"
-    allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_USER']
+    allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
 
     def get_queryset(self, *args, **kwargs):
 
-        if self.request.user.groups.filter(name='PERSON_UNIT_USER').exists():
+        if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
                 queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
         
         if 'unit_id' in self.kwargs:
@@ -266,7 +279,7 @@ class HomeRequestDetail(AuthenUserTestMixin, DetailView):
 
 
 @login_required
-@permission_required('User.Person_unit_user', 'User.Person_admin')
+@permission_required('User.PERSON_UNIT_ADMIN', 'User.Person_admin')
 def update_process_step(request, home_request_id, process_step):
     home_request = HomeRequest.objects.get(id = home_request_id)
     unit_id = home_request.Unit.id

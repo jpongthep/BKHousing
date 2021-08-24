@@ -48,8 +48,6 @@
                 <col width="40">
                 <col width="40">
                 <col width="120">
-                <col width="120">
-                <col width="320">
                 <col width="40">
                 <col width="40">
                 <col width="40">
@@ -67,9 +65,7 @@
                     
                     <th>#</th>
                     <th>#</th>
-                    <th>วันส่ง</th>
                     <th>หน่วยงาน</th>
-                    <th>เจ้าหน้าที่หน่วย</th>
                     <th colspan = 2>ผู้ขอ</th>
                     <th colspan = 2>นขต.</th>
                     <th colspan = 2>กพ.ทอ.</th>
@@ -92,10 +88,7 @@
                     <td>{{ forloop.counter }}</td>                        
                     <td><a href = "{% url 'HomeRequest:person_unit_list' object.Unit %}"><i class="fa fa-list text-info icon-size" ></i></a></td>
                     <td><a href = "{% url 'HomeRequest:xls' object.Unit %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
-                    <td>{{ object.DateSended|thaidate:"d M y" }}</td>
-                    
-                    <td>{{ object.Unit__ShortName }}</td>
-                    <td>{{ object.Requester.UnitApprover.FullName }} ({{ object.Requester.UnitApprover.OfficePhone }})</td>
+                    <td>{{ object.Unit__ShortName }}</td>                    
                     <td class = "font-weight-bold text-warning strong">{{ object.Num_RP }}</td>
                     <td class = "font-weight-bold text-success strong">{{ object.Num_RS }}</td>
                     <td class = "font-weight-bold text-warning strong">{{ object.Num_UP }}</td>

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import HomeRequest, CoResident
 
+from apps.UserData.models import User
+
 
 class CoResidentInline(admin.TabularInline):
     model = CoResident
@@ -10,10 +12,16 @@ class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
     list_display = ['year_round', 'FullName', 'Unit']
     list_display_links = ['FullName']
-    # raw_id_fields = ('owner','home')
+    raw_id_fields = ('Requester','UnitApprover','PersonReciever','PersonApprover')
     save_as = True
 
     inlines = [CoResidentInline,]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "UnitReciever":
+            kwargs["queryset"] = User.objects.filter(groups__name__in=['PERSON_UNIT_USER'])
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     # fieldsets = (
     #     ('Standard info', {
     #         'fields': (
@@ -32,14 +40,4 @@ class HomeRequestAdmin(admin.ModelAdmin):
     #     }),
     # )
 
-# class HomeRequestAdmin(admin.ModelAdmin):
-#     pass
-    # list_display = ['year_round', 'FullName', 
-    #                 'Affiliation', 'FormStatus', 'ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']
-    # list_display_links = ['FullName']
-    # list_editable = ['FormStatus','ProcedureStatus','TroubleEvaulatePerson','TroubleEvaulateUnit']
-
-
-    # list_filter = ['Type']
-    # list_editable = ['Type','NumDay']
 admin.site.register(HomeRequest, HomeRequestAdmin)

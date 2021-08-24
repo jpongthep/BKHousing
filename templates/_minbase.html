@@ -81,19 +81,34 @@
               <a href="{% url 'HomeRequest:af_person'%}" class="nav-link text-secondary"></a>
             {% endif %}
           </li>
+          {% if request.user|in_group:"RTAF_NO_HOME_USER, PERSON_UNIT_ADMIN, PERSON_ADMIN" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-edit"></i> คำขอบ้านพัก</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown05">
-              <li><a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}"><i class="fa fa-fw fa-user"></i> คำขอบุคคล</a></li>
-            {% if request.user|has_group:"PERSON_UNIT_USER" %}
-              <li><a class="dropdown-item" href="{% url 'HomeRequest:list'%}"><i class="fa fa-fw fa-users"></i> คำขอหน่วยงาน</a></li>
+            {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
+              <li>
+                <a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}">
+                  <i class="fa fa-fw fa-user"></i> 
+                  คำขอบุคคล
+                </a>
+              </li>
             {% endif %}
+            {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
+              <li>
+                <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
+                  <i class="fa fa-fw fa-users"></i> 
+                  คำขอหน่วยงาน
+                </a>
+              </li>
+            {% endif %}
+
             {% if request.user|has_group:"PERSON_ADMIN" %}
               <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> หน่วยงาน ทอ.</a></li>
             {% endif %}
             </ul>
-          </li>          
-
+          </li>    
+          {% endif %}     
+{% comment %} 
           <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
           </li>
@@ -105,22 +120,25 @@
               <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>
           </li>
-
+{% endcomment %}
         </ul>
-        <ul class="navbar-nav me-auto  float-right">
+{% comment %} 
+        <form class="ms-auto">
+          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </form>
+{% endcomment %}
+        <ul class="navbar-nav ms-auto">
           {% if request.user.is_staff %}
           <li class="nav-item float-right">
             <a class="nav-link" target = "_blank" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
           </li>
-          {% endif %}          
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link" target = "_blank" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> logout</a>
           </li>
 
         </ul>
-        <form>
-          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        </form>
+
       </div>
     </div>
   </nav>
@@ -132,10 +150,10 @@
 
       <div class="row mt-2">
         <div class="col-xl-9">
-          <h3>{% block header %}Bootstrap 4.6.0 Blank Template{% endblock %}</h3>          
+          <h3>{% block header %}ข้อมูลทั่วไป{% endblock %}</h3>          
         </div>
-        <div class="col-xl-3">
-            <h5>{% block header_right %}block header_right{% endblock %}</h5>
+        <div class="col-xl-3 ms-auto text-end">
+            <h5>{% block header_right %} {{ request.user.FullName }} : {{ request.user.CurrentUnit }}{% endblock %}</h5>
         </div>
       </div>
       <div class="row mt-2">

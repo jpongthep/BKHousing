@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 USER_PERMISSION = (
     ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
     ("RTAF_HOME_USER", "RTAF_home_user"),
-    ("PERSON_UNIT_USER", "Person_unit_user"),
+    ("PERSON_UNIT_ADMIIN", "Person_unit_admin"),
     ("PERSON_ADMIN", "Person_admin"),
     ("HOME_EXAMINE_OFFICER", "Home_examine_officer"),
     ("MP_OFFICER", "MP_officer"),
@@ -159,13 +159,12 @@ class HomeRequestProcessStep(models.TextChoices):
 
 # ขั้นตอนของเอกสาร
 class CoResidenceRelation(models.TextChoices):
-    HUSBAND = '1-HB', _('สามี')
-    WIFE = '2-WF', _('ภรรยา')
-    CHILD = '3-CH', _('บุตร')
-    FATHER = '4-FA', _('บิดา')
-    MOTHER = '5-MO', _('มารดา')
-    RELATIVE = '6-RE', _('ญาติ') 
-    INHABITANT = '7-IH', _('ผู้อาศัย')    
+    SPOUSE = '1-SP', _('คู่สมรส')    
+    CHILD = '2-CH', _('บุตร')
+    FATHER = '3-FA', _('บิดา')
+    MOTHER = '4-MO', _('มารดา')
+    RELATIVE = '5-RE', _('ญาติ') 
+    INHABITANT = '6-IH', _('ผู้อาศัย')    
 
 class PERSON_STATUS(models.IntegerChoices):
     SINGLE = 1, _('โสด')

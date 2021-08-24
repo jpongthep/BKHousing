@@ -4,7 +4,7 @@
     {% if object.RequesterDateSend %}
         <a href = "#" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}"><i class="fa fa-check text-success icon-size" ></i></a>
     {% elif  object.get_ProcessStep_display == 'RequesterProcess' %}
-        <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+        ร่าง
     {% endif %}
 {% elif processer == "UnitPerson" %}
     {% if object.UnitApprover %}
@@ -13,7 +13,7 @@
         </a>
     {% elif  object.get_ProcessStep_display == 'UnitProcess' %}
         <a href = "#" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
-            <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+            รับเรื่อง
         </a>
     {% endif %}
 {% elif processer == "PersonAdmin" %}    
@@ -23,7 +23,7 @@
         </a>
     {% elif  object.get_ProcessStep_display == 'PersonProcess' %}
         <a href = "#" title = "{{ object.PersonReciever.FullName}} ({{ object.PersonReciever.OfficePhone}}) {{ object.PersonDateRecieved|thaidate:"d M y"}}">
-            <i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i>
+            รับเรื่อง
         </a>
     {% endif %}   
 {% endif %}

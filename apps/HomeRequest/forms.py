@@ -47,6 +47,15 @@ class HomeRequestForm(forms.ModelForm):
                         'placeholder': 'ข้อมูลบ้านพักหลังเดิมและสาเหตุการออก / ถูกไล่ออกโดยละเอียด',
                         'rows' : 2
                 }),
+            'HouseRegistration' : forms.FileInput(attrs={'accept':'application/pdf'}),
+            'DivorceRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
+            'SpouseDeathRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
+            'HomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
+            'SpouseHomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
+            'SalaryBill': forms.FileInput(attrs={'accept':'application/pdf'}),
+            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),
+
+                
         }
 
 
@@ -78,4 +87,4 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         can_delete=True,
 
                                         # how many inline-forms are sent to the template by default
-                                        extra = 2)
+                                        extra = 3)

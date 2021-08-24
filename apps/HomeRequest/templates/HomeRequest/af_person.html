@@ -15,19 +15,14 @@
 
 
 {% block script %}
-    window.onload = function(){                 
+    function modal_hr_detail(hr_id)
+    {
+        urltext = "{% url 'HomeRequest:md' 99999 %}"
+            new_urltext = urltext.replace("99999",hr_id)
+            fetch_show_modal(new_urltext);
 
-        document.querySelectorAll('.af_detail').forEach(item => {
-            hr_id = item.getAttribute('data-hr_id');
-            console.log('hr_id = ',hr_id);
-            item.addEventListener('click', event => { 
-                urltext = "{% url 'HomeRequest:md' 99999 %}"
-                new_urltext = urltext.replace("99999",hr_id)
-                fetch_show_modal(new_urltext);
-            })
-        })
     }
-   
+
 {% endblock %}
 
 {% block style %}
@@ -111,8 +106,6 @@
         </div>
     </div>
 
-<button href = "#" id = "btn1">tst</button>
-<span id = "demo"></span>
 {% endblock %}
 
 {% block modal %}

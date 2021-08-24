@@ -6,9 +6,13 @@ register = template.Library()
 @register.filter(name='has_group') 
 def has_group(user, group_name):
     try:
-        group =  Group.objects.get(name=group_name) 
+        group =  Group.objects.get(name=group_name)
     except:
         return False
+    
+    # print("groups :  ", group)
+    # print("user.groups.all :  ",user.groups.all())
+    # print(group in user.groups.all())
 
     return group in user.groups.all() 
 
@@ -16,10 +20,10 @@ def has_group(user, group_name):
 def in_group(user, groups_name):
     # GroupListText = groups_name.split(", ")
     GroupListText = [x.strip() for x in groups_name.split(',')]
-    
+    # print("GroupTextList = ",GroupListText)
     for GroupText in GroupListText:
         try:
-            group = Group.objects.get(name=groups_name)
+            group = Group.objects.get(name=GroupText)
         except:
             return False
             

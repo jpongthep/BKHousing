@@ -14,11 +14,7 @@
             {% endif %}
         </td>
         <td>
-                <a 
-                    href = "#"
-                    class = "af_detail" 
-                    data-hr_id = "{{object.id}}"
-                >
+                <a href = "#" onclick = "modal_hr_detail({{ object.id }})">
                     <i class="fa fa-eye text-info icon-size" ></i>
                 </a>
         </td>
@@ -30,7 +26,23 @@
             {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
             {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
         </td>
-        <td><img src = "{% static 'my_images/together.jpg' %}" width = 30></td>
+        <td>
+            {% if object.get_Status_display == 'โสด' and object.Requester.Sex == 'ชาย' %}
+                <img src = "{% static 'my_images/single_m.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'โสด' and object.Requester.Sex == 'หญิง' %}
+                <img src = "{% static 'my_images/single_f.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'สมรส-อยู่ร่วมกัน' %}
+                <img src = "{% static 'my_images/together.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'ชาย' %}
+                <img src = "{% static 'my_images/widow_m.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'หญิง' %}
+                <img src = "{% static 'my_images/widow_f.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'ชาย' %}
+                <img src = "{% static 'my_images/divorce_m.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'หญิง' %}
+                <img src = "{% static 'my_images/divorce_f.jpg' %}" width = 25>
+            {% endif %}
+        </td>
         <td>
             {% if object.CoResident.all.count == 0%}
                 - 
@@ -50,13 +62,17 @@
         <td>
             {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
         </td>
-        <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="return prompt('กรอกเหตุผลการยกเลิกขอบ้าน');">ยกเลิก</button></td>
+        <td></td>
     </tr>  
 {% else %}
     <tr>                        
         <td>{{ forloop.counter }}</td>
-        <td><i class="fa fa-ban text-dark icon-size" ></td>
-        <td><a href = "{% url 'HomeRequest:detail' object.id %}"><i class="fa fa-eye text-secondary icon-size" ></i></a></td>
+        <td><i class="fa fa-ban text-dark icon-size" ></td>        
+        <td>
+                <a href = "#" onclick = "modal_hr_detail({{ object.id }})">
+                    <i class="fa fa-eye text-secondary icon-size" ></i>
+                </a>
+        </td>
         <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word text-secondary  icon-size"></i></a></td>
         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
         <td>{{ object.FullName }}</td>
@@ -65,7 +81,15 @@
             {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
             {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
         </td>
-        <td></td>
+        <td>
+            {% if object.get_Status_display == 'โสด' and object.Requester.Sex == 'ชาย' %}
+                <img src = "{% static 'my_images/single_m.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'โสด' and object.Requester.Sex == 'หญิง' %}
+                <img src = "{% static 'my_images/single_f.jpg' %}" width = 25>
+            {% elif object.get_Status_display == 'สมรส-อยู่ร่วมกัน' %}
+                <img src = "{% static 'my_images/together.jpg' %}" width = 25>
+            {% endif %}
+        </td>
         <td>
             {% if object.CoResident.all.count == 0%}
                 - 

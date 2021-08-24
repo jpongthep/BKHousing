@@ -8,13 +8,18 @@
       </div>
       <div class="modal-body">
          <div class="container-fluid">
-            <div class="row">
-              <div class="col-md-4">{{ object.FullName }}</div>
-              <div class="col-md-4">{{ object.Position }}</div>
-              <div class="col-md-4">{{ object.Unit }}</div>
+            <div class="row">              
+              <div class="col-md-4"><strong>ตำแหน่ง :</strong> {{ object.Position }}</div>
+              <div class="col-md-4"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
+              <div class="col-md-4"><strong>รายได้ :</strong> {{ object.Salary }} + {{ object.AddSalary }}</div>
+            </div>
+            <div class="row mt-2">              
+              <div class="col-md-3"><strong>ตำแหน่ง :</strong> {{ object.Position }}</div>
+              <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
+              <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
             </div>
 
-            <div class="row">
+            <div class="row mt-5 fw-bold">
               <div class="col-md-2">ชื่อ</div>
                 <div class="col-2">ความสัมพันธ์</div>
                 <div class="col-2">PersonID</div>
@@ -24,7 +29,8 @@
                 <div class="col-1">การศึกษา</div>
             </div>
             <div class="row">
-            {% for cr in co_residence %}
+            
+            {% for cr in object.CoResident.all %}
               <div class="col-md-2">{{ cr.FullName }}</div>
               <div class="col-2">
                   {{ cr.get_Relation_display }}
@@ -49,9 +55,17 @@
           </div>
       </div>
       <div class="modal-footer">
+      {% if object.still_active %}
         <button type="button" class="btn btn-danger me-auto" data-bs-dismiss="modal">ยกเลิกคำขอ</button>
+      {% endif %}
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-        <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">ส่งรายงาน</button>
+      {% if object.still_active %}
+        {% if object.RequesterSended %}
+          <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal" style = "display:none;">ส่งรายงาน</button>
+        {% else %}
+          <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">ส่งรายงาน</button>
+        {% endif %}
+      {% endif %}
       </div>
     </div>
   </div>

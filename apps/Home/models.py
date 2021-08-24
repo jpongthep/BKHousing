@@ -37,7 +37,12 @@ class HomeData(models.Model):
         return reverse('Home:detail', kwargs={"pk": hm_id})    
 
     def __str__(self):
-        return f'{self.number} {self.get_type_display()} {self.get_zone_display()}'
+        HomeNumber = self.number if self.number != '-' else f'อ.{self.building_number}-{self.room_number}'
+        
+        if self.get_type_display() == 'ไม่ระบุ':
+            return f'{HomeNumber} {self.get_zone_display()}'
+        else:
+            return f'{HomeNumber} {self.get_type_display()} {self.get_zone_display()}'
 
 class HomeOwner(models.Model):
     class Meta:
@@ -105,7 +110,9 @@ class PetData(models.Model):
 # ข้อมูลยานพาหนะ รถยนต์ รถจักรยานยนต์ 
 class VehicalData(models.Model):
     class Meta:
-        UniqueConstraint(fields=['plate', 'province'], name='plate_province')
+        constraints = [
+            UniqueConstraint(fields=['plate', 'province'], name='plate_province')
+        ]
         
     home_parker = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='HomeParker', null = True)
     plate = models.CharField(verbose_name="เลขทะเบียนรถ", max_length = 10, null = True)

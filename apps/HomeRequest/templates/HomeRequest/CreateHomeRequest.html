@@ -16,6 +16,16 @@
 
 {% block script %}
     $(document).ready(function(){
+
+        $('button[name="send"]').click(function() {
+            var c = confirm("เมื่อส่งข้อมูลแล้วจะไม่สามารถแก้ไขข้อมูลในระบบได้ ยืนยันการบันทึกและส่งข้อมูล");
+            return c;
+        });
+
+        $('button[name="save"]').click(function() {
+            var c = confirm("บันทึกเพื่อส่งภายหลัง");
+            return c;
+        });
         
         $("#id_Status").change(function() {
             married = this.value == 2 || this.value == 3;
@@ -92,6 +102,8 @@
         $("#div_id_SpouseAFID").toggle(married);
         $("#div_id_IsHRISReport").toggle(married);
     });
+
+
 {% endblock %}
 
 {% block style %}
@@ -382,8 +394,8 @@
     </div>
     {% comment %} <input type="button" class="btn btn-info" value="เพิ่มผู้พักอาศัย" id="add_more"> {% endcomment %}
 
-  <button type="submit" class="btn btn-warning">บันทึก</button>        
-  <button type="submit" class="btn btn-primary">ส่งรายงาน</button>        
+  <button type="submit" name="save" class="btn btn-warning">บันทึก</button>        
+  <button type="submit" name="send" class="btn btn-primary">ส่งรายงาน</button>        
 
   </form>
 {% endblock %}

@@ -15,17 +15,18 @@ function fetch_show_modal(url)
 {
     fetch(url)
     .then(response => response.text())
-    .then(y => showModalURL(y));
+    .then(y => showModalURL(y,() => alert("success click")));    
 }
 
 
-const showModalURL = (modal_html) => {
+const showModalURL = (modal_html, success_callback) => {
   if (modalWrap !== null) {
     modalWrap.remove();
   }
 
   modalWrap = document.createElement('div');
   modalWrap.innerHTML = modal_html;
+  modalWrap.querySelector('.modal-success-btn').onclick = success_callback;
   document.body.append(modalWrap);
   var modal = new bootstrap.Modal(modalWrap.querySelector('.modal'));
   modal.show();

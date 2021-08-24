@@ -1,18 +1,15 @@
+
 from django.contrib import admin
 from django.urls import path, include
 
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.static import static
-
-from django.views.generic import TemplateView
 
 from apps.UserData.views import MyLoginView
 from django.contrib.auth.views import LogoutView
-class minView(TemplateView):
-    template_name = "_minbase.html"
+from .views import minView
 
-# class blankView(TemplateView):
-#     template_name = "_blank.html"
 
 urlpatterns = [
     # path('', blankView.as_view(), name = 'blank'),

@@ -2,12 +2,13 @@ from datetime import date
 
 from django.db import models
 from django.urls import reverse
+from django.db.models import Q
 
-
-from apps.Utility.UploadData import UploadFolderName
+from apps.Utility.UploadData import UploadFolderName, only_pdf
 from apps.Utility.Constants import ( PERSON_STATUS,
                                      EDUCATION, 
                                      CHOICE_Rank,
+                                     YEARROUND_PROCESSSTEP,
                                      HomeZone,
                                      HomeRequestProcessStep,
                                      CoResidenceRelation)
@@ -31,7 +32,6 @@ class HomeRequest(models.Model):
 
     Salary = models.IntegerField(verbose_name="เงินเดือน(ปัจจุบัน)", null=True, blank=True)
     AddSalary = models.IntegerField(verbose_name="เงินเพิ่ม", null=True, blank=True)
-
 
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
@@ -92,13 +92,13 @@ class HomeRequest(models.Model):
     ZoneRequestPriority6 = models.CharField(verbose_name = "ลำดับ 6", choices = HomeZone.choices, max_length= 2, null=True, blank = True)
 
     #เอกสารหลักฐาน    
-    HouseRegistration = models.FileField(verbose_name='สำเนาทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName)
-    DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName)
-    SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName)
-    HomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName)
-    SpouseHomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName)
-    SalaryBill = models.FileField(verbose_name='สลิปเงินเดือนล่าสุด', default = None, null = True, blank = True, upload_to = UploadFolderName)
-    SpouseApproved = models.FileField(verbose_name='หนังสือรับรองจากคู่สมรส', default = None, null = True, blank = True, upload_to = UploadFolderName)
+    HouseRegistration = models.FileField(verbose_name='สำเนาทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    HomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    SpouseHomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    SalaryBill = models.FileField(verbose_name='สลิปเงินเดือนล่าสุด', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    SpouseApproved = models.FileField(verbose_name='หนังสือรับรองจากคู่สมรส', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
 
     Comment = models.TextField(verbose_name="หมายเหตุ", null=True, blank = True)
 
@@ -169,6 +169,14 @@ class HomeRequest(models.Model):
     def WorkYear(self):
         today = date.today()
         return today.year - self.PlacementDate.year
+
+    @property
+    def still_active(self):
+        CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
+                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
+                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+        CurrentYear = CurrentYearRound[0].Year
+        return self.year_round.Year == CurrentYear
 
     def status_icon(self):
         if self.Status == 'โสด':
