@@ -14,11 +14,11 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'CurrentUnit', 'FullName','MobilePhone', 'OfficePhone')
     ordering = ('CurrentUnit','Rank',)
     fieldsets = (
-    (None, {'fields': ('username', 'password')}),
-    ('Personal info', {'fields': (('Rank', 'first_name', 'last_name'), 'PersonID', 'email', 'MobilePhone')}),
-    ('RTAF info', {'fields': (('Position', 'CurrentUnit') ,'AFID', 'RTAFEMail', 'OfficePhone')}),
-    ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-    ('Important dates', {'fields': ('last_login', 'date_joined')}),)
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': (('Rank', 'first_name', 'last_name'), 'PersonID', 'email', 'MobilePhone')}),
+        ('RTAF info', {'fields': (('Position', 'CurrentUnit') ,'AFID', 'RTAFEMail', 'OfficePhone')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),)
 
     add_fieldsets = (
     (None, {
