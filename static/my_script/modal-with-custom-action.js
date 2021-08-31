@@ -18,6 +18,16 @@ function fetch_show_modal(url)
     .then(y => showModalURL(y,() => alert("success click")));    
 }
 
+function test_modal()
+{
+  showModal(
+                "Test modal", 
+                "{% lorem 3 p %}", 
+                'Yes', 
+                'Cancel', 
+                () => alert("success click"));
+}
+
 
 const showModalURL = (modal_html, success_callback) => {
   if (modalWrap !== null) {
@@ -26,11 +36,16 @@ const showModalURL = (modal_html, success_callback) => {
 
   modalWrap = document.createElement('div');
   modalWrap.innerHTML = modal_html;
-  modalWrap.querySelector('.modal-success-btn').onclick = success_callback;
+  
+  if(document.getElementById("modal-success-btn"))
+    modalWrap.querySelector('.modal-success-btn').onclick = success_callback;
+  
+  
   document.body.append(modalWrap);
   var modal = new bootstrap.Modal(modalWrap.querySelector('.modal'));
   modal.show();
 }
+
 
 
 const showModal = (title, description, yesBtnLabel = 'Yes', noBtnLabel = 'Cancel', callback) => {

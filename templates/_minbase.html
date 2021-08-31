@@ -5,12 +5,13 @@
   <head>
     <title>
       {% block title %}
-        Bootstrap Blank
+        ARMIS :: Airforce Resident Management Information System
       {% endblock %}    
     </title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'images/armis.png' %}">
     <!-- Bootstrap CSS -->
     <link href="{% static 'assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet">
@@ -48,25 +49,25 @@
         grid-row-end: 3;
       }      
 
+      footer div img {
+        width : 35px
+      }
+
  
     </style>
-   {% block style %}
-      
-    {% endblock %}
-    
-    {% block scriptlink %}
 
-    {% endblock %}
+    {% block style %}{% endblock %}
+    
+    {% block scriptlink %}{% endblock %}
+
     <script>
-      {% block script %}
-      {% endblock %}
+      {% block script %}{% endblock %}
     </script>  
  </head>
   <body>
     <main>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Fifth navbar example">
     <div class="container-fluid">      
-    
       <a class="navbar-brand" href="#">ARMIS</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -83,13 +84,14 @@
           </li>
           {% if request.user|in_group:"RTAF_NO_HOME_USER, PERSON_UNIT_ADMIN, PERSON_ADMIN" %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-fw fa-edit"></i> คำขอบ้านพัก</a>
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-fw fa-edit"></i> รายงานขอบ้านพัก</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown05">
             {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}">
                   <i class="fa fa-fw fa-user"></i> 
-                  คำขอบุคคล
+                  รายงานส่วนตัว
                 </a>
               </li>
             {% endif %}
@@ -97,7 +99,7 @@
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
                   <i class="fa fa-fw fa-users"></i> 
-                  คำขอหน่วยงาน
+                  รายงาน {{ request.user.CurrentUnit.ShortName }}
                 </a>
               </li>
             {% endif %}
@@ -150,7 +152,7 @@
 
       <div class="row mt-2">
         <div class="col-xl-9">
-          <h3>{% block header %}ข้อมูลทั่วไป{% endblock %}</h3>          
+          <h3>{% block header %}ขั้นตอนการขอบ้านพัก{% endblock %}</h3>          
         </div>
         <div class="col-xl-3 ms-auto text-end">
             <h5>{% block header_right %} {{ request.user.FullName }} : {{ request.user.CurrentUnit }}{% endblock %}</h5>
@@ -167,6 +169,7 @@
       <div class="mt-4">
         <div class="col-xl-12">
           {% block content %}
+            <img src = "{% static 'images/requestflow.png' %}"
           {% endblock %}
         </div>
       </div>

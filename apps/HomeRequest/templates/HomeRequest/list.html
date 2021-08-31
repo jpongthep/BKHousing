@@ -1,8 +1,27 @@
 {% extends '_minbase.html' %}
 {% load thaidate %}
+{% load static %}
 
 {% block title %}
 รายการขอบ้านพัก
+{% endblock %}
+
+{% block scriptlink %}
+    <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
+  
+{% endblock %}
+
+
+{% block script %}
+    function modal_hr_detail(hr_id)
+    {
+        urltext = "{% url 'HomeRequest:md' 99999 %}"
+        
+        new_urltext = urltext.replace("99999",hr_id)
+        console.log(new_urltext)
+        fetch_show_modal(new_urltext);
+    }
+
 {% endblock %}
 
 {% block style %}
@@ -19,6 +38,12 @@
         text-align: center;
     }
 
+    td a {
+        font-size:smaller;
+        text-decoration: none;
+        color:green;
+    }
+
   </style>
 {% endblock %}
 
@@ -29,6 +54,7 @@
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block CardRow %}
+{% comment %} 
     <div class = "row">
         {% include "project/card.html" with color="secondary" awesome="fa-pen" number="12" text="เริ่มกรอก"%}  
         {% include "project/card.html" with color="warning" awesome="fa-list" number="04" text="ส่งหน่วย"%}
@@ -36,7 +62,8 @@
         {% include "project/card.html" with color="success" awesome="fa-check" number="4" text="รอจัดสรร"%}
         {% include "project/card.html" with color="primary" awesome="fa-home" number="12" text="รับจัดสรร"%}  
         {% include "project/card.html" with color="danger" awesome="fa-home" number="12" text="รับจัดสรร"%}  
-    </div>
+    </div> 
+{% endcomment %}
 {% endblock %}
 
 {% block content%}
@@ -78,8 +105,8 @@
                         <th>Mobile</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
+                        <th>ประเมิน</th>                        
                         <th>กพ.ทอ.</th>
-                        <th>ประเมิน</th>
                         <th>อนุมัติ</th>
                         <th>หมายเหตุ</th>                        
                     </tr>
@@ -88,45 +115,6 @@
                 {% for object in object_list %}
                     {% include "HomeRequest/row_data/unit_row_data.html" with object=object%}
                 {% endfor %}
-                <!--
-                    <tr>
-                        <td>3</td>
-                        <td><a href = "#"><a href = "#"><i class="fa fa-edit text-danger icon-size" ></i></a></i></a></td>
-                        <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
-                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
-                        <td>{{ object.DateSend }}</td>
-                        <td>น.ต.สายัญ ขยันงาน</td>
-                        <td>ยศ.ทอ.</td>
-                        <td>2-1122</td>
-                        <td><a href = "#"><i class="fa fa-check text-success icon-size" ></i></a></td>
-                        <td><a href = "#"><i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i></a></td>
-                        <td></td>
-                        <td>
-                            <span class="fa-stack" style="vertical-align: top;">
-                                <i class="far fa-tasks  icon-size"></i>                                
-                                <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
-                                <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 20px;"></i>
-                            </span>
-                        </td>
-                        <td><a href = "#"><i class="fa fa-building text-primary icon-size" ></i></a></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
-                        <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
-                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
-                        <td>{{ object.DateSend }}</td>
-                        <td>ร.อ.หญิง เหมือนฝัน  หมั่นศึกษา</td>
-                        <td>ยศ.ทอ.</td>
-                        <td>2-1122</td>
-                        <td><a href = "#"><i class="fa  fa-spinner fa-spin  text-warning icon-size" ></i></a></td>
-                        <td></td>
-                        <td></td>
-                        <td><a href = "#"><i class="fa fa-arrow-right text-success icon-size"></i></a></td>
-                        <td></td>
-                    </tr>
-                !-->
                 </tbody>
             </table>
         </div>

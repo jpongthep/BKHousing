@@ -7,7 +7,7 @@ from .models import User, Unit
 class UnitAdmin(admin.ModelAdmin):
     list_display = ['get_UnitGroup_display','ShortName', 'FullName']
     list_display_links = ['ShortName']
-    search_fields = ('ShortName', 'FullName')
+    search_fields = ('ShortName', 'FullName','username')
     ordering = ["UnitGroup", "id"]
 
 class UserAdmin(BaseUserAdmin):

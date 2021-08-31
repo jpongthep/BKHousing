@@ -123,7 +123,10 @@ USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login'
-AUTHENTICATION_BACKENDS = ['apps.UserData.AFAuthentications.SettingsBackend']
+AUTHENTICATION_BACKENDS = [
+                            'apps.UserData.AFAuthentications.SettingsBackend',
+                            'django.contrib.auth.backends.ModelBackend'
+                        ]
 SESSION_COOKIE_AGE = 60*60*24
 
 AUTH_USER_MODEL = 'UserData.User'

@@ -5,7 +5,8 @@ from io import StringIO, BytesIO
 from django.shortcuts import render
 from django.views.generic import CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
@@ -41,7 +42,7 @@ class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         for ag in self.allow_groups:
             if self.request.user.groups.filter(name=ag).exists():
-                return True                
+                return True
         return False
 
     def has_home_request(self):
@@ -120,6 +121,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, co_resident_formset):
+        print(form.errors)
         return self.render_to_response(
                  self.get_context_data(form=form,
                                        co_resident_formset=co_resident_formset
@@ -176,6 +178,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
             self.object.update_process_step(
                                     HomeRequestProcessStep.REQUESTER_SENDED, 
                                     self.request.user)
+            self.object.save()
             messages.success(self.request, f'บันทึกการแก้ไขและส่งข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
         
         return super().form_valid(form)
@@ -216,7 +219,13 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
         
         queryset = queryset.filter(year_round__Year = get_current_year())
         queryset = queryset.order_by("-year_round__Year")
-        return queryset    
+        return queryset 
+    
+    def get_template_names(self):
+        if "hr/ul" in self.request.META.get('HTTP_REFERER'):
+            return "Person/modal_list.html"
+        else:
+            return "HomeRequest/list.html"
 
 
 class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
@@ -267,7 +276,7 @@ class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
         return queryset
 
 class HomeRequestDetail(AuthenUserTestMixin, DetailView):
-    allow_groups = ['RTAF_NO_HOME_USER']
+    allow_groups = ['RTAF_NO_HOME_USER','PERSON_UNIT_ADMIN']
     model = HomeRequest
     template_name = "HomeRequest/Detail.html"
 
@@ -279,13 +288,22 @@ class HomeRequestDetail(AuthenUserTestMixin, DetailView):
 
 
 @login_required
-@permission_required('User.PERSON_UNIT_ADMIN', 'User.Person_admin')
 def update_process_step(request, home_request_id, process_step):
+    allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
+    allow_access = False
+    for ag in allow_groups:
+        if request.user.groups.filter(name=ag).exists():
+            allow_access = True
+            break
+    if not allow_access:
+        raise PermissionDenied()
+               
     home_request = HomeRequest.objects.get(id = home_request_id)
     unit_id = home_request.Unit.id
     home_request.ProcessStep = process_step
     home_request.save()
     home_request.update_process_step(process_step, request.user)
+    print("sdfdsf")
 
     if process_step in [ HomeRequestProcessStep.UNIT_PROCESS, 
                          HomeRequestProcessStep.UNIT_SENDED]:
@@ -353,15 +371,33 @@ def TestDocument(request,home_request_id):
 
 def TestExcel(request,unit_id):
     # testdoc = static('documents/test_doc.docx')
-    testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/test_xls.xlsx')
+    testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/unit_report.xlsx')
     # Start by opening the spreadsheet and selecting the main sheet
     workbook = load_workbook(filename=testxls)
-    xls_title= f"Unit.xlsx"
+    xls_title= f"unit_report.xlsx"
 
     sheet = workbook.active
 
     # Write what you want into a specific cell
-    sheet["D1"] = "writing ;)"
+    sheet["A1"] = f'หน่วย {request.user.CurrentUnit.ShortName}'
+
+    unit_id = request.user.CurrentUnit
+
+    queryset = HomeRequest.objects.filter(Unit = request.user.CurrentUnit)                
+    
+    # if request.user.groups.filter(name='PERSON_ADMIN').exists():
+    #     queryset = HomeRequest.objects.filter(Unit_id = unit_id)
+    
+    queryset = queryset.filter(year_round__Year = get_current_year())
+    queryset = queryset.order_by("-year_round__Year")
+    first_row = 6
+    for i, data in enumerate(queryset):
+        sheet[f"A{first_row+i}"] = i+1
+        sheet[f"B{first_row+i}"] = data.FullName
+        sheet[f"C{first_row+i}"] = data.get_Status_display()
+        sheet[f"D{first_row+i}"] = data.Salary + data.AddSalary
+        sheet[f"R{first_row+i}"] = data.Requester.MobilePhone
+
 
     # Save the spreadsheet
 

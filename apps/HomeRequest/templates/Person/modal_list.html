@@ -1,0 +1,72 @@
+{% load thaidate %}
+<div class="modal  fade" tabindex="-1">
+  <div class="modal-dialog  modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title">คำขอบ้านพัก {{ object.FullName }} วงรอบ {{ object.year_round }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+         <div class="container-fluid">
+                <table class="table table-bordered table-striped">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="350">
+                    <col width="120">
+                    <col width="60">
+                    <col width="80">
+                    <col width="60">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th colspan = "3">เอกสาร</th>
+                        <th>ยศ ชื่อ นามสกุล</th>
+                        <th>สังกัด</th>
+                        <th>Mobile</th>
+                        <th>ผู้ขอ</th>
+                        <th>นขต.</th>
+                        <th>กพ.ทอ.</th>
+                        <th>ประเมิน</th>
+                        <th>อนุมัติ</th>
+                        <th>หมายเหตุ</th>                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                        {% include "HomeRequest/row_data/unit_row_modal_data.html" with object=object%}
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block style %}
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <style>
+    .icon-size {font-size: 20px;}
+    .check-size {font-size: 10px;}
+
+    thead tr:first-child{
+        text-align: center;
+    }
+
+    table td:not(:nth-child(5)):not(:last-child){
+        text-align: center;
+    }
+
+  </style>
+{% endblock %}
+
+

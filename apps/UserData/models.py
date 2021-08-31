@@ -42,6 +42,8 @@ class User(AbstractUser):
     PlacementCommandDate = models.DateField(verbose_name="ลงวันที่", null = True, blank = True)
     PlacementDate = models.DateField(verbose_name="เริ่มบรรจุเมื่อ", null = True, blank = True)
 
+    retire_date = models.DateField(verbose_name="วันทีเกษียณ", null = True, blank = True)
+
     @property
     def Sex(self):
         RankDisplay = self.get_Rank_display()

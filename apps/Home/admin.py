@@ -17,13 +17,27 @@ class HomeDataAdmin(admin.ModelAdmin):
     # save_as = True
 
 class HomeOwnerAdmin(admin.ModelAdmin):
+    list_display = ['is_stay','owner_unit','owner','home','lastest_command']
+    list_display_links = ['owner']
+    ordering = ('-is_stay','owner__Rank',)
     raw_id_fields = ('owner','home')
     list_filter = ('is_stay','home__zone','home__type','owner__CurrentUnit')
     search_fields = ['owner__first_name','home__number','home__number']
     inlines = [CoResidentInline,]
+
+    def lastest_command(self, obj):
+        if obj.is_stay:
+            return obj.enter_command
+        else:
+            return obj.leave_command
+    lastest_command.short_description = 'คำสั่งล่าสุด'
+
+    def owner_unit(self, obj):
+        return obj.owner.CurrentUnit
+    owner_unit.short_description = 'สังกัด'
     # search_fields = ['FullName',]
-    # list_display = ['year_round', 'FullName', 'Unit']
-    # list_display_links = ['FullName']
+    # 
+    # 
     # save_as = True
 
 

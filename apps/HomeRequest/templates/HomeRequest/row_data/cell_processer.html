@@ -11,8 +11,13 @@
         <a href = "#" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
             <i class="fa fa-check text-success icon-size" ></i>
         </a>
+    {% elif  object.IsUnitEval %}
+        <span class="fa-stack" style="vertical-align: top;">
+            <i class="far fa-tasks text-success icon-size"></i>
+            <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+        </span>
     {% elif  object.get_ProcessStep_display == 'UnitProcess' %}
-        <a href = "#" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+        <a href = "#" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
             รับเรื่อง
         </a>
     {% endif %}

@@ -1,0 +1,82 @@
+{% comment %} <h3 class="text-center">7 ขั้นตอนการขอบ้านพัก ทอ.</h3> {% endcomment %}
+<section>
+        <div class="container">
+            <div class="accordion" id="accordionExample">
+                <div class="steps">
+                    <progress id="progress" value= {% widthratio object.process_value 1 17 %} max=100 ></progress>
+                    <div class="step-item">
+                        {% if object.process_value >= 0 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >1</button>
+                        {% endif %}
+                        <div class="step-title">กรอกคำขอ</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 1 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >2</button>
+                        {% endif %}
+                        <div class="step-title">ส่งคำขอ</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 2 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >3</button>
+                        {% endif %}
+                        <div class="step-title">กพ.หน่วย รับเรื่อง</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 3 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >4</button>
+                        {% endif %}
+                        <div class="step-title">กพ.หน่วย ส่งเรื่อง</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 4 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >5</button>
+                        {% endif %}
+                        <div class="step-title">กพ.ทอ.รับเรื่อง</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 5 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >6</button>
+                        {% endif %}
+                        <div class="step-title">กพ.ทอ.ตรวจสอบ</div>
+                    </div>
+                    <div class="step-item">
+                        {% if object.process_value >= 6 %}
+                        <button class="step-button text-center" aria-expanded="true" >
+                            <i class="fas fa-check fa-2x"></i>
+                        </button>
+                        {% else %}
+                            <button class="step-button text-center" >7</button>
+                        {% endif %}
+                        <div class="step-title">รอจัดสรร</div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>

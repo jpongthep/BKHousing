@@ -19,6 +19,8 @@ urlpatterns = [
     path('afp', AFPersonListView.as_view(), name = 'af_person'),
     path('list', HomeRequestUnitListView.as_view(), name = 'list'),
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
+    path('<unit_id>/mud', HomeRequestUnitListView.as_view(), name = 'model_unit_data'),
+    
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),
 

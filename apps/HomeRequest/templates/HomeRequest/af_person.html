@@ -3,9 +3,7 @@
 {% load thaidate %}
 
 
-{% block title %}
-คำขอบ้านพัก
-{% endblock %}
+{% block title %}คำขอบ้านพัก{% endblock %}
 
 
 {% block scriptlink %}
@@ -18,9 +16,10 @@
     function modal_hr_detail(hr_id)
     {
         urltext = "{% url 'HomeRequest:md' 99999 %}"
-            new_urltext = urltext.replace("99999",hr_id)
-            fetch_show_modal(new_urltext);
-
+        
+        new_urltext = urltext.replace("99999",hr_id)
+        console.log(new_urltext)
+        fetch_show_modal(new_urltext);
     }
 
 {% endblock %}
@@ -39,6 +38,72 @@
         text-align: center;
     }
 
+        :root {
+            --prm-color: #0381ff;
+            --prm-gray: #b1b1b1;
+        }
+
+    td a {
+        font-size:smaller;
+        text-decoration: none;
+        color:green;
+    }
+
+    .steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .step-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background-color: var(--prm-gray);
+        transition: .4s;
+    }
+
+    .step-button[aria-expanded="true"] {
+        width: 60px;
+        height: 60px;
+        background-color: var(--prm-color);
+        color: #fff;
+    }
+
+    .done {
+        background-color: var(--prm-color);
+        color: #fff;
+    }
+
+    .step-item {
+        z-index: 10;
+        text-align: center;
+    }
+
+    #progress {
+    -webkit-appearance:none;
+        position: absolute;
+        width: 95%;
+        z-index: 5;
+        height: 10px;
+        margin-left: 18px;
+        margin-bottom: 18px;
+    }
+
+    /* to customize progress bar */
+    #progress::-webkit-progress-value {
+        background-color: var(--prm-color);
+        transition: .5s ease;
+    }
+
+    #progress::-webkit-progress-bar {
+        background-color: var(--prm-gray);
+
+    }
+}
   </style>
 {% endblock %}
 
@@ -49,6 +114,9 @@
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block content%}
+    {% if has_request %}  
+        {% include "HomeRequest/process_step.html" with object=object_list.0 %}
+    {% endif %}
     <div>
         <div>      
         {% if not has_request %}  

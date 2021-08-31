@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 USER_PERMISSION = (
     ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
     ("RTAF_HOME_USER", "RTAF_home_user"),
-    ("PERSON_UNIT_ADMIIN", "Person_unit_admin"),
+    ("PERSON_UNIT_ADMIN", "Person_unit_admin"),
     ("PERSON_ADMIN", "Person_admin"),
     ("HOME_EXAMINE_OFFICER", "Home_examine_officer"),
     ("MP_OFFICER", "MP_officer"),
@@ -27,6 +27,7 @@ CHOICE_Rank = (
     ( 30102 ,  'พล.อ.อ.*หญิง' ) ,
     ( 30211 ,  'พล.อ.อ.' ) ,
     ( 30212 ,  'พล.อ.อ.หญิง' ) ,
+    ( 30213 ,  'พล.อ.' ) ,
     ( 30221 ,  'พล.อ.ท.' ) ,
     ( 30222 ,  'พล.อ.ท.หญิง' ) ,
     ( 30231 ,  'พล.อ.ต.' ) ,
@@ -163,8 +164,9 @@ class CoResidenceRelation(models.TextChoices):
     CHILD = '2-CH', _('บุตร')
     FATHER = '3-FA', _('บิดา')
     MOTHER = '4-MO', _('มารดา')
-    RELATIVE = '5-RE', _('ญาติ') 
-    INHABITANT = '6-IH', _('ผู้อาศัย')    
+    BROSIS = '5-BS', _('พี่น้อง')
+    RELATIVE = '6-RE', _('ญาติ') 
+    INHABITANT = '7-IH', _('ผู้อาศัย')    
 
 class PERSON_STATUS(models.IntegerChoices):
     SINGLE = 1, _('โสด')
@@ -186,6 +188,12 @@ class EDUCATION(models.IntegerChoices):
     Vocational = 8, _('ปวช.หรือเทียบเท่า'),
     HighVocational  = 9, _('ปวส.หรือเทียบเท่า'),
     MiniBachelor = 10, _('อนุปริญญาหรือเทียบเท่า'), 
+
+# การศึกษาของผู้พักอาศัยร่วม
+class HomeRentPermission(models.IntegerChoices):
+    no_permission = 1, _('ไม่มีสิทธิ์เบิกค่าเช่าบ้าน')
+    not_use = 2, _('มีสิทธิ์แต่ไม่ได้เบิกค่าเช่าบ้าน')
+    used = 3, _('มีและใช้สิทธิ์เบิกค่าเช่าบ้าน')
 
 # ผู้ประเมินความเดือดร้อน
 FillFormTypeChoice = [

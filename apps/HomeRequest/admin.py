@@ -12,7 +12,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
     list_display = ['year_round', 'FullName', 'Unit']
     list_display_links = ['FullName']
-    raw_id_fields = ('Requester','UnitApprover','PersonReciever','PersonApprover')
+    raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover')
     save_as = True
 
     inlines = [CoResidentInline,]

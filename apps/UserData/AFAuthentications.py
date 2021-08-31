@@ -31,7 +31,6 @@ def checkRTAFPassdword(username, password):
     else:
         return False
 
-
 class SettingsBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
@@ -49,7 +48,11 @@ class SettingsBackend(ModelBackend):
             if not user.is_active:
                 return None
 
-            if username in ['pongthep', 'test_user','test_user2','test_user4','test_person_admin']:
+            if username in [
+                            'pongthep', 'test_user',
+                            'test_user2','test_user3',
+                            'test_user4','test_person_admin',
+                            'test_tss_admin']:
                 return user
 
             # if not re.search("@rtaf.mi.th$",user.email):
@@ -65,7 +68,8 @@ class SettingsBackend(ModelBackend):
             if pwd_valid:
                 return user
             else:
-                messages.error(request,f'password สำหรับ  User  "{username}" ไม่ถูกต้อง')
+                messages.error(request,f'password ทอ. สำหรับ  User  "{username}" ไม่ถูกต้อง')
+                messages.info(request,f'เข้าระบบด้วย password ของ armis')
                 return None
                 
         except User.DoesNotExist:
@@ -73,12 +77,12 @@ class SettingsBackend(ModelBackend):
             if ReturnData:
                 user = User(username = username)
                 user.email = f'{username}@rtaf.mi.th'                
-                user.is_active = False
+                user.is_active = True
                 user.is_staff = False
                 user.is_superuser = False
                 user.first_name = ReturnData['user_name']
                 user.last_name = ""
-                user.Unit = ReturnData['user_orgname']
+                # user.Unit = ReturnData['user_orgname']
                 user.save()
 
                 UserUnit = Unit.objects.filter(ShortName = ReturnData['user_orgname'])
@@ -86,7 +90,8 @@ class SettingsBackend(ModelBackend):
                     NewUnit = Unit(ShortName = ReturnData['user_orgname'], FullName = ReturnData['user_orgname'])
                     NewUnit.save()                
 
-                messages.warning(request,f'ไม่มีผู้ใช้นี้ในระบบ ได้ทำการเพิ่ม "{username}" ให้แล้ว ติดต่อ Admin เพื่อเข้าใช้งาน')
+                messages.warning(request,f'ไม่มีผู้ใช้นี้ในระบบ ได้ทำการเพิ่ม "{username}" ให้แล้ว')
+                return user
             else:                
                 messages.error(request,f'ไม่มีผู้ใช้ "{username}" ในระบบ')
 

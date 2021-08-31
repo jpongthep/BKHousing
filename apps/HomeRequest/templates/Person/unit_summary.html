@@ -1,5 +1,6 @@
 {% extends '_minbase.html' %}
 {% load thaidate %}
+{% load static %}
 
 {% block title %}
 รายการขอบ้านพัก
@@ -7,6 +8,25 @@
 
 {% block header %}
 รายการขอบ้านพัก
+{% endblock %}
+
+
+{% block scriptlink %}
+    <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
+  
+{% endblock %}
+
+
+{% block script %}
+    function modal_unit_detail(unit_id)
+    {
+        urltext = "{% url 'HomeRequest:model_unit_data' 99999 %}"
+        
+        new_urltext = urltext.replace("99999",unit_id)
+        console.log(new_urltext)
+        fetch_show_modal(new_urltext);
+    }
+
 {% endblock %}
 
 {% block style %}
@@ -86,7 +106,7 @@
             {% for object in object_list %}
                 <tr>                        
                     <td>{{ forloop.counter }}</td>                        
-                    <td><a href = "{% url 'HomeRequest:person_unit_list' object.Unit %}"><i class="fa fa-list text-info icon-size" ></i></a></td>
+                    <td><a onclick = "modal_unit_detail({{ object.Unit }})" ><i class="fa fa-list text-info icon-size" ></i></a></td>
                     <td><a href = "{% url 'HomeRequest:xls' object.Unit %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
                     <td>{{ object.Unit__ShortName }}</td>                    
                     <td class = "font-weight-bold text-warning strong">{{ object.Num_RP }}</td>

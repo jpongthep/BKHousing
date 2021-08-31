@@ -11,7 +11,8 @@ from apps.Utility.Constants import ( PERSON_STATUS,
                                      YEARROUND_PROCESSSTEP,
                                      HomeZone,
                                      HomeRequestProcessStep,
-                                     CoResidenceRelation)
+                                     CoResidenceRelation,
+                                     HomeRentPermission)
 
 from apps.Configurations.models import YearRound
 from apps.UserData.models import User, Unit as TheUnit
@@ -25,7 +26,7 @@ class HomeRequest(models.Model):
     year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='Requester')
 
     # ข้อมูลพื้นฐานส่วนตัว ณ ช่วงเวลาที่ขอ
-    Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True)
+    Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True, blank = True)
     FullName = models.CharField(max_length = 255, verbose_name="ยศ - ชื่อ - นามสกุล", null = False, default = '')
     Position = models.CharField(max_length = 200, null=True, verbose_name="ตำแหน่ง")
     Unit = models.ForeignKey(TheUnit, models.SET_NULL, null = True, verbose_name="สังกัด", related_name='Unit')
@@ -42,8 +43,7 @@ class HomeRequest(models.Model):
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
-    RentPermission = models.BooleanField(default = True, verbose_name="มีสิทธิ์เบิกค่าเช่าบ้าน")
-    IsHomeRent = models.BooleanField(default = True, verbose_name="เบิกค่าเช่าบ้านอยู่ก่อน")
+    RentPermission = models.IntegerField(verbose_name="สิทธิ์เบิกค่าเช่าบ้าน", choices = HomeRentPermission.choices, default=3)
 
     RentAddress = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
     RentSubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
@@ -121,8 +121,8 @@ class HomeRequest(models.Model):
     PersonDateApproved = models.DateField(verbose_name = "วันที่กำลังพลรับเอกสาร", default=None, null=True, blank=True)
 
     # แบบประเมินความเดือดร้อน 2 ส่วน หน่วยงาน และ กพ.ทอ.
-    IsTroubleUnit = models.BooleanField(verbose_name = 'นขต.ประเมินเรียบร้อย', default = False)
-    IsTroublePerson =  models.BooleanField(verbose_name = 'กพ.ทอ.ประเมินเรียบร้อย', default = False)
+    IsUnitEval = models.BooleanField(verbose_name = 'นขต.ประเมินเรียบร้อย', default = False)
+    IsPersonEval =  models.BooleanField(verbose_name = 'กพ.ทอ.ประเมินเรียบร้อย', default = False)
     #คะแนนประเมินล่าสุด
     TroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน", null=True,blank = True)
 
@@ -151,6 +151,8 @@ class HomeRequest(models.Model):
                 self.PersonDateApproved = date.today()
 
             self.OriginProcessStep = ProcessStep
+            self.ProcessStep = ProcessStep
+            print('HR save data :',ProcessStep, user )
             self.save()
 
 
@@ -159,7 +161,7 @@ class HomeRequest(models.Model):
         self.OriginProcessStep = self.ProcessStep
 
     def get_absolute_url(self):
-        return reverse('HomeRequest:detail', kwargs={"pk": self.pk})
+        return reverse('HomeRequest:af_person')
 
     @property
     def RequesterSended(self):
@@ -177,6 +179,10 @@ class HomeRequest(models.Model):
                                               | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
         CurrentYear = CurrentYearRound[0].Year
         return self.year_round.Year == CurrentYear
+    
+    def process_value(self):
+        step = ['RP','RS','UP','US','PP','PA','GH','RC','RF']
+        return step.index(self.ProcessStep)
 
     def status_icon(self):
         if self.Status == 'โสด':

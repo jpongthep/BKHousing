@@ -25,12 +25,18 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
         
         TroubleformID = request.POST['Troubleform']
         filled_form = FilledForm.objects.get(id = TroubleformID)
-        filled_form.home_request_form.UnitApprover = request.user
         
         TotalScore = filled_form.CalculateScore()
         filled_form.home_request_form.TroubleScore = TotalScore
+        print('Type = ',Type)
+        if Type == 'Unit':
+            filled_form.home_request_form.IsUnitEval = True
+        elif Type == 'Person':
+            filled_form.home_request_form.IsPersonEval = True
+
         filled_form.home_request_form.save()
         filled_form.save()
+
         messages.success(request, f'บันทึกข้อมูลการประเมินความเดือดร้อนของ {home_request.FullName} เรียบร้อยได้ {TotalScore} คะแนน')
 
 

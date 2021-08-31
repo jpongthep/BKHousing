@@ -4,6 +4,8 @@ from django.utils.translation import ugettext as _
 
 
 from .models import HomeRequest, CoResident
+from apps.Utility.Constants import HomeRentPermission
+
 
 class HomeRequestForm(forms.ModelForm):
     class Meta:
@@ -14,7 +16,7 @@ class HomeRequestForm(forms.ModelForm):
                 'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
                 'Address','SubDistinct','Distinct','Province','GooglePlusCodes1',
                 'TravelDescription',
-                'RentPermission','IsHomeRent','RentStartDate','RentEndDate','RentOwner','RentOwnerPID','RentalCost',
+                'RentPermission','RentStartDate','RentEndDate','RentOwner','RentOwnerPID','RentalCost',
                 'RentAddress', 'RentSubDistinct', 'RentDistinct', 'RentProvince', 'GooglePlusCodes2',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
                 'IsHomelessDisaster','IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
@@ -24,6 +26,7 @@ class HomeRequestForm(forms.ModelForm):
                 ]        
         # exclude = ['Requester', 'DateSend', 'YearRound', 'UnitApprover', 
         #            'PersonApprover', 'IsTroubleSelf', 'IsTroubleUnit', 'IsTroublePerson']
+        
         widgets = {
             'FullName': forms.TextInput(attrs = {'placeholder': 'น.อ.ทัพฟ้าไทย ใส่ใจการงาน'}),
             'Position': forms.TextInput(
@@ -32,6 +35,7 @@ class HomeRequestForm(forms.ModelForm):
                 attrs={
                     'placeholder': 'กรอกตำบลแล้วเลือก',
                 }),
+            
             'TravelDescription': forms.Textarea(
                 attrs={
                         'placeholder': 'ในวันทำงานจะตื่นตั้งแต่ 0500 และปฏิบัติภารกิตส่วนตัว ออกจากบ้านเวลา 0540 แวะซื้อข้าวเพื่อทานเช้าและเที่ยง ถึงที่ทำงานเวลาประมาณ 0630',
@@ -47,15 +51,14 @@ class HomeRequestForm(forms.ModelForm):
                         'placeholder': 'ข้อมูลบ้านพักหลังเดิมและสาเหตุการออก / ถูกไล่ออกโดยละเอียด',
                         'rows' : 2
                 }),
+            'RentPermission': forms.RadioSelect,
             'HouseRegistration' : forms.FileInput(attrs={'accept':'application/pdf'}),
             'DivorceRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SpouseDeathRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
             'HomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SpouseHomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SalaryBill': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),
-
-                
+            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),                
         }
 
 

@@ -1,22 +1,14 @@
 {% load thaidate %}
+{% load static %}
+
+<script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
 
 {% if object.get_ProcessStep_display != 'RequesterCancel' %}
     <tr>                        
         <td>{{ forloop.counter }}</td>
-        <td>
-            {% if object.get_ProcessStep_display != 'RequesterProcess'%}
-                <a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a>
-            {% else %}
-                <i class="fa fa-edit text-primary icon-size"></i></i>
-            {% endif %}
-        </td>
-        <td><a href = "#" onclick = "modal_hr_detail({{ object.id }})"><i class="fa fa-eye text-info icon-size" ></i></a></td>
-        <td>
-            <a href = "{% url 'HomeRequest:doc' object.id %}">
-                <i class="fas fa-file-word text-info icon-size"></i>
-            </a>
-        </td>
-        <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
+        <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
+        <td><a href = "#" onclick = "test_modal()"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+        <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word icon-size"></i></a></td>
         <td>{{ object.FullName }} </td>
         <td>{{ object.Unit }}</td>
         <td>{{ object.Requester.MobilePhone }}</td>
@@ -27,37 +19,35 @@
             {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="UnitPerson" %}
         </td>
         <td>
-            {% if object.get_ProcessStep_display not in 'RequesterProcess,RequesterSended' %}
+            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
+        </td>
+        <td>
             <a href = "{% url 'Trouble:eval' object.id 'Unit' %}" target = "_blank">
-                {% if object.IsUnitEval  %}
-                    <strong>{{object.TroubleScore}}</strong>
+                {% if object.UnitApprover and object.PersonApprover  %}
+                    <strong>10</strong>
                 {% else %}
                     <span class="fa-stack" style="vertical-align: top;">
                         <i class="far fa-tasks  icon-size"></i>
-                        <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                            {% if object.UnitApprover %}
+                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>                                                
+                            {% else %}
+                                <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                            {% endif %}
+                            {% if object.PersonApprover %}
+                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                                <span class="badge">5</span>
+                            {% else %}
+                                <i class="fas fa-question text-danger fa-stack-1x check-size"  style="margin-top: 10px;margin-left: 20px;"></i>
+                            {% endif %}
                     </span>
                 {% endif %}
             </a>
-            {% endif %}
-
-        </td>        
-        <td>
-            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
         </td>
-   
-        <td>
-            {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
-        </td>
+        <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
     {% if request.resolver_match.url_name == 'list' %}
         <td>
-            {# ถ้าส่งเรื่องมาแล้วให้แสดงปุ่มรับเรื่อง #}
-            {% if object.get_ProcessStep_display == 'RequesterSended' %}
-                <a href = "{% url 'HomeRequest:update_process_step' object.id 'UP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
-            {% endif %}
-            {# ถ้าประเมินแล้วให้แสดงปุ่มส่งเรื่อง #}
-            {% if object.IsUnitEval and object.get_ProcessStep_display != 'UnitSended' %}
-                <a href = "{% url 'HomeRequest:update_process_step' object.id 'US'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
-            {% endif %}
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'UP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
+            <a href = "{% url 'HomeRequest:update_process_step' object.id 'US'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
         </td>
     {% elif request.resolver_match.url_name == 'person_unit_list' %}
         <td>

@@ -12,6 +12,7 @@
 
 {% block scriptlink %}
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    
 {% endblock %}
 
 {% block script %}
@@ -40,37 +41,25 @@
             
         });
 
-        $("#id_RentPermission").change(function() {
-            has_rent_permission = $('#id_RentPermission').is(":checked");
+        $("[name = 'RentPermission']").change(function() {
+            console.log($("[name = 'RentPermission']:checked").val())
 
-            $("#div_id_IsHomeRent").toggle(has_rent_permission);
-            is_homerent = $('#id_IsHomeRent').is(":checked");
+            has_rent_permission =$("[name = 'RentPermission']:checked").val() == '3';
 
-            $("#div_id_RentStartDate").toggle(has_rent_permission && is_homerent);
-            $("#div_id_RentEndDate").toggle(has_rent_permission && is_homerent);
-            $("#div_id_RentOwner").toggle(has_rent_permission && is_homerent);
-            $("#div_id_RentOwnerPID").toggle(has_rent_permission && is_homerent);
-            $("#div_id_RentalCost").toggle(has_rent_permission && is_homerent);
-            $("#div_RentAddress").toggle(has_rent_permission && is_homerent);
+            $("#div_id_RentStartDate").toggle(has_rent_permission);
+            $("#div_id_RentEndDate").toggle(has_rent_permission);
+            $("#div_id_RentOwner").toggle(has_rent_permission);
+            $("#div_id_RentOwnerPID").toggle(has_rent_permission);
+            $("#div_id_RentalCost").toggle(has_rent_permission);
+            $("#div_RentAddress").toggle(has_rent_permission);
         });
 
         $("#id_IsNeverRTAFHome").change(function() {
             IsNeverRTAFHome = ! $('#id_IsNeverRTAFHome').is(":checked");
-
             $("#div_id_RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
-
         });
 
-        $("#id_IsHomeRent").change(function() {
-            is_homerent = $('#id_IsHomeRent').is(":checked")
 
-            $("#div_id_RentStartDate").toggle(is_homerent)
-            $("#div_id_RentEndDate").toggle(is_homerent)
-            $("#div_id_RentOwner").toggle(is_homerent)
-            $("#div_id_RentOwnerPID").toggle(is_homerent)
-            $("#div_id_RentalCost").toggle(is_homerent)
-            $("#div_RentAddress").toggle(is_homerent)
-        });
 
         function cloneMore(selector, type) {
             var newElement = $(selector).clone(true);
@@ -101,6 +90,16 @@
         $("#div_id_SpousePID").toggle(married);
         $("#div_id_SpouseAFID").toggle(married);
         $("#div_id_IsHRISReport").toggle(married);
+
+        
+        has_rent_permission = {{ form.RentPermission.value|default_if_none:"0" }} == 3;
+
+        $("#div_id_RentStartDate").toggle(has_rent_permission);
+        $("#div_id_RentEndDate").toggle(has_rent_permission);
+        $("#div_id_RentOwner").toggle(has_rent_permission);
+        $("#div_id_RentOwnerPID").toggle(has_rent_permission);
+        $("#div_id_RentalCost").toggle(has_rent_permission);
+        $("#div_RentAddress").toggle(has_rent_permission);
     });
 
 
@@ -124,27 +123,21 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-2">
-                    {{ form.Rank|as_crispy_field }}
-                </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     {{ form.FullName|as_crispy_field  }}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     {{ form.Position|as_crispy_field  }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     {{ form.Unit|as_crispy_field  }}
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-2">
                     {{ form.Salary|as_crispy_field }}
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     {{ form.AddSalary|as_crispy_field  }}
                 </div>
-
             </div>
             <div class="row">
                 <div class="col-md-2">
@@ -198,7 +191,6 @@
             <div class="row">
                 <div class="col-md-2">
                     {{ form.RentPermission|as_crispy_field }}
-                    {{ form.IsHomeRent|as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
                     {{ form.RentStartDate|as_crispy_field  }}                    
@@ -394,8 +386,11 @@
     </div>
     {% comment %} <input type="button" class="btn btn-info" value="เพิ่มผู้พักอาศัย" id="add_more"> {% endcomment %}
 
-  <button type="submit" name="save" class="btn btn-warning">บันทึก</button>        
-  <button type="submit" name="send" class="btn btn-primary">ส่งรายงาน</button>        
+    <div class = "mt-3">
+        <button type="submit" name="save" class="btn btn-warning">บันทึกร่าง</button>        
+  <button type="submit" name="send" class="btn btn-primary">บันทึกและส่งรายงาน</button>        
+    </div>
+  
 
   </form>
 {% endblock %}
