@@ -19,7 +19,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "UnitReciever":
-            kwargs["queryset"] = User.objects.filter(groups__name__in=['PERSON_UNIT_USER'])
+            kwargs["queryset"] = User.objects.filter(groups__name__in=['PERSON_UNIT_ADMIN'])
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     # fieldsets = (
