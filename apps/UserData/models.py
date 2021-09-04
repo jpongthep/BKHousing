@@ -25,19 +25,19 @@ class User(AbstractUser):
         permissions = USER_PERMISSION
 
     AFID = models.CharField(verbose_name = "เลขประจำตัว ทอ.", max_length = 15, null = True)
-    PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=False, blank=False, default = '' )
+    PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
     BirthDay = models.DateField(verbose_name="วันเกิด", null = True, blank = True)    
-    Rank = models.PositiveIntegerField(verbose_name="ยศ", choices = CHOICE_Rank, default = 0, null=True)
+    Rank = models.PositiveIntegerField(verbose_name="ยศ", choices = CHOICE_Rank, default = 0, null=True, blank=True)
     Position  =  models.CharField(verbose_name="ตำแหน่ง", max_length=250, null = True, blank = True)
 
-    OfficePhone = models.CharField(verbose_name="เบอร์ที่ทำงาน", max_length = 20, null=True)
-    MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True)
-    RTAFEMail = models.EmailField(verbose_name = "email ทอ.", null=True)
+    OfficePhone = models.CharField(verbose_name="เบอร์ที่ทำงาน", max_length = 20, null=True, blank=True)
+    MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True, blank=True)
+    RTAFEMail = models.EmailField(verbose_name = "email ทอ.", null=True, blank=True)
 
-    CurrentUnit =  models.ForeignKey(Unit, verbose_name="สังกัด", on_delete=models.SET_NULL, null = True, related_name='CurrentUnit')
+    CurrentUnit =  models.ForeignKey(Unit, verbose_name="สังกัด", on_delete=models.SET_NULL, null = True, blank=True, related_name='CurrentUnit')
  
      # การบรรจุครั้งแรก อาจนำไปใส่ไว่้ใน User เนื่องจากข้อมูลชุดนี้ไม่เปลี่ยนแปลงตลอดอายุราชการ
-    PlacementUnit = models.ForeignKey(Unit, verbose_name="สังกัดบรรจุ", on_delete=models.SET_NULL, null = True, related_name='PlacementUnit')
+    PlacementUnit = models.ForeignKey(Unit, verbose_name="สังกัดบรรจุ", on_delete=models.SET_NULL, null = True, blank=True, related_name='PlacementUnit')
     command_of_placement = models.CharField(verbose_name="ที่คำสั่งบรรจุ", max_length = 100, null = True, blank = True)
     PlacementCommandDate = models.DateField(verbose_name="ลงวันที่", null = True, blank = True)
     PlacementDate = models.DateField(verbose_name="เริ่มบรรจุเมื่อ", null = True, blank = True)
