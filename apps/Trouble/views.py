@@ -66,7 +66,7 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
         }
     
 
-    return render(request,'trouble/list_question.html',context)
+    return render(request,'Trouble/list_question.html',context)
 
 def CreateBlankFrom(set_form, home_request_form, evaluater, type = 'Self', date = datetime.date.today()):
     blank_form = FilledForm( 

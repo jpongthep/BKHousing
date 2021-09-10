@@ -14,6 +14,7 @@ USER_PERMISSION = (
 
 
 class RTAFUnitSection(models.TextChoices):    
+    NotDefine = '0', _('-')
     Commander = '1', _('ส่วนบังคับบัญชา')
     AFHeadquater = '2', _('กองทัพอากาศ (กองบัญชาการ)')
     Headquater = '3', _('ส่วนบัญชาการ')
@@ -80,6 +81,9 @@ CHOICE_Rank = (
     ( 40201 ,  'พนง.อาวุโส' ) ,
     ( 40400 ,  'พนง.หญิง' ) ,
     ( 40401 ,  'พนง.' ) ,
+    ( 40600 ,  'นาย' ) ,
+    ( 40601 ,  'นาง' ) ,
+    ( 40602 ,  'น.ส.' ) ,
     ( 0 ,  '' )
 ) 
 
@@ -169,11 +173,12 @@ class CoResidenceRelation(models.TextChoices):
     INHABITANT = '7-IH', _('ผู้อาศัย')    
 
 class PERSON_STATUS(models.IntegerChoices):
+    NOSTATUS = 0, _('-')
     SINGLE = 1, _('โสด')
     MARRIES_TOGETHER = 2, _('สมรส-อยู่ร่วมกัน')
-    MARRIES_SEPARATE = 3, _('สมรส-แยกกันอยู่')
-    DIVOTE = 4, _('หย่า')
-    WIDOW = 5, _('ม่าย')
+    MARRIES_SEPARATE = 7, _('สมรส-แยกกันอยู่')
+    DIVOTE = 3, _('หย่าร้าง')
+    WIDOW = 4, _('ม่าย')
     
 # การศึกษาของผู้พักอาศัยร่วม
 class EDUCATION(models.IntegerChoices):

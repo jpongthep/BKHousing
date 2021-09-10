@@ -85,10 +85,9 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
-        'OPTIONS': 
-            {
+        'OPTIONS':{
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-            }
+        }
     }
 }
 
@@ -127,14 +126,14 @@ AUTHENTICATION_BACKENDS = [
                             'apps.UserData.AFAuthentications.SettingsBackend',
                             'django.contrib.auth.backends.ModelBackend'
                         ]
-SESSION_COOKIE_AGE = 60*60*24
+SESSION_COOKIE_AGE = 60*60*2
 
 AUTH_USER_MODEL = 'UserData.User'
 
 
 STATIC_URL = '/static/'
 # STATICFILES_DIRS = (os.path.join('static'),)
-STATIC_ROOT = ''
+# STATIC_ROOT = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'staticfiles',

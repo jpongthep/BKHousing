@@ -1,6 +1,6 @@
 from .settings import *
 
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*','ec2-54-151-164-105.ap-southeast-1.compute.amazonaws.com']
 
 DATABASES = {

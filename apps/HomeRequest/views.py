@@ -23,7 +23,9 @@ from openpyxl import load_workbook
 from .models import HomeRequest, CoResident
 from .forms import HomeRequestForm, CoResidentFormSet
 from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep)
+from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
+from apps.UserData.forms import UserCurrentDataForm
 
 
 def get_current_year():
@@ -73,14 +75,27 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'FullName': request.user.FullName,
                             'Position': request.user.Position,
                             'Unit': request.user.CurrentUnit,
-                            'OfficePhone' : request.user.OfficePhone
+                            'OfficePhone' : request.user.OfficePhone,
+                            'Unit' : request.user.CurrentUnit,
+                            'Salary' : request.user.current_salary,
+                            'Status' : request.user.current_status,
+                            'SpouseName' : request.user.current_spouse_name,
+                            'SpousePID' : request.user.current_spouse_pid,
+                            'Address' : request.user.Address
                         }        
-        form = self.form_class(initial = initial_value)
+        form = self.form_class(initial = initial_value, prefix='hr')
 
         co_resident_formset = CoResidentFormSet()
+
+        initial_value = {
+                            'OfficePhone' : request.user.OfficePhone,
+                            'MobilePhone' : request.user.MobilePhone,
+                        }        
+        user_current_data_form =  UserCurrentDataForm(initial = initial_value, prefix='userdata')
         return self.render_to_response(
                                 self.get_context_data(form=form,
-                                                        co_resident_formset=co_resident_formset,
+                                                      co_resident_formset=co_resident_formset,
+                                                      user_current_data_form = user_current_data_form
                                                         ))    
 
     # def get(self, request, *args, **kwargs):
@@ -90,16 +105,17 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         self.object = None
-        form = self.form_class(request.POST, request.FILES)
+        form = self.form_class(request.POST, request.FILES, prefix='hr')
 
+        user_current_data_form = UserCurrentDataForm(self.request.POST, prefix='userdata')
         co_resident_formset = CoResidentFormSet(self.request.POST)
         if form.is_valid() and co_resident_formset.is_valid():
-            return self.form_valid(form, co_resident_formset)
+            return self.form_valid(form, user_current_data_form, co_resident_formset)
         else:
-            return self.form_invalid(form, co_resident_formset)
+            return self.form_invalid(form, user_current_data_form, co_resident_formset)
 
-    def form_valid(self, form, co_resident_formset):
-        self.object = form.save(commit=False)    
+    def form_valid(self, form, user_current_data_form, co_resident_formset):
+        self.object = form.save(commit=False)
         # กำหนดค่าเริ่มต้นให้ form    
         self.object.Requester = self.request.user
         CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
@@ -110,6 +126,8 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object.Unit = self.request.user.CurrentUnit
         self.object.ProcessStep = HomeRequestProcessStep.REQUESTER_PROCESS
         self.object.save()
+        
+        user_current_data_form.save()
 
         co_resident = co_resident_formset.save(commit=False)
         for cr in co_resident:
@@ -146,31 +164,50 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         home_request = self.object
+        
         co_resident_formset = CoResidentFormSet(instance = home_request, 
                                                 queryset = home_request.CoResident.order_by("Relation"))
 
         return self.render_to_response(
-                  self.get_context_data(form = HomeRequestForm(instance=self.object),
-                                        co_resident_formset = co_resident_formset)
+                  self.get_context_data(form = HomeRequestForm(instance=self.object, prefix='hr'),
+                                        user_current_data_form =  UserCurrentDataForm(instance = request.user, prefix='userdata'),
+                                        co_resident_formset = co_resident_formset
                                         )
+                                       )
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+        print('get_context_data kwargs = ',kwargs)
         if self.request.POST:
+            data['form'] = HomeRequestForm(self.request.POST, prefix='hr')
+            data["user_current_data_form"] = UserCurrentDataForm(self.request.POST, prefix='userdata')
             data["co_resident"] = CoResidentFormSet(self.request.POST, instance=self.object)
         else:
+            data['form'] = HomeRequestForm(instance=self.object, prefix='hr')
+            data["user_current_data_form"] = UserCurrentDataForm(instance = self.request.user, prefix='userdata')
             data["co_resident"] = CoResidentFormSet(instance=self.object)
+        # print('data = ',data)
         return data
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        co_resident = context["co_resident"]
-        self.object = form.save()
-        if co_resident.is_valid():
-            co_resident.home_request = self.object
-            co_resident.save()
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.form_class(request.POST, request.FILES, instance = self.object, prefix='hr')
+
+        user_current_data_form = UserCurrentDataForm(self.request.POST, instance = request.user, prefix='userdata')
+        co_resident_formset = CoResidentFormSet(self.request.POST)
+        if form.is_valid() and user_current_data_form.is_valid() and co_resident_formset.is_valid():
+            return self.form_valid(form, user_current_data_form, co_resident_formset)
         else:
-            print('co_resident.errors = ',co_resident.errors)
+            return self.form_invalid(form, user_current_data_form, co_resident_formset)
+
+    def form_valid(self, form, user_current_data_form, co_resident_formset):
+
+        user_current_data_form.save()
+        co_resident = co_resident_formset.save(commit=False)
+
+        for cr in co_resident:
+            cr.home_request = self.object
+            cr.save()
 
         if 'save' in self.request.POST:
             messages.info(self.request, f'บันทึกการแก้ไขข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
@@ -180,8 +217,14 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
                                     self.request.user)
             self.object.save()
             messages.success(self.request, f'บันทึกการแก้ไขและส่งข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
-        
+
         return super().form_valid(form)
+
+    def form_invalid(self, form, user_current_data_form, co_resident_formset):
+        print("="*60)
+        print('form_invalid => formerrors  ',form.errors)
+        print('co_resident_formset => co_resident_formseterrors  ',co_resident_formset.errors)
+        return super().form_invalid(form)
 
     def get_success_url(self):        
         return reverse('HomeRequest:af_person')
@@ -381,9 +424,10 @@ def TestExcel(request,unit_id):
     # Write what you want into a specific cell
     sheet["A1"] = f'หน่วย {request.user.CurrentUnit.ShortName}'
 
-    unit_id = request.user.CurrentUnit
+    
+    xls_unit = Unit.objects.get(id = unit_id)
 
-    queryset = HomeRequest.objects.filter(Unit = request.user.CurrentUnit)                
+    queryset = HomeRequest.objects.filter(Unit = xls_unit)
     
     # if request.user.groups.filter(name='PERSON_ADMIN').exists():
     #     queryset = HomeRequest.objects.filter(Unit_id = unit_id)

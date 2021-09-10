@@ -12,7 +12,6 @@
 
 {% block scriptlink %}
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-    
 {% endblock %}
 
 {% block script %}
@@ -28,45 +27,68 @@
             return c;
         });
         
-        $("#id_Status").change(function() {
-            married = this.value == 2 || this.value == 3;
+        $("#id_hr-Status").change(function() {
+            married = this.value == 2 || this.value == 7;
 
-            widow_divote = this.value == 4 || this.value == 5;
+            widow_divote = this.value == 3 || this.value == 4;
 
-            $("#div_id_IsHRISReport").toggle(married || widow_divote);
+            $("#div_id_hr-IsHRISReport").toggle(married || widow_divote);
 
-            $("#div_id_SpouseName").toggle(married);
-            $("#div_id_SpousePID").toggle(married);
-            $("#div_id_SpouseAFID").toggle(married);
+            $("#div_id_hr-SpouseName").toggle(married);
+            $("#div_id_hr-SpousePID").toggle(married);
+            $("#div_id_hr-SpouseAFID").toggle(married);
             
         });
 
-        $("[name = 'RentPermission']").change(function() {
-            console.log($("[name = 'RentPermission']:checked").val())
+        $("[name = 'hr-RentPermission']").change(function() {
+            console.log($("[name = 'hr-RentPermission']:checked").val())
 
-            has_rent_permission =$("[name = 'RentPermission']:checked").val() == '3';
+            has_rent_permission =$("[name = 'hr-RentPermission']:checked").val() == '3';
 
-            $("#div_id_RentStartDate").toggle(has_rent_permission);
-            $("#div_id_RentEndDate").toggle(has_rent_permission);
-            $("#div_id_RentOwner").toggle(has_rent_permission);
-            $("#div_id_RentOwnerPID").toggle(has_rent_permission);
-            $("#div_id_RentalCost").toggle(has_rent_permission);
+            $("#div_id_hr-RentStartDate").toggle(has_rent_permission);
+            $("#div_id_hr-RentEndDate").toggle(has_rent_permission);
+            $("#div_id_hr-RentOwner").toggle(has_rent_permission);
+            $("#div_id_hr-RentOwnerPID").toggle(has_rent_permission);
+            $("#div_id_hr-RentalCost").toggle(has_rent_permission);
             $("#div_RentAddress").toggle(has_rent_permission);
         });
 
-        $("#id_IsNeverRTAFHome").change(function() {
-            IsNeverRTAFHome = ! $('#id_IsNeverRTAFHome').is(":checked");
-            $("#div_id_RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
+        $("#id_hr-IsNeverRTAFHome").change(function() {
+            IsNeverRTAFHome = ! $('#id_hr-IsNeverRTAFHome').is(":checked");
+            $("#div_id_hr-RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
         });
+
+        $('[data-priority]').change(function(){
+            changed_item = $(this).data('priority');
+            selected_value = $(`select[data-priority='${changed_item}']`).val();
+
+            if($(this).find(':selected').val() == '')
+            {
+                $(`select[data-priority='${changed_item+1}']`).prop('disabled', 'disabled');                
+            }
+            else
+            {
+                $(`select[data-priority='${changed_item+1}']`).prop('disabled', false);
+            }
+
+            $(`select[data-priority='${changed_item+1}']`).val('');
+
+            for(i = changed_item + 2; i <= 6; i++)
+            {
+                $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
+                $(`select[data-priority='${i}']`).val('');
+            }
+        });
+
 
 
 
         function cloneMore(selector, type) {
             var newElement = $(selector).clone(true);
-            var total = $('#id_' + type + '-TOTAL_FORMS').val();
+            var total = $('#id_hr-' + type + '-TOTAL_FORMS').val();
             newElement.find(':input').each(function() {
                 var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
-                var id = 'id_' + name;
+                var id = 'id_hr-' + name;
                 $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
             });
             newElement.find('label').each(function() {
@@ -74,7 +96,7 @@
                 $(this).attr('for', newFor);
             });
             total++;
-            $('#id_' + type + '-TOTAL_FORMS').val(total);
+            $('#id_hr-' + type + '-TOTAL_FORMS').val(total);
             $(selector).after(newElement);
         }
 
@@ -82,25 +104,26 @@
             cloneMore('#co_residence:last', 'service');
         });
 
-        status = $("#id_Status").val();
+        status = $("#id_hr-Status").val();
         married = status == 2 || status == 3;
         widow_divote = status == 4 || status == 5;
 
-        $("#div_id_SpouseName").toggle(married);
-        $("#div_id_SpousePID").toggle(married);
-        $("#div_id_SpouseAFID").toggle(married);
-        $("#div_id_IsHRISReport").toggle(married);
+        $("#div_id_hr-SpouseName").toggle(married);
+        $("#div_id_hr-SpousePID").toggle(married);
+        $("#div_id_hr-SpouseAFID").toggle(married);
+        $("#div_id_hr-IsHRISReport").toggle(married);
 
         
         has_rent_permission = {{ form.RentPermission.value|default_if_none:"0" }} == 3;
 
-        $("#div_id_RentStartDate").toggle(has_rent_permission);
-        $("#div_id_RentEndDate").toggle(has_rent_permission);
-        $("#div_id_RentOwner").toggle(has_rent_permission);
-        $("#div_id_RentOwnerPID").toggle(has_rent_permission);
-        $("#div_id_RentalCost").toggle(has_rent_permission);
+        $("#div_id_hr-RentStartDate").toggle(has_rent_permission);
+        $("#div_id_hr-RentEndDate").toggle(has_rent_permission);
+        $("#div_id_hr-RentOwner").toggle(has_rent_permission);
+        $("#div_id_hr-RentOwnerPID").toggle(has_rent_permission);
+        $("#div_id_hr-RentalCost").toggle(has_rent_permission);
         $("#div_RentAddress").toggle(has_rent_permission);
     });
+
 
 
 {% endblock %}
@@ -108,9 +131,10 @@
 {% block style %}
 <style>
     .mouse_hover:hover{
-        border-style: solid;
-        
+        border-style: solid;        
     }
+
+    select[disabled]{ color:#aaa;  }
 </style>    
 {% endblock%}
 
@@ -123,7 +147,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     {{ form.FullName|as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
@@ -135,7 +159,7 @@
                 <div class="col-md-2">
                     {{ form.Salary|as_crispy_field }}
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     {{ form.AddSalary|as_crispy_field  }}
                 </div>
             </div>
@@ -157,6 +181,20 @@
                 </div>
 
             </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ user_current_data_form.OfficePhone|as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.MobilePhone|as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.RTAFEMail|as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.email|as_crispy_field  }}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -166,22 +204,22 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     {{ form.Address|as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.SubDistinct|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.Distinct|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.Province|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.GooglePlusCodes1|as_crispy_field  }}
-                    <input id = "zipcode" type = 'hidden'>
-                </div>
+                    <div id="div_id_hr-GooglePlusCodes1" class="mb-3">
+                        <label for="id_hr-GooglePlusCodes1" class="form-label">
+                            Google Plus Codes 1
+                            <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25 
+                                 class = "help_goocle_code_plus" 
+                                 data-bs-toggle="modal" data-bs-target="#google_help_modal">
+
+                        </label>
+                        <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1">
+                    </div>
+                    <input id="zipcode1" type="hidden">
+                </div>                
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -209,22 +247,22 @@
                 </div>
             </div>
             <div class="row" id = "div_RentAddress">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     {{ form.RentAddress|as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentSubDistinct|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.RentDistinct|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.RentProvince|as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.GooglePlusCodes2|as_crispy_field  }}
-                    <input id = "zipcode" type = 'hidden'>
-                </div>
+                    <div id="div_id_hr-GooglePlusCodes2" class="mb-3">
+                        <label for="id_hr-GooglePlusCodes2" class="form-label">
+                            Google Plus Codes 2
+                            <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25  
+                                 class = "help_goocle_code_plus" 
+                                 data-bs-toggle="modal" data-bs-target="#google_help_modal">
+                        </label>
+                        <input type="text" name="hr-GooglePlusCodes2" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes2">
+                    </div>
+                    <input id="zipcode2" type="hidden">
+                </div>                
+
             </div>            
         </div>
     </div>
@@ -272,15 +310,19 @@
         </div>
         <div class="card-body">
             <div class="row">
+            {% if request.user.Rank < 30411 %}
                 <div class="col-md-2">
                     {{ form.IsHomeNeed|as_crispy_field }}
-                </div>                
+                </div>
+            {% endif %}
                 <div class="col-md-2">
                     {{ form.IsFlatNeed|as_crispy_field  }}
-                </div>                
+                </div>
+            {% if request.user.current_status in "2,7" %}
                 <div class="col-md-2">
                     {{ form.IsShopHouseNeed|as_crispy_field  }}
-                </div>                
+                </div>
+            {% endif %}
             </div>        
             <div class="row">
                 <div class="col-md-2">
@@ -393,4 +435,20 @@
   
 
   </form>
+  
+  <!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="google_help_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body text-center">      
+        <img src = "{% static 'images/google_plus_code.png'%}" width = 886 height = 634>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>        
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -3,7 +3,10 @@ import re
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from apps.Utility.Constants import (USER_PERMISSION, CHOICE_Rank, RTAFUnitSection )
+from apps.Utility.Constants import (USER_PERMISSION, 
+                                    CHOICE_Rank, 
+                                    RTAFUnitSection,
+                                    PERSON_STATUS )
 # Create your models here.
 
 class Unit(models.Model):
@@ -11,10 +14,10 @@ class Unit(models.Model):
     class Meta:
         verbose_name_plural = "Unit : หน่วยขึ้นตรง ทอ." 
 
-    UnitGroup =  models.CharField(max_length = 1, default = None, choices = RTAFUnitSection.choices)        
+    UnitGroup = models.CharField(max_length = 1, default = None, choices = RTAFUnitSection.choices)        
     ShortName = models.CharField(max_length = 20, blank = False)
-    FullName = models.CharField(max_length = 90, blank = False)
-    
+    FullName  = models.CharField(max_length = 90, blank = False)
+
     def __str__(self):
         return f'{self.ShortName}'
 
@@ -32,10 +35,21 @@ class User(AbstractUser):
 
     OfficePhone = models.CharField(verbose_name="เบอร์ที่ทำงาน", max_length = 20, null=True, blank=True)
     MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True, blank=True)
-    RTAFEMail = models.EmailField(verbose_name = "email ทอ.", null=True, blank=True)
+    RTAFEMail = models.EmailField(verbose_name = "ที่อยู่ email ทอ.", null=True, blank=True)
 
     CurrentUnit =  models.ForeignKey(Unit, verbose_name="สังกัด", on_delete=models.SET_NULL, null = True, blank=True, related_name='CurrentUnit')
- 
+    current_salary = models.DecimalField(verbose_name="เงินเดือนปัจจุบัน", max_digits = 9, decimal_places = 2, null=True, blank=True)
+    current_status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
+    current_spouse_name = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
+    current_spouse_pid = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
+       
+
+    # ที่อยู่ปัจจุบัน
+    Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
+    SubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
+    Distinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="อำเภอ")    
+    Province = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
+     
      # การบรรจุครั้งแรก อาจนำไปใส่ไว่้ใน User เนื่องจากข้อมูลชุดนี้ไม่เปลี่ยนแปลงตลอดอายุราชการ
     PlacementUnit = models.ForeignKey(Unit, verbose_name="สังกัดบรรจุ", on_delete=models.SET_NULL, null = True, blank=True, related_name='PlacementUnit')
     command_of_placement = models.CharField(verbose_name="ที่คำสั่งบรรจุ", max_length = 100, null = True, blank = True)

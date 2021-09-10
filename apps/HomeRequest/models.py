@@ -32,7 +32,7 @@ class HomeRequest(models.Model):
     Unit = models.ForeignKey(TheUnit, models.SET_NULL, null = True, verbose_name="สังกัด", related_name='Unit')
 
     Salary = models.IntegerField(verbose_name="เงินเดือน(ปัจจุบัน)", null=True, blank=True)
-    AddSalary = models.IntegerField(verbose_name="เงินเพิ่ม", null=True, blank=True)
+    AddSalary = models.IntegerField(verbose_name="เงินเพิ่ม", null=True, blank=True, default = 0)
 
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")

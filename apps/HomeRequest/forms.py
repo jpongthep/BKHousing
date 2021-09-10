@@ -58,7 +58,13 @@ class HomeRequestForm(forms.ModelForm):
             'HomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SpouseHomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SalaryBill': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),                
+            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),     
+            'ZoneRequestPriority1' : forms.Select(attrs={'data-priority':'1'}),
+            'ZoneRequestPriority2' : forms.Select(attrs={'disabled':'true', 'data-priority':'2'}),
+            'ZoneRequestPriority3' : forms.Select(attrs={'disabled':'true', 'data-priority':'3'}),
+            'ZoneRequestPriority4' : forms.Select(attrs={'disabled':'true', 'data-priority':'4'}),
+            'ZoneRequestPriority5' : forms.Select(attrs={'disabled':'true', 'data-priority':'5'}),
+            'ZoneRequestPriority6' : forms.Select(attrs={'disabled':'true', 'data-priority':'6'}),
         }
 
 
@@ -91,3 +97,5 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
 
                                         # how many inline-forms are sent to the template by default
                                         extra = 3)
+
+

@@ -18,6 +18,9 @@ function fetch_show_modal(url)
     .then(y => showModalURL(y,() => alert("success click")));    
 }
 
+
+
+
 function test_modal()
 {
   showModal(
@@ -75,6 +78,40 @@ const showModal = (title, description, yesBtnLabel = 'Yes', noBtnLabel = 'Cancel
   `;
 
   modalWrap.querySelector('.modal-success-btn').onclick = callback;
+
+  document.body.append(modalWrap);
+
+  var modal = new bootstrap.Modal(modalWrap.querySelector('.modal'));
+  modal.show();
+}
+
+
+const showModalDialog = (title, description, yesBtnLabel = 'Close') => {
+  if (modalWrap !== null) {
+    modalWrap.remove();
+  }
+
+  modalWrap = document.createElement('div');
+  modalWrap.innerHTML = `
+    <div class="modal fade" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title">${title}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><img scr = '{% static 'images/google_plus_code.png'%}' width = 300></p>
+          </div>
+          <div class="modal-footer bg-light">            
+            <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  
 
   document.body.append(modalWrap);
 

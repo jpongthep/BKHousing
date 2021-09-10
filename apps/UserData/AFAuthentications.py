@@ -1,18 +1,22 @@
 import json
 import re
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import authenticate as django_authenticate
+from django.contrib.auth.models import Group
+from django.conf import settings
 
 import requests as rq
 
 from .models import User, Unit
+from apps.Home.models import HomeOwner
+from apps.Utility.Constants import RTAFUnitSection
 
 
 def checkRTAFPassdword(username, password):
-    pass
     URL = "https://api2-software.rtaf.mi.th:5051/rtaf/v3/ad/internal/login"
 
     data = {
@@ -31,71 +35,264 @@ def checkRTAFPassdword(username, password):
     else:
         return False
 
+def getUserByRTAFemail(email, token):
+    URL = "https://api2-software.rtaf.mi.th:5051/rtaf/hris_api_1/RTAFHousePerson"
+    data = {
+        "token" : token,
+        "email" : email + '@rtaf.mi.th'
+    } 
+    r = rq.post(url = URL, data = data, verify=False) 
+
+    return_data = json.loads(r.text)
+
+    # ไม่พบข้อมูล
+    if return_data['data'] == 'ไม่มีข้อมูล':
+        return None
+    return_data = return_data['data'][0]
+
+    search_unit = Unit.objects.filter(ShortName = return_data['UNITNAME'])
+    if search_unit.exists():
+        user_unit = search_unit[0]
+    else:
+        user_unit = Unit(
+                        UnitGroup = '0', 
+                        ShortName =  return_data['UNITNAME'], 
+                        FullName = return_data['UNITNAME']
+                    )
+        user_unit.save()
+    
+    try:
+        search_user = User.objects.get(username = return_data['PEOPLEID'])
+        search_user.username = email
+        search_user.first_name = return_data['FIRSTNAME']
+        search_user.last_name = return_data['LASTNAME']
+        search_user.email = email+'@rtaf.mi.th'
+        search_user.is_active = True
+        search_user.PersonID = return_data['PEOPLEID']
+        search_user.AFID = return_data['ID']
+        search_user.BirthDay = datetime.strptime(return_data['BIRTHDATE'][:10], '%Y-%m-%d')
+        search_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d')
+        search_user.Rank = int(return_data['RANKID'])
+        search_user.Position = return_data['POSITION']
+        search_user.CurrentUnit = user_unit
+        search_user.current_salary = float(return_data['SALARY'],)
+        search_user.current_status = return_data['MARRIED']
+        search_user.current_spouse_name = return_data['SPOUSE_NAME']
+        search_user.current_spouse_pid = return_data['SPOUSE_IDCARD']
+        search_user.Address = return_data['ADDRESS']
+        search_user.save()
+        user = search_user
+    except User.DoesNotExist:        
+        new_user = User(username = email,
+                        first_name = return_data['FIRSTNAME'],
+                        last_name = return_data['LASTNAME'],
+                        email = email+'@rtaf.mi.th',
+                        is_active = True,
+                        PersonID = return_data['PEOPLEID'],
+                        AFID = return_data['ID'],
+                        BirthDay = datetime.strptime(return_data['BIRTHDATE'][:10], '%Y-%m-%d'),
+                        retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d'),
+                        Rank = int(return_data['RANKID']),
+                        Position = return_data['POSITION'],
+                        CurrentUnit = user_unit,
+                        current_salary = float(return_data['SALARY'],),
+                        current_status = return_data['MARRIED'],
+                        current_spouse_name = return_data['SPOUSE_NAME'],
+                        current_spouse_pid = return_data['SPOUSE_IDCARD'],
+                        Address = return_data['ADDRESS']
+                        )
+        new_user.save()
+        print('User.DoesNotExist ')
+        user = new_user
+
+    #ค้นหาว่ามีบ้านที่พักอยู่หรือไม่
+    home_owner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
+    if home_owner.exists():
+        home_status = Group.objects.get(name='RTAF_HOME_USER') 
+    elif user.current_spouse_pid:
+        # ถ้ามีคู่สมรสตรวจสอบว่าเป็นคู่สมรสเจ้าของบ้านหรือไม่
+        try:
+            spouse_user = User.objects.get(PersonID = user.current_spouse_pid)
+            spouse_home = HomeOwner.objects.filter(owner = spouse_user).filter(is_stay = True)
+            if spouse_home.exists():
+                home_status = Group.objects.get(name='RTAF_HOME_SPOUSE')
+            else:
+                home_status = Group.objects.get(name='RTAF_NO_HOME_USER') 
+        except:
+            home_status = Group.objects.get(name='RTAF_NO_HOME_USER') 
+    else:
+        home_status = Group.objects.get(name='RTAF_NO_HOME_USER') 
+        
+    user.groups.add(home_status)
+
+    return user
+
+def getPersonID(person_data):
+
+    URL = "https://api2-software.rtaf.mi.th:5051/covid19/rtaf/personal/idcard/by/name"
+
+    full_name = person_data['user_name']
+
+    # แยกยศ ชื่อ นามสกุล
+    rank = re.findall("[(ว่าที่)]*[ ]*[(พล.อ)]*[(พ.อ.)]*[นรจ]*\.[สตทอ]\.[(หญิง)]*", full_name)[0]
+    first_name, last_name = full_name.replace(rank, "").strip().split()
+
+    data = {
+        "token" : person_data['token'],
+        "fname" : first_name,
+        "lname": last_name
+    } 
+
+    r = rq.post(url = URL, data = data, verify=False) 
+
+    return_data = json.loads(r.text)
+    # print('return_data = ',return_data)
+    if 'data' not in return_data: 
+        return None
+    if  not return_data['data']: 
+        return None
+    
+    return_data = return_data['data'][0]
+
+    return return_data['national_id']
+
+
+def UpdateRTAFData(current_user,person_data):
+    URL = "https://api2-software.rtaf.mi.th:5051/covid19/rtaf/personal/idcard/by/name"
+
+    full_name = person_data['user_name']
+
+    # แยกยศ ชื่อ นามสกุล
+    rank = re.findall("[(ว่าที่)]*[ ]*[(พล.อ)]*[(พ.อ.)]*[นรจ]*\.[สตทอ]\.[(หญิง)]*", full_name)[0]
+    first_name, last_name = full_name.replace(rank, "").strip().split()
+
+    data = {
+        "token" : person_data['token'],
+        "fname" : first_name,
+        "lname": last_name
+    } 
+
+    r = rq.post(url = URL, data = data, verify=False) 
+
+    return_data = json.loads(r.text)
+    # print('return_data = ',return_data)
+    if 'data' not in return_data: 
+        return
+    if  not return_data['data']: 
+        return
+    
+
+    return_data = return_data['data'][0]
+
+
+    current_user.PersonID = return_data['national_id']
+    current_user.BirthDay = return_data['birthday']
+
+    UserUnit = Unit.objects.filter(ShortName = return_data['unitname'])
+    if not UserUnit.exists():                    
+        NewUnit = Unit(ShortName = return_data['unitname'], FullName = return_data['unitname'])
+        NewUnit.save() 
+        UserUnit = NewUnit
+    else:
+        UserUnit = UserUnit[0]
+
+    current_user.CurrentUnit = UserUnit                
+    current_user.save()
+
+
+    URL = "https://api2-software.rtaf.mi.th:5051/rtaf/hris_api_1/RTAFHousePerson"
+    data = {
+        "token" : person_data['token'],
+        "national_id" : current_user.PersonID
+    } 
+
+    r = rq.post(url = URL, data = data, verify=False) 
+
+    return_data = json.loads(r.text)
+    if 'data' not in return_data: 
+        return
+    if  not return_data['data']: 
+        return
+
+    return_data = return_data['data'][0]
+    
+    # print('return_data = ',return_data)
+    current_user.first_name = return_data['FIRSTNAME']
+    current_user.last_name = return_data['LASTNAME']   
+    current_user.AFID = return_data['ID']
+    current_user.RTAFEMail = current_user.username + '@rtaf.mi.th'
+    current_user.Rank = int(return_data['RANKID'])
+    current_user.Position = return_data['POSITION']
+    current_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d')
+    current_user.current_salary = float(return_data['SALARY'])
+    current_user.Address = return_data['ADDRESS']
+    current_user.save()
+
+    # ตรวจสอบว่ามีคู่สมรสหรือไม่
+    if not return_data['SPOUSE_IDCARD']:
+        return 
+    else:
+        current_user.current_spouse_pid = return_data['SPOUSE_IDCARD']
+        current_user.save()
+
+        # ตรวจสอบว่าคู่สมรสเป็น ทอ. ?
+        data = {
+            "token" : person_data['token'],
+            "national_id" : current_user.current_spouse_pid
+        } 
+
+        r = rq.post(url = URL, data = data, verify=False) 
+
+        return_data = json.loads(r.text)
+        if 'data' not in return_data: 
+            return
+        if  return_data['data'] == 'ไม่มีข้อมูล': 
+            return      
+        if  not return_data['data']: 
+            return      
+
+        return_data = return_data['data']
+        # กรณีที่คู่สมรสเป็น ทอ.
+        print(return_data)
+        current_user.current_spouse_name = return_data['RANK'] + return_data['FIRSTNAME'] + '  ' + return_data['LASTNAME']
+        current_user.save()
+    
+
+
+
 class SettingsBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
-        pass
-        # print('Username = ',username)
 
-        if re.search("@rtaf.mi.th$",username.lower()):
-            username =  username[0:-11]            
-
+        #กรณีใส่ @rtaf.mi.th มาด้วยก็เอาออกก่อน
+        if re.search("@rtaf.mi.th$",username.lower()) : username =  username[0:-11]
+        username = username.lower()
         try:
             user = User.objects.get(username=username)
-            print(user)
-            print(username)
-
-            if not user.is_active:
-                return None
-
-            if username in [
-                            'pongthep', 'test_user',
-                            'test_user2','test_user3',
-                            'test_user4','test_person_admin',
-                            'test_tss_admin']:
-                return user
-
-            # if not re.search("@rtaf.mi.th$",user.email):
-            #     user = django_authenticate(username=username, password=password)
-            #     if user is not None:
-            #         return user
-            #     else:
-            #         messages.error(request,f'password สำหรับ  User "{username}" ไม่ถูกต้อง')
-            #         return None
-
             pwd_valid = checkRTAFPassdword(username,password)
-
             if pwd_valid:
+                UpdateRTAFData(user,pwd_valid)
+                user.set_password(password)
+                user.save()
+                # print('login user = ', user)
                 return user
             else:
-                messages.error(request,f'password ทอ. สำหรับ  User  "{username}" ไม่ถูกต้อง')
-                messages.info(request,f'เข้าระบบด้วย password ของ armis')
+                messages.error(request,f'เชื่อมโยง AD RTAF ไม่สำเร็จ')
                 return None
                 
         except User.DoesNotExist:
+            # ตรวจสอบ username และ password
             ReturnData = checkRTAFPassdword(username,password)
-            if ReturnData:
-                user = User(username = username)
-                user.email = f'{username}@rtaf.mi.th'                
-                user.is_active = True
-                user.is_staff = False
-                user.is_superuser = False
-                user.first_name = ReturnData['user_name']
-                user.last_name = ""
-                # user.Unit = ReturnData['user_orgname']
-                user.save()
 
-                UserUnit = Unit.objects.filter(ShortName = ReturnData['user_orgname'])
-                if not UserUnit.exists():                    
-                    NewUnit = Unit(ShortName = ReturnData['user_orgname'], FullName = ReturnData['user_orgname'])
-                    NewUnit.save()                
+            if not ReturnData:
+                messages.error(request,f'ไม่มีผู้ใช้ในระบบ หรือ รหัสผ่านอาจจะไม่ถูกต้อง')
+                return
 
-                messages.warning(request,f'ไม่มีผู้ใช้นี้ในระบบ ได้ทำการเพิ่ม "{username}" ให้แล้ว')
-                return user
-            else:                
-                messages.error(request,f'ไม่มีผู้ใช้ "{username}" ในระบบ')
+            auth_user = getUserByRTAFemail(username, ReturnData['token'])
+            auth_user.set_password(password)
+            auth_user.save()
+            return auth_user
 
-        return None
 
     def get_user(self, user_id):
         try:
