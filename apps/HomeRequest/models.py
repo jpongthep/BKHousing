@@ -95,8 +95,8 @@ class HomeRequest(models.Model):
     HouseRegistration = models.FileField(verbose_name='สำเนาทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
-    HomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
-    SpouseHomeRent6006 = models.FileField(default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    HomeRent6006 = models.FileField(verbose_name='แบบฟอร์มเบิก คชบ. 6006 (ตนเอง)',default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    SpouseHomeRent6006 = models.FileField(verbose_name='แบบฟอร์มเบิก คชบ. 6006 (คู่สมรส)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     SalaryBill = models.FileField(verbose_name='สลิปเงินเดือนล่าสุด', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     SpouseApproved = models.FileField(verbose_name='หนังสือรับรองจากคู่สมรส', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
 

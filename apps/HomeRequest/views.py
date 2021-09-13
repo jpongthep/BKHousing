@@ -3,7 +3,7 @@ import os
 from io import StringIO, BytesIO
 #django Module
 from django.shortcuts import render
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -33,7 +33,7 @@ def get_current_year():
                                               | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
                                               | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
     CurrentYear = CurrentYearRound[0].Year
-    print('CurrentYear = ',CurrentYear)
+    # print('CurrentYear = ',CurrentYear)
     return CurrentYear
 
 
@@ -52,6 +52,9 @@ class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
         queryset = queryset.filter(year_round__Year = get_current_year())
         return queryset.exists()
 
+
+class ProcessFlow(TemplateView):
+    template_name = "HomeRequest/process_flow.html"
 
 class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
     allow_groups = ['RTAF_NO_HOME_USER']
@@ -127,7 +130,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object.ProcessStep = HomeRequestProcessStep.REQUESTER_PROCESS
         self.object.save()
         
-        user_current_data_form.save()
+        # user_current_data_form.save()
 
         co_resident = co_resident_formset.save(commit=False)
         for cr in co_resident:

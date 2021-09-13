@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="height: 100%;">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+        <title>ARMIS :: Login</title>
+        <link rel="icon" href="{% static 'images/armis.png' %}">
+        <link type="text/css" rel="stylesheet" href="{% static '/assets/login_style.css' %}"/>
+    </head>
+    <body class="">
+
+        <div class="body_login">
+            <div id="background-wrapper" style="background-image: url('{% static '/images/home_lake_bg.jpg' %}');"></div>
+                <div class="card border-0 mx-auto mt-5 bg-100  o_database_list">
+                    <div class="card-body">
+                        <div class="text-center pb-3 border-bottom mb-4">
+                            <img alt="Logo" style="max-height:120px; max-width: 100%; width:auto" class="company_logo" src="{% static '/images/company_logo.png' %}"/>
+                            <h4 class = "mt-0">ARMIS</h4>
+                            <h5>ระบบสารสนเทศเพื่อการจัดการ<br>บ้านพักอาศัย ทอ.</h5>
+                        </div>
+                    
+                        <form class="oe_login_form" method="post">
+                            {% csrf_token %}                            
+                            <div class="form-group field-login">
+                                {{ form.username }}
+                            </div>
+                            <div class="form-group field-password">                                
+                                {{ form.password }}
+                            </div>
+                            
+                            <div class="clearfix oe_login_buttons text-center mb-1 pt-3">
+                                <div class="mb-3">
+                                    {% include "DisplayMessage.html" %}
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Log in</button>            
+                                <div class="o_login_auth"></div>
+                            </div>
+
+                            <input type="hidden" name="redirect"/>
+
+
+                        </form>
+
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <a href="https://software.rtaf.mi.th/" target="_blank">พัฒนาโดย <span>ศูนย์ซอฟต์แวร์กองทัพอากาศ</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
+

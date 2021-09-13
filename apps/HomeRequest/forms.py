@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.fields import DateField
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
@@ -14,19 +15,17 @@ class HomeRequestForm(forms.ModelForm):
                 'Rank' ,'FullName', 'Position', 'Unit',
                 'Salary', 'AddSalary',
                 'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
-                'Address','SubDistinct','Distinct','Province','GooglePlusCodes1',
+                'Address','GooglePlusCodes1',
                 'TravelDescription',
                 'RentPermission','RentStartDate','RentEndDate','RentOwner','RentOwnerPID','RentalCost',
-                'RentAddress', 'RentSubDistinct', 'RentDistinct', 'RentProvince', 'GooglePlusCodes2',
+                'RentAddress', 'GooglePlusCodes2',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
                 'IsHomelessDisaster','IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
                 'IsHomeNeed','IsFlatNeed','IsShopHouseNeed',
                 'ZoneRequestPriority1','ZoneRequestPriority2','ZoneRequestPriority3','ZoneRequestPriority4','ZoneRequestPriority5','ZoneRequestPriority6',
                 'HouseRegistration','DivorceRegistration','SpouseDeathRegistration','HomeRent6006','SpouseHomeRent6006','SalaryBill','SpouseApproved',
                 ]        
-        # exclude = ['Requester', 'DateSend', 'YearRound', 'UnitApprover', 
-        #            'PersonApprover', 'IsTroubleSelf', 'IsTroubleUnit', 'IsTroublePerson']
-        
+
         widgets = {
             'FullName': forms.TextInput(attrs = {'placeholder': 'น.อ.ทัพฟ้าไทย ใส่ใจการงาน'}),
             'Position': forms.TextInput(
@@ -38,7 +37,7 @@ class HomeRequestForm(forms.ModelForm):
             
             'TravelDescription': forms.Textarea(
                 attrs={
-                        'placeholder': 'ในวันทำงานจะตื่นตั้งแต่ 0500 และปฏิบัติภารกิตส่วนตัว ออกจากบ้านเวลา 0540 แวะซื้อข้าวเพื่อทานเช้าและเที่ยง ถึงที่ทำงานเวลาประมาณ 0630',
+                        'placeholder': 'ในวันทำงานจะตื่นตั้งแต่ 0500 และปฏิบัติภารกิจส่วนตัว ออกจากบ้านเวลา 0540 แวะซื้อข้าวเพื่อทานเช้าและเที่ยง ถึงที่ทำงานเวลาประมาณ 0630',
                         'rows' : 4
                 }),
             'OtherTrouble': forms.Textarea(
@@ -51,6 +50,8 @@ class HomeRequestForm(forms.ModelForm):
                         'placeholder': 'ข้อมูลบ้านพักหลังเดิมและสาเหตุการออก / ถูกไล่ออกโดยละเอียด',
                         'rows' : 2
                 }),
+            'RentStartDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
+            'RentEndDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
             'RentPermission': forms.RadioSelect,
             'HouseRegistration' : forms.FileInput(attrs={'accept':'application/pdf'}),
             'DivorceRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),

@@ -1,0 +1,119 @@
+<!-- sales/templates/admin/sale_summary_change_list.html -->
+
+{% extends "admin/change_list.html" %}
+
+{% block content_title %}
+    <h1> Home Owner Summary </h1>
+{% endblock %}
+
+{% block result_list %}
+<style>
+    .data table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    .data  th, td {
+        text-align: left;
+        padding: 16px;
+    }
+
+    .data tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
+<script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,
+	title:{
+		text: "จำนวนข้าราชการที่พักอาศัย",
+		fontFamily: "arial black",
+		fontColor: "#695A42"
+	},
+
+	axisY:{
+		valueFormatString:"#0",
+		gridColor: "#B6B1A8",
+		tickColor: "#B6B1A8"
+	},
+	toolTip: {
+		shared: true,
+		content: toolTipContent
+	},
+	data: [{
+		type: "stackedColumn",
+		showInLegend: true,
+		color: "#696661",
+		name: "สัญญาบัตร",
+		dataPoints: [
+            {% for unit in summary %}    
+			    { y: {{ unit.Officer }}, label: "{{ unit.owner__CurrentUnit__ShortName }}"}
+                {% if not forloop.last %},{% endif %}			
+            {% endfor %}
+		]
+		},
+		{        
+			type: "stackedColumn",
+			showInLegend: true,
+			name: "ประทวน",
+			color: "#3d54ff",
+			dataPoints: [
+            {% for unit in summary %}    
+			    { y: {{ unit.nonOfficer }}, label: "{{ unit.owner__CurrentUnit__ShortName }}"}
+                {% if not forloop.last %},{% endif %}			
+            {% endfor %}
+			]
+		}
+    ]
+});
+chart.render();
+
+function toolTipContent(e) {
+	var str = "";
+	var total = 0;
+	var str2, str3;
+	for (var i = e.entries.length - 1; i >= 0 ; i--){
+		var  str1 = "<span style= \"color:"+e.entries[i].dataSeries.color + "\"> "+e.entries[i].dataSeries.name+"</span>: <strong>"+e.entries[i].dataPoint.y+"</strong><br/>";
+		total = e.entries[i].dataPoint.y + total;
+		str = str.concat(str1);
+	}
+	str2 = "<span style = \"color:DodgerBlue;\"><strong>"+(e.entries[0].dataPoint.label)+"</strong></span><br/>";
+	total = Math.round(total * 100) / 100;
+	str3 = "<span style = \"color:Tomato\">Total:</span><strong> "+total+"</strong><br/>";
+	return (str2.concat(str)).concat(str3);
+}
+
+}
+</script>
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<h2>จำนวนข้าราชการพักอาศัย</h2>
+
+
+<table>
+  <tr>
+    <th>ส่วน</th>
+    <th>หน่วยงาน</th>
+    <th>สัญญาบัตร</th>
+    <th>ประทวน</th>
+    <th>รวม</th>
+  </tr>
+{% for unit in summary %}    
+  <tr>
+        <td>{{ unit.owner__CurrentUnit__UnitGroup }}</td>
+        <td>{{ unit.owner__CurrentUnit__ShortName }}</td>
+        <td>{{ unit.Officer }}</td>
+        <td>{{ unit.nonOfficer }}</td>
+        <td>{{ unit.Number }}</td>
+  </tr>        
+{% endfor %}      
+</table>
+
+{% endblock %}
+
+{% block pagination %}{% endblock %}

@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'images/armis.png' %}">
     <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <link href="{% static 'assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
@@ -68,7 +69,7 @@
     <main>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Fifth navbar example">
     <div class="container-fluid">      
-      <a class="navbar-brand" href="#">ARMIS</a>
+      <a class="navbar-brand" href="/">ARMIS</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -82,11 +83,17 @@
               <a href="{% url 'HomeRequest:af_person'%}" class="nav-link text-secondary"></a>
             {% endif %}
           </li>
-          {% if request.user|in_group:"RTAF_NO_HOME_USER, PERSON_UNIT_ADMIN, PERSON_ADMIN" %}
+          
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-fw fa-edit"></i> รายงานขอบ้านพัก</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown05">
+              <li>
+                <a class="dropdown-item" href="{% url 'HomeRequest:process_flow'%}">
+                  <i class="fas fa-tasks"></i> 
+                  ขั้นตอนการดำเนินการ
+                </a>
+              </li>
             {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}">
@@ -109,7 +116,7 @@
             {% endif %}
             </ul>
           </li>    
-          {% endif %}     
+
 {% comment %} 
           <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
@@ -130,6 +137,9 @@
         </form>
 {% endcomment %}
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item float-right">
+            <a class="nav-link" href="#"><i class="fas fa-address-card"></i> Profiles</a>
+          </li>
           {% if request.user.is_staff %}
           <li class="nav-item float-right">
             <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
@@ -175,6 +185,7 @@
       </div>
     </div>
 </main>
+    {% comment %} {% include "modal_message.html" %} {% endcomment %}
     {% include "footer.html" %}
 
     <script src="{% static 'assets/dist/js/bootstrap.bundle.min.js' %}"></script>

@@ -1,0 +1,84 @@
+<style>
+*{
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box
+}
+body{
+    padding:0;
+    margin:0;
+
+}
+#notfound{
+    position:absolute;
+
+    background:#f6f6f6;
+    transform: translate(-50%, -50%);
+}
+#notfound .notfound{
+    position:absolute;
+    left:50%;
+    top:50%;
+    -webkit-transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%)
+}
+.notfound{
+    max-width:100%;
+    width:100%;
+    line-height:1.4;
+    padding:110px 40px;
+    text-align:center;
+    background:#fff;
+
+}
+.notfound .notfound-404{
+    position:relative;
+    height:180px
+}
+.notfound .notfound-404 h1{
+    font-family:roboto,sans-serif;
+    position:absolute;
+    left:50%;
+    top:50%;
+    -webkit-transform:translate(-50%,-50%);
+    -ms-transform:translate(-50%,-50%);
+    transform:translate(-50%,-50%);
+    font-size:165px;
+    font-weight:700;
+    margin:0;
+    color:#262626;
+    text-transform:uppercase;        
+}
+.notfound .notfound-404 h1>span{
+    color:#00b7ff
+}
+.notfound h2{
+    font-family:roboto,sans-serif;
+    font-size:22px;
+    font-weight:400;
+    text-transform:uppercase;
+    color:#151515;
+    margin-top:0;
+    margin-bottom:25px
+}
+
+@media only screen and (max-width:767px){
+    .notfound h2{
+        font-size:18px
+    }
+}
+@media only screen and (max-width:480px){
+    .notfound .notfound-404 h1{
+        font-size:141px
+    }
+}
+
+</style>
+<body>
+    <div class="notfound">
+        <div class="notfound-404">
+            <h1>4<span>0</span>4</h1>
+        </div>
+        <h2>ไม่พบหน้าที่เปิด ขออภัยในความไม่สะดวก <br>โปรแกรมระบบสารสนเทศบ้านพักกองทัพอากาศ (ARMIS) อยู่ในขั้นตอนพัฒนา <br>กรุณาแจ้งศูนย์ซอฟต์แวร์กองทัพอากาศเพื่อแก้ไข 2-8285</h2>
+    </div>
+</body>

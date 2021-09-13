@@ -17,6 +17,7 @@ class Unit(models.Model):
     UnitGroup = models.CharField(max_length = 1, default = None, choices = RTAFUnitSection.choices)        
     ShortName = models.CharField(max_length = 20, blank = False)
     FullName  = models.CharField(max_length = 90, blank = False)
+    is_Bangkok = models.BooleanField(verbose_name = "กทม.และปริมณฑล", default = True)
 
     def __str__(self):
         return f'{self.ShortName}'

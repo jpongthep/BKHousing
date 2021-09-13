@@ -56,6 +56,11 @@ class HomeOwner(models.Model):
     date_leave = models.DateField(verbose_name="ย้ายออกเมื่อ", null = True, blank = True)
     leave_type = models.CharField(verbose_name="ย้ายออกเพราะ", max_length = 2, choices = OwnerLeaveType.choices, default = OwnerLeaveType.STAY)
     leave_comment = models.TextField(verbose_name="หมายเหตุการย้ายออก",null = True, blank = True)
+    first_rent = models.IntegerField(verbose_name="ค่าบำรุงแรกเข้า", null = True, blank = True, default = 2000)
+    rent_rate = models.IntegerField(verbose_name="ค่าบำรุงรายเดือน", null = True, blank = True, default = 400)
+    water_meter_insurance = models.IntegerField(verbose_name="ค่าประหันมิเตอร์น้ำ", null = True, blank = True, default = 800)
+    water_meter = models.IntegerField(verbose_name="เลขมิเตอร์น้ำแรกเข้า", null = True, blank = True, default = 0)
+    electric_meter = models.IntegerField(verbose_name="เลขมิเตอร์ไฟแรกเข้า", null = True, blank = True, default = 0)
 
     def get_absolute_url(self):
         return reverse('Home:owner_detail', kwargs={"pk": hmowner_id}) 
@@ -136,3 +141,9 @@ class VehicalData(models.Model):
     # def get_absolute_url(self):
     #     hm_ownid = self.home_owner.id
     #     return reverse('Home:detail', kwargs={"pk": hm_ownid})    
+
+class HomeOwnerSummary(HomeOwner):
+    class Meta:
+        proxy = True
+        verbose_name = 'Home Owner Summary'
+        verbose_name_plural = 'Homes Owner Summary'

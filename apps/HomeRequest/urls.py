@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import (CreateHomeRequestView, 
+from .views import (ProcessFlow,
+                    CreateHomeRequestView, 
                     UpdateHomeRequestView,
                     HomeRequestUnitListView,
                     HomeRequestDetail,
@@ -13,6 +14,7 @@ from .views import (CreateHomeRequestView,
 from .views_modals import af_person_data_detailview
 app_name = 'HomeRequest'
 urlpatterns = [
+    path('pf', ProcessFlow.as_view(), name = 'process_flow'),
     path('cr', CreateHomeRequestView.as_view(), name = 'create'),
     path('<pk>/ud', UpdateHomeRequestView.as_view(), name = 'update'),
     path('<pk>/dt', HomeRequestDetail.as_view(), name = 'detail'),

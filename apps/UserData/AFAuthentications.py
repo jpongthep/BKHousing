@@ -16,7 +16,7 @@ from apps.Home.models import HomeOwner
 from apps.Utility.Constants import RTAFUnitSection
 
 
-def checkRTAFPassdword(username, password):
+def checkRTAFPassdword(request, username, password):
     URL = "https://api2-software.rtaf.mi.th:5051/rtaf/v3/ad/internal/login"
 
     data = {
@@ -24,7 +24,11 @@ def checkRTAFPassdword(username, password):
         'pass' : password
     } 
 
-    r = rq.post(url = URL, data = data, verify=False) 
+    try:
+        r = rq.post(url = URL, data = data, verify=False)
+    except:
+        messages.error(request, "ไม่สามารถติดต่อกับ LDAP Server ทอ.ได้ ")
+        return False
 
     return_STR_JSON = r.text 
     returnData = json.loads(return_STR_JSON)
@@ -33,6 +37,7 @@ def checkRTAFPassdword(username, password):
     if returnData['result'] == "Process-Complete":
         return returnData
     else:
+        messages.error(request, "username หรือ รหัสผ่านไม่ถูกต้อง ")
         return False
 
 def getUserByRTAFemail(email, token):
@@ -80,6 +85,7 @@ def getUserByRTAFemail(email, token):
         search_user.current_spouse_name = return_data['SPOUSE_NAME']
         search_user.current_spouse_pid = return_data['SPOUSE_IDCARD']
         search_user.Address = return_data['ADDRESS']
+        search_user.date_joined = datetime.today()
         search_user.save()
         user = search_user
     except User.DoesNotExist:        
@@ -102,7 +108,7 @@ def getUserByRTAFemail(email, token):
                         Address = return_data['ADDRESS']
                         )
         new_user.save()
-        print('User.DoesNotExist ')
+        # print('User.DoesNotExist ')
         user = new_user
 
     #ค้นหาว่ามีบ้านที่พักอยู่หรือไม่
@@ -253,7 +259,7 @@ def UpdateRTAFData(current_user,person_data):
 
         return_data = return_data['data']
         # กรณีที่คู่สมรสเป็น ทอ.
-        print(return_data)
+        # print(return_data)
         current_user.current_spouse_name = return_data['RANK'] + return_data['FIRSTNAME'] + '  ' + return_data['LASTNAME']
         current_user.save()
     
@@ -269,24 +275,22 @@ class SettingsBackend(ModelBackend):
         username = username.lower()
         try:
             user = User.objects.get(username=username)
-            pwd_valid = checkRTAFPassdword(username,password)
+            pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
                 UpdateRTAFData(user,pwd_valid)
                 user.set_password(password)
                 user.save()
                 # print('login user = ', user)
                 return user
-            else:
-                messages.error(request,f'เชื่อมโยง AD RTAF ไม่สำเร็จ')
+            else:                
                 return None
                 
         except User.DoesNotExist:
             # ตรวจสอบ username และ password
-            ReturnData = checkRTAFPassdword(username,password)
+            ReturnData = checkRTAFPassdword(request, username,password)
 
             if not ReturnData:
-                messages.error(request,f'ไม่มีผู้ใช้ในระบบ หรือ รหัสผ่านอาจจะไม่ถูกต้อง')
-                return
+                return None
 
             auth_user = getUserByRTAFemail(username, ReturnData['token'])
             auth_user.set_password(password)

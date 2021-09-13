@@ -1,3 +1,4 @@
+{% load thaidate %}
 {% comment %} <h3 class="text-center">7 ขั้นตอนการขอบ้านพัก ทอ.</h3> {% endcomment %}
 <section>
         <div class="container">
@@ -16,7 +17,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 1 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -26,7 +27,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 2 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -36,7 +37,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 3 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.PersonApprover.FullName}} ({{ object.PersonApprover.OfficePhone}}) {{ object.PersonDateApproved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}

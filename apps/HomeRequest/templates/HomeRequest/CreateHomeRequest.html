@@ -15,6 +15,10 @@
 {% endblock %}
 
 {% block script %}
+    var priority_options;
+    var priority_selected = [];
+    var all_choices = ['1','2','3','6T','6S','7S','BS']
+
     $(document).ready(function(){
 
         $('button[name="send"]').click(function() {
@@ -58,26 +62,80 @@
             $("#div_id_hr-RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
         });
 
+        priority_options = []
+        $("select[data-priority=1] option").each(function(){
+            optionValue = this.value;
+            optionText =  this.innerHTML;
+            optiontext = `<option value="${optionValue}">${optionText}</option>`
+            priority_options.push(optiontext);
+        });
+        $("select[data-priority=1]").html(priority_options);   
+        $("select[data-priority=1]").val('');        
+
+        console.log('priority_options = ', priority_options)
+
+        function filterOptions(type) {
+            localStorage.type = type
+            if (type === "All") {
+                $("#targetReport").html(options)
+            } else {
+                $("#targetReport").empty()
+                options.filter("." + type).appendTo($("#targetReport"))
+            }
+        }
+
+        
+
         $('[data-priority]').change(function(){
             changed_item = $(this).data('priority');
             selected_value = $(`select[data-priority='${changed_item}']`).val();
 
+            console.log('changed_item = ',changed_item)
+
+            priority_selected.length = changed_item - 1;
             if($(this).find(':selected').val() == '')
             {
                 $(`select[data-priority='${changed_item+1}']`).prop('disabled', 'disabled');                
             }
             else
             {
+                priority_selected.push(all_choices.indexOf(selected_value));
                 $(`select[data-priority='${changed_item+1}']`).prop('disabled', false);
             }
+            
+            console.log('priority_selected = ', priority_selected);
 
-            $(`select[data-priority='${changed_item+1}']`).val('');
+            console.log(`select[data-priority='${changed_item+1}']`)
+            $(`select[data-priority='${changed_item+1}']`).focus();
+            remain_options = [];
+            remain_options.push(priority_options[0]); 
+            for(i = 0; i < priority_options.length;i++)
+            {
+                console.log('i = ',i, priority_selected.indexOf(i) == -1);
+                if(priority_selected.indexOf(i) == -1)
+                {                    
+                    remain_options.push(priority_options[i+1]);                    
+                }
+            }
+
+            //console.log('all_choices = ',all_choices);
+            console.log('remain_options = ',remain_options);
+            //console.log('priority_options = ',priority_options);
+            $(`select[data-priority='${changed_item+1}'] option`).empty();
+            $(`select[data-priority='${changed_item+1}']`).html(remain_options);
+            
+            
+            //$(`select[data-priority='${changed_item+1}']`).empty();
+            //priority_options.appendTo($(`select[data-priority='${changed_item+1}']`))
+
+            console.log(priority_options);
 
             for(i = changed_item + 2; i <= 6; i++)
             {
                 $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
                 $(`select[data-priority='${i}']`).val('');
             }
+
         });
 
 
@@ -269,7 +327,7 @@
 
     <div class="card shadow mt-3">
         <div class="card-header bg-warning">
-            <h5>ข้อมูลความจำเป็นและความเดือดร้อน</h5>
+            <h5>ข้อมูลความจำเป็นและความเดือดร้อน (เลือกได้มากกว่า 1 ข้อ)</h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -304,8 +362,8 @@
         </div>      
     </div>
 
-    <div class="card shadow mt-3">
-        <div class="card-header bg-dark text-white">
+    <div class="card shadow  mt-3">
+        <div class="card-header bg-info">
             <h5>ข้อมูลการเรียงลำดับความต้องการ</h5>
         </div>
         <div class="card-body">
@@ -350,7 +408,7 @@
     </div>
     <div class="card shadow mt-3">
         <div class="card-header bg-primary text-white">
-            <h5>เอกสารประกอบคำร้อง</h5>
+            <h5>เอกสารประกอบคำร้อง (pdf file เท่านั้น)</h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -384,7 +442,7 @@
 
     <div class="card mt-3 shadow">
         <div class="card-header  bg-success text-white">
-            <h5>ผู้พักอาศัยร่วม</h5>
+            <h5>ผู้พักอาศัยร่วม (ที่จะมาพักด้วยกัน)</h5>
         </div>
         <div class="card-body">
         {{ co_resident_formset.management_form }}

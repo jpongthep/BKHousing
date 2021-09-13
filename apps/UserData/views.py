@@ -8,6 +8,7 @@ from .forms import MyAuthForm, UserForm
 
 class MyLoginView(LoginView):    
     authentication_form = MyAuthForm
+    template_name = 'registration/new_login.html'
 
 
 class UpdateUserView(UpdateView):

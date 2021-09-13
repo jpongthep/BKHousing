@@ -41,7 +41,7 @@ class UserAdmin(BaseUserAdmin):
     (None, {
         'classes': ('wide',),
         'fields': ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')}),)
-    list_filter = ('groups__name','CurrentUnit', 'Rank',)
+    list_filter = ('groups__name','CurrentUnit__is_Bangkok','CurrentUnit', 'Rank')
     search_fields = ('first_name', 'last_name', 'CurrentUnit__ShortName','username','PersonID')
 
     # filter_horizontal = ('groups', 'user_permissions',)
