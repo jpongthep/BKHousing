@@ -35,8 +35,10 @@ CHOICE_Rank = (
     ( 30232 ,  'พล.อ.ต.หญิง' ) ,
     ( 30301 ,  'น.อ.(พ)' ) ,
     ( 30302 ,  'น.อ.(พ) หญิง' ) ,
+    ( 30410 ,  'พ.อ.' ) ,
     ( 30411 ,  'น.อ.' ) ,
     ( 30412 ,  'น.อ.หญิง' ) ,
+    ( 30420 ,  'พ.ท.' ) ,
     ( 30421 ,  'น.ท.' ) ,
     ( 30422 ,  'น.ท.หญิง' ) ,
     ( 30431 ,  'น.ต.' ) ,
@@ -106,6 +108,7 @@ class HomeDataType(models.TextChoices):
     FOSF = 'FOSF', _('แฟลตสัญญาบัตร(โสด ญ.)')
     FOSM = 'FOSM', _('แฟลตสัญญาบัตร(โสด)')
     RF = 'RF', _('เรือนแถวสัญญาบัตร')
+    FMIX = 'FM', _('แฟลตผสม')
     
 class HomeZone(models.TextChoices):
     Z1 = '1', _('เขต 1 : ท่าดินแดง')
@@ -123,6 +126,11 @@ class HomeDataStatus(models.TextChoices):
     WAITFIX = 'WF', _('รอซ่อม')
     FIX = 'FX', _('ซ่อม')
     REMOVE = 'RM', _('รื้อถอน')
+
+class PAYMENT_METHOD(models.IntegerChoices):
+    NOMETHOD = 0, _('ไม่ระบุ')
+    CASH = 1, _('จ่ายเงินสด')
+    ACCOUNT = 2, _('หักบัญชี')
 
 class HomeDataGrade(models.TextChoices):    
     NO = '?', _('?')

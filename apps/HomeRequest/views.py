@@ -171,6 +171,8 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         co_resident_formset = CoResidentFormSet(instance = home_request, 
                                                 queryset = home_request.CoResident.order_by("Relation"))
 
+        print("update -> get method ")
+
         return self.render_to_response(
                   self.get_context_data(form = HomeRequestForm(instance=self.object, prefix='hr'),
                                         user_current_data_form =  UserCurrentDataForm(instance = request.user, prefix='userdata'),

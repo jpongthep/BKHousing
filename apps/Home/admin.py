@@ -57,9 +57,23 @@ class HomeDataAdmin(admin.ModelAdmin):
     # save_as = True
 
 
+class WaterPaymentInline(admin.TabularInline):
+    model = WaterPayment
+    exclude = ('PersonID', 'comment',)
+    ordering = ['-date',]
+    max_num=0
+
+    # def has_edit_permission(self, request, obj):
+    #   return False
+    # def has_add_permission(self, request, obj):
+    #   return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+
 class RentPaymentInline(admin.TabularInline):
     model = RentPayment
-    exclude = ('comment',)
+    exclude = ('PersonID', 'comment',)
+    ordering = ['-date',]
     max_num=0
 
     # def has_edit_permission(self, request, obj):
@@ -77,8 +91,8 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     ordering = ('-is_stay','owner__Rank',)
     raw_id_fields = ('owner','home')
     list_filter = ('is_stay','home__zone','home__type','owner__CurrentUnit')
-    search_fields = ['owner__first_name','home__number','home__number']
-    inlines = [CoResidentInline,RentPaymentInline]
+    search_fields = ['owner__first_name','owner__last_name','home__number','home__number']
+    inlines = [CoResidentInline,RentPaymentInline,WaterPaymentInline]
 
     def lastest_command(self, obj):
         if obj.is_stay:
@@ -90,6 +104,15 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     def owner_unit(self, obj):
         return obj.owner.CurrentUnit
     owner_unit.short_description = 'สังกัด'
+
+    def get_inlines(self, request, obj):
+        inlines = super(HomeOwnerAdmin, self).get_inlines(request, obj)
+        if request.user.groups.filter(name__in= ['FINANCIAL_OFFICER']).exists():
+            inlines = [RentPaymentInline]
+        elif request.user.groups.filter(name__in= ['CIVIL_OFFICER']).exists():
+            inlines = [WaterPaymentInline]
+        
+        return inlines
     # search_fields = ['FullName',]
     # 
     # 

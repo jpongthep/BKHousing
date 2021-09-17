@@ -60,7 +60,7 @@ class HomeRequest(models.Model):
     # คู่สมรส
     Status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
-    SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
+    SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="เลขประชาชนคู่สมรส")
     SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ. (ถ้าเป็น)")
     IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานคู่สมรสและบุตรในประวัติราชการ')
 

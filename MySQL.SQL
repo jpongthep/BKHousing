@@ -1,4 +1,3 @@
-
 DROP PROCEDURE IF EXISTS `createHomeOwner`
 
 
@@ -23,7 +22,8 @@ BEGIN
         FOR NOT FOUND SET not_found = 1;
 
 	OPEN cur_finance_personid;
-	SET _home_owner_id = 1;
+	SELECT Max(id) + 1 into _home_owner_id FROM Home_homeowner;
+	
 	importHomeOwner: LOOP
 		set not_found = 0;
 		FETCH cur_finance_personid INTO _finance_id, _person_id, _command_number, _is_stay;
@@ -31,24 +31,26 @@ BEGIN
 			LEAVE importHomeOwner;
 		END IF;
 
-        SELECT id into _home_id FROM home_homedata WHERE finance_id = _finance_id;
-        SELECT id into _user_id FROM userdata_user WHERE username = _person_id;
+        SELECT id into _home_id FROM Home_homedata WHERE finance_id = _finance_id;
+        SELECT id into _user_id FROM UserData_user WHERE PersonID = _person_id;
 		-- กรณีจับคู่บ้าน + คน ไม่ได้ ไม่บันทึก
         IF  not_found = 1 THEN
 			ITERATE  importHomeOwner;
 		END  IF;
 
 		-- กรณีจับคู่บ้าน + คน ได้ หาคำสั่ง ถ้ามีก็เอามาใส่ด้วย
-		SELECT id into _command_id FROM command_command WHERE CONCAT(number,"/",year) = _command_number;
+		SELECT id into _command_id FROM Command_command WHERE CONCAT(number,"/",year) = _command_number;
+
+		select _home_owner_id, _is_stay, _home_id, _user_id;
 
 		IF not_found = 0 THEN
 			IF _is_stay = 1 THEN
-				INSERT INTO home_homeowner (id, is_stay, home_id, owner_id, leave_type, enter_command_id) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-", _command_id);
+				INSERT INTO Home_homeowner (id, is_stay, home_id, owner_id, leave_type, enter_command_id) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-", _command_id);
 			ELSEIF _is_stay = 0 THEN
-				INSERT INTO home_homeowner (id, is_stay, home_id, owner_id, leave_type, leave_command_id) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-", _command_id);
+				INSERT INTO Home_homeowner (id, is_stay, home_id, owner_id, leave_type, leave_command_id) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-", _command_id);
 			END IF;
 		ELSE
-			INSERT INTO home_homeowner (id, is_stay, home_id, owner_id, leave_type) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-");
+			INSERT INTO Home_homeowner (id, is_stay, home_id, owner_id, leave_type) VALUES (_home_owner_id, _is_stay, _home_id, _user_id, "-");
 		END IF;
 		SET _home_owner_id = _home_owner_id + 1;
 		-- select _home_id, _user_id, _command_id;

@@ -15,7 +15,8 @@
     <!-- Bootstrap CSS -->
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
     <link href="{% static 'assets/dist/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet">
+    {% comment %} <link href="{% static 'assets/dist/css/navbar.css' %}" rel="stylesheet"> {% endcomment %}
+    <link href="{% static 'assets/dist/css/navbar-top-fixed.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
     <style>
       .bd-placeholder-img {
@@ -67,7 +68,7 @@
  </head>
   <body>
     <main>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Fifth navbar example">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" aria-label="Fifth navbar example">
     <div class="container-fluid">      
       <a class="navbar-brand" href="/">ARMIS</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +99,7 @@
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}">
                   <i class="fa fa-fw fa-user"></i> 
-                  รายงานส่วนตัว
+                  แบบฟอร์มขอบ้านพัก
                 </a>
               </li>
             {% endif %}

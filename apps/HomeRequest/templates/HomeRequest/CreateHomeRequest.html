@@ -376,7 +376,8 @@
                 <div class="col-md-2">
                     {{ form.IsFlatNeed|as_crispy_field  }}
                 </div>
-            {% if request.user.current_status in "2,7" %}
+                
+            {% if request.user.current_status|stringformat:"i" in '2,7' %}
                 <div class="col-md-2">
                     {{ form.IsShopHouseNeed|as_crispy_field  }}
                 </div>
