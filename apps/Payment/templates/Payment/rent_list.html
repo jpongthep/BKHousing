@@ -1,0 +1,34 @@
+{% extends '_minbase.html' %}
+{% load common_tags %}
+{% block content %}
+    <table border = 1>
+
+    {% for data in  pivot_data %}
+        {% if forloop.counter == 1 %}
+        <thead>
+            <th>ยศ ชื่อ นามสกุล</th>
+            {% for k, v in data.items %}
+                {% if forloop.counter > 5 %}
+                <th>{{ k }}</th>
+                {% endif %}
+            {% endfor %}
+        </thead>
+        {% endif %}
+        <tr>
+            <td>
+                {{ data|dict_key:'get_home_owner__owner__Rank_display' }}
+                {{ data|dict_key:'home_owner__owner__first_name' }}
+                {{ data|dict_key:'home_owner__owner__last_name' }}
+            </td>
+            {% for k, v in data.items %}
+                {% if forloop.counter > 5 %}
+                <td>{{ v }}</td>
+                {% endif %}
+            {% endfor %} 
+        </tr>
+    {% endfor %}
+    </table>
+
+
+{% endblock %}
+

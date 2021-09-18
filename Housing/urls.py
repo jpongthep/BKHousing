@@ -19,6 +19,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name = 'logout'),
 
     path('hm/', include('apps.Home.urls')),
+    path('pm/', include('apps.Payment.urls')),
     path('hr/', include('apps.HomeRequest.urls')),
     path('pf/', include('apps.UserData.urls')),
     path('tr/', include('apps.Trouble.urls')),
