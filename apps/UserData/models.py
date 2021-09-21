@@ -43,7 +43,6 @@ class User(AbstractUser):
     current_status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
     current_spouse_name = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     current_spouse_pid = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
-       
 
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
@@ -66,11 +65,11 @@ class User(AbstractUser):
         if RankDisplay in ['นาง', 'นางสาว','ญ.']:
             return 'หญิง'
 
-        if re.findall("หญิง", RankDisplay ):
+        if re.findall("หญิง", RankDisplay):
             return 'หญิง'
         else:
             return 'ชาย'
-        
+
     @property
     def FullName(self):        
         RankDisplay = str(self.get_Rank_display())
