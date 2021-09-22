@@ -142,20 +142,37 @@ DELIMITER $$
 CREATE TRIGGER contacts_before_insert
 BEFORE INSERT
    ON contacts FOR EACH ROW
-
 BEGIN
-
    DECLARE vUser varchar(50);
-
    -- Find username of person performing INSERT into table
    SELECT USER() INTO vUser;
-
    -- Update create_date field to current system date
    SET NEW.created_date = SYSDATE();
-
    -- Update created_by field to the username of the person performing the INSERT
    SET NEW.created_by = vUser;
-
 END; $$
 
 DELIMITER ;
+
+SET @sql = NULL;
+SELECT
+  GROUP_CONCAT(DISTINCT
+    CONCAT(
+      'SUM(CASE when date_format(date, \'%m-%d\') = ''',
+      date_format(date, '%m-%d'),
+      ''' then montly_bill end) AS `',
+      date_format(date, '%m-%y'), '`'
+    )
+  ) INTO @sql
+FROM 
+	Payment_rentpayment 
+WHERE  
+	date  >= DATE_SUB(NOW(),INTERVAL 13 MONTH)
+ORDER BY 
+	date asc;
+
+SET @sql = CONCAT('CREATE TEMPORARY TABLE pivot_rent_payment SELECT home_owner_id , ', @sql, ' FROM Payment_rentpayment WHERE home_owner_id IS NOT NULL GROUP BY home_owner_id');
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
