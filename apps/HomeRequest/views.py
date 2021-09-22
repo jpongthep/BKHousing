@@ -162,7 +162,6 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         else:
             self.object = self.get_object()
             return not self.object.RequesterSended
-            
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
