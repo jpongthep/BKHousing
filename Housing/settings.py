@@ -127,7 +127,11 @@ AUTHENTICATION_BACKENDS = [
                             'apps.UserData.AFAuthentications.SettingsBackend',
                             'django.contrib.auth.backends.ModelBackend'
                         ]
-SESSION_COOKIE_AGE = 60*60*2
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_COOKIE_AGE = 60*30
+
 
 AUTH_USER_MODEL = 'UserData.User'
 

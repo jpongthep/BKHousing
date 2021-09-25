@@ -260,7 +260,7 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
                 queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
         
         if 'unit_id' in self.kwargs:
-            unit_id =  self.kwargs['unit_id']
+            unit_id = self.kwargs['unit_id']
             if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
                     queryset = HomeRequest.objects.filter(Unit_id = unit_id)
         
@@ -268,12 +268,22 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
         queryset = queryset.order_by("-year_round__Year")
         return queryset 
     
-    def get_template_names(self):
-        if "hr/ul" in self.request.META.get('HTTP_REFERER'):
-            return "Person/modal_list.html"
-        else:
-            return "HomeRequest/list.html"
 
+class HomeRequestAdminListView(HomeRequestUnitListView):
+    model = HomeRequest    
+    template_name = "Person/modal_list.html"
+    allow_groups = ['PERSON_ADMIN']
+
+    def get_queryset(self, *args, **kwargs):
+        
+        if 'unit_id' in self.kwargs:
+            unit_id =  self.kwargs['unit_id']
+            if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
+                    queryset = HomeRequest.objects.filter(Unit_id = unit_id)
+        
+        queryset = queryset.filter(year_round__Year = get_current_year())
+        queryset = queryset.order_by("-year_round__Year")
+        return queryset     
 
 class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
     template_name = "Person/unit_summary.html"

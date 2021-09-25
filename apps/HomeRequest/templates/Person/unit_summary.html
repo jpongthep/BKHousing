@@ -13,7 +13,6 @@
 
 {% block scriptlink %}
     <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
-  
 {% endblock %}
 
 
@@ -26,7 +25,6 @@
         console.log(new_urltext)
         fetch_show_modal(new_urltext);
     }
-
 {% endblock %}
 
 {% block style %}
@@ -35,14 +33,15 @@
     .icon-size {font-size: 20px;}
     .check-size {font-size: 10px;}
 
-    thead tr:first-child{
+    thead tr:first-child, 
+    thead tr:nth-child(2){
         text-align: center;
+        text-valign: center;
     }
 
-    table td:not(:nth-child(6)):not(:last-child){
+    table td:not(:last-child){
         text-align: center;
     }
-
 
   </style>
 {% endblock %}
@@ -58,67 +57,61 @@
         <div class="table-title">
             <div class="row mb-2">
                 <div class="col-sm-10"><h4>จนท.กพ.ทอ.</h4>  {{ request.user.FullName}}</div>
-                <div class="col-sm-2">
-                    
-                </div>
+                <div class="col-sm-2"></div>
             </div>
         </div>
         <table class="table table-bordered table-striped">
-                <col width="40">                    
-                <col width="40">
-                <col width="40">
+                <col width="50">                    
                 <col width="120">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                <col width="40">
-                
+                <col width="50">
+                <col width="50">
+                <col width="50">
+                <col width="50">
+                <col width="50">
+                <col width="50">
+                <col width="50">
+                <col width="80">
+                <col width="100">
+                <col width="150">                
             <thead>
                 <tr>
-                    <th>#</th>
-                    
-                    <th>#</th>
-                    <th>#</th>
-                    <th>หน่วยงาน</th>
-                    <th colspan = 2>ผู้ขอ</th>
-                    <th colspan = 2>นขต.</th>
-                    <th colspan = 2>กพ.ทอ.</th>
-                    <th><i class="fa fa-hourglass text-warning icon-size" ></th>
-                    <th><i class="fa fa-home text-primary icon-size" ></th>
-                    <th>                            
-                        <span class="fa-stack">
-                            <i class="fas fa-home text-primary  " style="margin-top: 13px; margin-left: -6px;"></i>                                
-                            <i class="fas fa-home text-primary  " style="margin-top: 2px; margin-left: -10px;"></i>                                
-                        </span>
-                    </th>                        
-                    <th><i class="fa fa-building text-primary icon-size" ></th>
-
-                    <th></th>
+                    <th rowspan = 2>ลำดับ</th>
+                    <th rowspan = 2>หน่วยงาน</th>
+                    <th rowspan = 2 colspan = 2>รายการคำขอ</th>
+                    <th colspan = 6>คำขอในระบบ</th>                                        
+                    <th rowspan = 2><i class="fa fa-home text-primary icon-size" ></i> ได้รับจัดสรร</th>
+                    <th rowspan = 2>หมายเหตุ</th>
+                </tr>
+                <tr>
+                    <th colspan = 2>
+                        <i class="fa fa-user text-black icon-size" ></i> ผู้ขอ
+                    </th>
+                    <th colspan = 2>
+                        <i class="fa fa-users text-black icon-size" ></i> นขต.
+                    </th>
+                    <th>
+                        <i class="fa fa-building text-black icon-size" ></i> กพ.ทอ.
+                    </th>
+                    <th>
+                        <i class="fa fa-hourglass-start"></i> รอจัดสรร
+                    </th>
                 </tr>
             </thead>
             <tbody>
             {% for object in object_list %}
                 <tr>                        
                     <td>{{ forloop.counter }}</td>                        
-                    <td><a onclick = "modal_unit_detail({{ object.Unit }})" ><i class="fa fa-list text-info icon-size" ></i></a></td>
-                    <td><a href = "{% url 'HomeRequest:xls' object.Unit %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
                     <td>{{ object.Unit__ShortName }}</td>                    
-                    <td class = "font-weight-bold text-warning strong">{{ object.Num_RP }}</td>
-                    <td class = "font-weight-bold text-success strong">{{ object.Num_RS }}</td>
-                    <td class = "font-weight-bold text-warning strong">{{ object.Num_UP }}</td>
-                    <td class = "font-weight-bold text-success strong">{{ object.Num_US }}</td>                        
-                    <td class = "font-weight-bold text-warning strong">{{ object.Num_PP }}</td>
-                    <td class = "font-weight-bold text-success strong">{{ object.Num_PA }}</td>                        
-                    <td></td>
-                    <td><a href = "#" class = "font-weight-bold text-success strong">{{ object.Num_GH }}</a></td>
-                    <td></td>
-                    <td></td>
+                    <td><a href = "#" onclick = "modal_unit_detail({{ object.Unit }})" ><i class="fa fa-list text-info icon-size" ></i></a></td>
+                    <td><a href = "{% url 'HomeRequest:xls' object.Unit %}"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
+                    <td class = "font-weight-bold strong">{{ object.Num_RP }}</td>
+                    <td class = "font-weight-bold strong">{{ object.Num_RS }}</td>
+                    <td class = "font-weight-bold strong">{{ object.Num_UP }}</td>
+                    <td class = "font-weight-bold strong">{{ object.Num_US }}</td>                        
+                    <td class = "font-weight-bold strong">{{ object.Num_PP }}</td>
+                    <td class = "font-weight-bold strong">{{ object.Num_PA }}</td>                        
+                    <td class = "font-weight-bold strong">{{ object.Num_GH }}</td>
+
                     <td></td>
                 </tr>      
             {% endfor %}
