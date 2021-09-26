@@ -4,7 +4,7 @@
 {% block title %}ARMIS :: ขั้นตอน{% endblock %}
 
 {% block header %}
-รายละเอียดขั้นตอนการขอบ้านพัก ทอ.
+ขั้นตอนการดำเนินการ
 {% endblock %}
 
 
@@ -41,6 +41,9 @@
         z-index: 400;
     }
 
+    ul.timeline > li:hover {
+        background: rgba(100,100,100,.3);
+    }
     ul.timeline > li:hover:before {
         background: #22c0e8;
     }
@@ -63,7 +66,7 @@
 <div class="container mt-5 mb-5">
 	<div class="row">
 		<div class="col-md-10 offset-md-1">
-			<h4>ขั้นตอนการดำเนินการ</h4>
+			{% comment %} <h4>ขั้นตอนการดำเนินการ</h4> {% endcomment %}
 			<ul class="timeline">
 				<li>					
 					<a href="#">วงรอบการดำเนินการ</a>

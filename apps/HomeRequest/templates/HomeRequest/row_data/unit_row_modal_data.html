@@ -13,13 +13,13 @@
         <td>{{ object.Unit }}</td>
         <td>{{ object.Requester.MobilePhone }}</td>
         <td>
-            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="requester" %}
+            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
         </td>
         <td>
-            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="UnitPerson" %}
+            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
         </td>
         <td>
-            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
+            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              
         </td>
         <td>
             <a href = "{% url 'Trouble:eval' object.id 'Unit' %}" target = "_blank">
@@ -43,13 +43,15 @@
                 {% endif %}
             </a>
         </td>
-        <td><a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a></td>
+        <td>
+            <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a>
+        </td>
     {% if request.resolver_match.url_name == 'list' %}
         <td>
             <a href = "{% url 'HomeRequest:update_process_step' object.id 'UP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
             <a href = "{% url 'HomeRequest:update_process_step' object.id 'US'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
         </td>
-    {% elif request.resolver_match.url_name == 'person_unit_list' %}
+    {% elif request.resolver_match.url_name == 'model_unit_data' %}
         <td>
             <a href = "{% url 'HomeRequest:update_process_step' object.id 'PP'%}" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
             <a href = "{% url 'HomeRequest:update_process_step' object.id 'PA'%}" class="btn btn-outline-success btn-sm">ส่งเรื่อง</a>
@@ -69,13 +71,13 @@
                         <td>{{ object.Unit }}</td>
                         <td>{{ object.Requester.MobilePhone }}</td>
                         <td>
-                            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="requester" %}
+                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
                         </td>
                         <td>
-                            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="UnitPerson" %}
+                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
                         </td>                        
                         <td>
-                            {% include "HomeRequest/row_data/cell_processer.html" with object=object processer="PersonAdmin" %}              
+                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              
                         </td>
                         <td>
                             <span class="fa-stack" style="vertical-align: top;">

@@ -3,7 +3,7 @@
   <div class="modal-dialog  modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-light">
-        <h5 class="modal-title">คำขอบ้านพัก {{ object.FullName }} วงรอบ {{ object.year_round }}</h5>
+        <h5 class="modal-title">คำขอบ้านพัก {{ object }} </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -38,7 +38,7 @@
                 </thead>
                 <tbody>
                     {% for object in object_list %}
-                        {% include "HomeRequest/row_data/unit_row_modal_data.html" with object=object%}
+                        {% include "Person/unit_row_admin_modal.html" with object=object%}
                     {% endfor %}
                 </tbody>
             </table>

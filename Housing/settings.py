@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5", 
     'thaidate',
+    'rest_framework',
     # My Owner APP
     'apps.UserData',
     'apps.Home',
@@ -130,7 +131,7 @@ AUTHENTICATION_BACKENDS = [
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
-SESSION_COOKIE_AGE = 60*30
+SESSION_COOKIE_AGE = 60*60
 
 
 AUTH_USER_MODEL = 'UserData.User'
@@ -139,6 +140,8 @@ AUTH_USER_MODEL = 'UserData.User'
 STATIC_URL = '/static/'
 # STATICFILES_DIRS = (os.path.join('static'),)
 # STATIC_ROOT = '/static/'
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'staticfiles',

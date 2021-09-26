@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (ProcessFlow,
                     CreateHomeRequestView, 
@@ -9,10 +9,17 @@ from .views import (ProcessFlow,
                     HomeRequestUnitSummaryListView,
                     TestDocument,
                     TestExcel,
+                    UnitList4PersonAdmin,
                     AFPersonListView,
                     update_process_step)
 
 from .views_modals import af_person_data_detailview
+# from rest_framework import routers
+# from .views import UnitList4PersonAdminViewSet
+
+# router = routers.DefaultRouter()
+# router.register(r'UnitList', UnitList4PersonAdminViewSet)
+
 app_name = 'HomeRequest'
 urlpatterns = [
     path('pf', ProcessFlow.as_view(), name = 'process_flow'),
@@ -22,7 +29,9 @@ urlpatterns = [
     path('afp', AFPersonListView.as_view(), name = 'af_person'),
     path('list', HomeRequestUnitListView.as_view(), name = 'list'),
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
-    path('<unit_id>/mud', HomeRequestAdminListView.as_view(), name = 'model_unit_data'),
+    path('<unit_id>/mud', HomeRequestAdminListView.as_view(), name = 'modal_unit_data'),
+    path('<unit_id>/fetch', UnitList4PersonAdmin.as_view(), name = 'unit_list_admin'),
+    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),

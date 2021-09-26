@@ -7,6 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
         <title>ARMIS :: Login</title>
         <link rel="icon" href="{% static 'images/armis.png' %}">
+        <link href="{% static 'my_script/logo.css' %}" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="{% static '/assets/login_style.css' %}"/>
     </head>
     <body class="">
@@ -17,8 +18,8 @@
                     <div class="card-body">
                         <div class="text-center pb-3 border-bottom mb-4">
                             <img alt="Logo" style="max-height:120px; max-width: 100%; width:auto" class="company_logo" src="{% static '/images/company_logo.png' %}"/>
-                            <h4 class = "mt-0">ARMIS</h4>
-                            <h5>ระบบสารสนเทศเพื่อการจัดการ<br>บ้านพักอาศัย ทอ.</h5>
+                            <h4 class = "mt-0 Logo-Brand">ARMIS</h4>
+                            <h5 class = "description-brand">ระบบสารสนเทศเพื่อการจัดการ<br>บ้านพักอาศัย ทอ.</h5>
                         </div>
                     
                         <form class="oe_login_form" method="post">
@@ -44,7 +45,7 @@
                         </form>
 
                     <div class="text-center mt-4 pt-3 border-top">
-                        <a href="https://software.rtaf.mi.th/" target="_blank">พัฒนาโดย <span>ศูนย์ซอฟต์แวร์กองทัพอากาศ</span></a>
+                        พัฒนาโดย <a href="https://software.rtaf.mi.th/" target="_blank">ศูนย์ซอฟต์แวร์กองทัพอากาศ</a>
                     </div>
                 </div>
             </div>

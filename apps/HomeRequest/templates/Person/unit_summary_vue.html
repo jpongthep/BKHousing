@@ -1,0 +1,295 @@
+{% extends '_minbase.html' %}
+{% load thaidate %}
+{% load static %}
+
+{% block title %}ARMIS :: รายการขอ นขต.ทอ.{% endblock %}
+
+{% block header %}รายการขอ นขต.ทอ.{% endblock %}
+
+
+{% block scriptlink %}
+    <script src="https://unpkg.com/vue@next"></script>
+{% endblock %}
+
+
+{% block script %}
+
+{% endblock %}
+
+{% block style %}
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+  <style>
+    .icon-size {font-size: 20px;}
+    .check-size {font-size: 10px;}
+
+    thead tr:first-child, 
+    thead tr:nth-child(2){
+        text-align: center;
+        text-valign: center;
+    }
+
+    .unit-list td:not(:last-child){
+        text-align: center;
+    }
+
+    .unit-data-list td:not(:nth-child(5)){
+        text-align: center;
+    }
+
+  </style>
+{% endblock %}
+
+{% block content%}
+<div id="MainAPP">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row mb-2">
+                    <div class="col-sm-10"><h4>ปีงบประมาณ 2564</h4> </div>
+                    <div class="col-sm-2"></div>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped unit-list">
+                    <col width="50">                    
+                    <col width="120">
+                    <col width="50">
+                    <col width="50">
+                    <col width="50">
+                    <col width="50">
+                    <col width="50">
+                    <col width="50">
+                    <col width="50">
+                    <col width="80">
+                    <col width="100">
+                    <col width="150">                
+                <thead>
+                    <tr>
+                        <th rowspan = 2>ลำดับ</th>
+                        <th rowspan = 2>หน่วยงาน</th>
+                        <th rowspan = 2 colspan = 2>รายการคำขอ</th>
+                        <th colspan = 6>คำขอในระบบ</th>                                        
+                        <th rowspan = 2><i class="fa fa-home text-primary icon-size" ></i> ได้รับจัดสรร</th>
+                        <th rowspan = 2>หมายเหตุ</th>
+                    </tr>
+                    <tr>
+                        <th colspan = 2>
+                            <i class="fa fa-user text-black icon-size" ></i> ผู้ขอ
+                        </th>
+                        <th colspan = 2>
+                            <i class="fa fa-users text-black icon-size" ></i> นขต.
+                        </th>
+                        <th>
+                            <i class="fa fa-building text-black icon-size" ></i> กพ.ทอ.
+                        </th>
+                        <th>
+                            <i class="fa fa-hourglass-start"></i> รอจัดสรร
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="obj in object_list">                        
+                        <td>[[ obj.counter ]]</td>                        
+                        <td>[[ obj.short_name ]]</td>                    
+                        <td><a href = "#" @click = "show_unit_data_list([[ obj.unit_id ]])" ><i class="fa fa-list text-info icon-size" ></i></a></td>
+                        <td><a href = ""><i class="fas fa-file-excel text-success icon-size"></i></a></td>
+                        <td>[[ obj.num_RP ]]</td>
+                        <td>[[ obj.num_RS ]]</td>
+                        <td>[[ obj.num_UP ]]</td>
+                        <td>[[ obj.num_US ]]</td>
+                        <td>[[ obj.num_PP ]]</td>
+                        <td>[[ obj.num_PA ]]</td>
+                        <td>[[ obj.num_GH ]]</td>
+                        <td></td>
+                    </tr>      
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {# เริ่ม Model แสดงรายการคำขอของหน่วย #}
+    <div class="modal fade" id="unit_data_list_modal" tabindex="-1" aria-labelledby="unit_data_list_modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unit_data_list_modalLabel">คำขอบ้านพัก [[ unit_data.short_name ]]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                    
+            <table class="table table-bordered table-hover table-striped caption-top unit-data-list" >
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="40">
+                    <col width="250">
+                    <col width="150">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th colspan = "3">เอกสาร</th>
+                        <th>ยศ ชื่อ นามสกุล</th>
+                        <th>มือถือ</th>
+                        <th>ผู้ขอ</th>
+                        <th>นขต.</th>
+                        <th>กพ.ทอ.</th>
+                        <th>ประเมิน</th>
+                        <th>อนุมัติ</th>
+                        <th>หมายเหตุ</th>                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(hm,i) in unit_data.HomeRequest">                        
+                        <td>[[ i + 1 ]]</td>
+                        <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
+                        <td><a href = "#" onclick = "test_modal()"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "url 'HomeRequest:doc' object.id"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td>[[ hm.FullName ]]</td>
+                        <td>[[ hm.MobilePhone ]]</td>
+                        <td>
+                            <div v-if="hm.RequesterDateSend">
+                                <a  href = "#" :title = "hm.RequesterDateSend"><i class="fa fa-check text-success icon-size" ></i></a>
+                            </div>
+                            <div v-else-if="hm.ProcessStep === 'RP' ">
+                                <small>ร่าง</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="hm.UnitApprover">                                
+                                <a href = "#" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
+                            </div>
+                            <div v-else-if="hm.ProcessStep === 'UP' ">
+                                <a href = "#" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">                                
+                                    <small>รับเรื่อง</small>
+                                </a>
+                            </div>                            
+                        </td>
+                        <td>
+                            <div v-if="hm.ProcessStep === 'US'  && ! hm.PersonApprover ">
+                                <button class="btn btn-outline-primary btn-sm" @click="PersonRecieved(i, hm.id)"><small>รับเรื่อง</small></button>                                
+                            </div>  
+                            <div v-else-if="hm.ProcessStep === 'PP' ">
+                                <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
+                                    <small>รับเรื่อง</small>
+                                </span>
+                            </div>
+                            <div v-else-if="hm.PersonApprover">                                
+                                <a href = "#" :title = "[hm.PersonApproverName, hm.PersonApproverPhone, hm.PersonDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="hm.IsPersonEval">
+                                [[ hm.TroubleScore ]]
+                            </div>
+                            <div v-else-if="hm.ProcessStep === 'PP' ">
+                                <a href = "#" @click="evaluate(hm.id)" class="fa-stack" style="vertical-align: top;" >
+                                    <i class="far fa-tasks text-danger icon-size"></i>
+                                    <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            {% if object.ProcessStep == 'US' %}
+                                    <a href = "url 'HomeRequest:update_process_step' object.id 'PP'" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
+                            {% elif object.ProcessStep == 'PP' %}
+                                    <a href = "url 'HomeRequest:update_process_step' object.id 'PA'" class="btn btn-outline-success btn-sm">ส่งจัดสรร</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิดหน้าต่าง</button>                
+            </div>
+            </div>
+        </div>
+    </div> {# modal div#}
+</div> {# vue element div#}
+{% endblock %}
+
+
+
+{% block buttom_script %}
+
+<script>
+    const MainAPP = {
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                test_counter: 0,
+                unit_data_list_modal : null,
+                object_list : [
+                    {% for object in object_list %}
+                    {
+                        counter : {{ forloop.counter }},
+                        short_name : "{{ object.Unit__ShortName }}",
+                        unit_id : {{ object.Unit }},                        
+                        num_RP : {{ object.Num_RP }},
+                        num_RS : {{ object.Num_RS }},
+                        num_UP : {{ object.Num_UP }},
+                        num_US : {{ object.Num_US }},
+                        num_PP : {{ object.Num_PP }},
+                        num_PA : {{ object.Num_PA }},
+                        num_GH : {{ object.Num_GH }}
+                    } {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                unit_data : {
+                    short_name : "",
+                    HomeRequest : []
+                }
+            }
+        },
+        mounted() {
+            this.unit_data_list_modal = new bootstrap.Modal(document.getElementById("unit_data_list_modal"), {});
+            console.log("monted function");
+        },
+        methods : {
+            show_unit_data_list(unit_id){
+                urltext = "{% url 'HomeRequest:unit_list_admin'  99999 %}";
+                new_urltext = urltext.replace("99999",unit_id)
+                console.log(new_urltext);
+
+                fetch(new_urltext)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.unit_data.HomeRequest = data;
+                        this.unit_data.short_name = data[0]["UnitName"];
+                        this.unit_data_list_modal.show();
+                        console.log(this.unit_data.HomeRequest);
+                    });
+
+            },
+            PersonRecieved(index, hr_id){
+                urltext = "{% url 'HomeRequest:update_process_step' 88888 '99999' %}";
+                urltext = urltext.replace("88888",hr_id)
+                new_urltext = urltext.replace("99999","PP")
+                // console.log(new_urltext);
+                // console.log(index, hr_id);
+
+                fetch(new_urltext)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data["success"])
+                            this.unit_data.HomeRequest[index]["ProcessStep"] = 'PP';
+                        else
+                            alert("เกิดข้อผิดพลาด ไม่สามารถรับเรื่องได้");
+                    });
+            },
+            evaluate(hm_id)
+            {
+                alert('ประเมิน ' + hm_id);
+            }
+        }
+    }
+
+    Vue.createApp(MainAPP).mount('#MainAPP')
+</script>
+{% endblock buttom_script %}

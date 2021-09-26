@@ -37,7 +37,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 3 %}
-                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.PersonApprover.FullName}} ({{ object.PersonApprover.OfficePhone}}) {{ object.PersonDateApproved|thaidate:"d M y"}}">
+                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -47,7 +47,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 4 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}

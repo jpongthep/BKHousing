@@ -8,13 +8,16 @@ coverage==5.5
 crispy-bootstrap5==0.4
 Django==3.2.6
 django-crispy-forms==1.12.0
+django-filter==21.1
 django-pivot==1.8.1
 django-thaidate==1.0.2
+djangorestframework==3.12.4
 et-xmlfile==1.1.0
 idna==3.2
 importlib-metadata==4.6.4
 iniconfig==1.1.1
 lxml==4.6.3
+Markdown==3.3.4
 mysqlclient==2.0.3
 openpyxl==3.0.7
 packaging==21.0

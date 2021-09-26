@@ -7,6 +7,8 @@ from django.views.generic import TemplateView, CreateView, ListView, DetailView,
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core import serializers
+from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
@@ -16,6 +18,12 @@ from django.db.models import Q, F
 from django.db.models import Count, Sum, Max
 
 #3rd party module
+# from rest_framework import viewsets
+# from rest_framework import permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
 from docx import Document
 from openpyxl import load_workbook
 
@@ -26,6 +34,7 @@ from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessSte
 from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm
+from .serializers import HomeRequestSerializer
 
 
 def get_current_year():
@@ -78,6 +87,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'FullName': request.user.FullName,
                             'Position': request.user.Position,
                             'Unit': request.user.CurrentUnit,
+                            'MobilePhone' : request.user.MobilePhone,
                             'OfficePhone' : request.user.OfficePhone,
                             'Unit' : request.user.CurrentUnit,
                             'Salary' : request.user.current_salary,
@@ -283,10 +293,22 @@ class HomeRequestAdminListView(HomeRequestUnitListView):
         
         queryset = queryset.filter(year_round__Year = get_current_year())
         queryset = queryset.order_by("-year_round__Year")
-        return queryset     
+        return queryset
+
+class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
+    allow_groups = ['PERSON_ADMIN']
+
+    def get(self, request, *args, **kwargs):        
+        unit_id = kwargs["unit_id"] if kwargs.get("unit_id", None) is not None else 41
+
+        queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("Rank")
+        serializer = HomeRequestSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
-    template_name = "Person/unit_summary.html"
+    # template_name = "Person/unit_summary.html"
+    template_name = "Person/unit_summary_vue.html"
     allow_groups = ['PERSON_ADMIN']
 
     def get_queryset(self):
@@ -360,14 +382,14 @@ def update_process_step(request, home_request_id, process_step):
     home_request.ProcessStep = process_step
     home_request.save()
     home_request.update_process_step(process_step, request.user)
-    print("sdfdsf")
 
     if process_step in [ HomeRequestProcessStep.UNIT_PROCESS, 
                          HomeRequestProcessStep.UNIT_SENDED]:
+        messages.info(request,f'บันทึกขั้นตอนคำขอบ้าน {home_request.Requester.FullName} เรียบร้อย')
         return HttpResponseRedirect("/hr/list")
     elif process_step in [ HomeRequestProcessStep.PERSON_PROCESS, 
                            HomeRequestProcessStep.PERSON_ACCEPTED]:
-        return HttpResponseRedirect(f"/hr/{unit_id}/list")
+        return JsonResponse({"success": True})
 
 
 def TestDocument(request,home_request_id):

@@ -1,14 +1,14 @@
 {% load thaidate %}
 
-{% if processer == 'requester'%}
+{% if processor == 'requester'%}
     {% if object.RequesterDateSend %}
         <a href = "#" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}"><i class="fa fa-check text-success icon-size" ></i></a>
     {% elif  object.get_ProcessStep_display == 'RequesterProcess' %}
         ร่าง
     {% endif %}
-{% elif processer == "UnitPerson" %}
+{% elif processor == "UnitPerson" %}
     {% if object.UnitApprover %}
-        <a href = "#" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
+        <a href = "#" title = "{{ object.UnitApprover.FullName }} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
             <i class="fa fa-check text-success icon-size" ></i>
         </a>
     {% elif  object.IsUnitEval %}
@@ -21,14 +21,14 @@
             รับเรื่อง
         </a>
     {% endif %}
-{% elif processer == "PersonAdmin" %}    
+{% elif processor == "PersonAdmin" %}    
     {% if object.PersonApprover %}
         <a href = "#" title = "{{ object.PersonApprover.FullName}} ({{ object.PersonApprover.OfficePhone}}) {{ object.PersonDateApproved|thaidate:"d M y"}}">
             <i class="fa fa-check text-success icon-size" ></i>
         </a>
     {% elif  object.get_ProcessStep_display == 'PersonProcess' %}
         <a href = "#" title = "{{ object.PersonReciever.FullName}} ({{ object.PersonReciever.OfficePhone}}) {{ object.PersonDateRecieved|thaidate:"d M y"}}">
-            รับเรื่อง
+            <small>รับเรื่อง</small>
         </a>
     {% endif %}   
 {% endif %}
