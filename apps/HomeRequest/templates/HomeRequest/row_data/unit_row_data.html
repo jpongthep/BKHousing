@@ -51,11 +51,11 @@
         <td>
             {# ถ้าส่งเรื่องมาแล้วให้แสดงปุ่มรับเรื่อง #}
             {% if object.get_ProcessStep_display == 'RequesterSended' %}
-                <a href = "#" onclick="return showConfirm('ยืนยันรับเรื่องขอบ้านพัก {{ object.Requester.FullName }}', '{% url 'HomeRequest:update_process_step' object.id 'UP'%}');" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>                
+                <a href = "#" onclick="return showConfirm('ยืนยันรับเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'UP'%}');" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>                
             {% endif %}
             {# ถ้าประเมินแล้วให้แสดงปุ่มส่งเรื่อง #}
             {% if object.IsUnitEval and object.ProcessStep not in 'US,PP,PA,GH' %}
-                <a href = "#" onclick="return showConfirm('ยืนยันส่งเรื่องขอบ้านพัก {{ object.Requester.FullName }}', '{% url 'HomeRequest:update_process_step' object.id 'US'%}');" class="btn btn-outline-primary btn-sm">ส่งเรื่อง</a>
+                <a href = "#" onclick="return showConfirm('ยืนยันส่งเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'US'%}');" class="btn btn-outline-primary btn-sm">ส่งเรื่อง</a>
             {% endif %}
         </td>
     </tr>      

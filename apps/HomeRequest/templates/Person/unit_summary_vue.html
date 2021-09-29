@@ -19,7 +19,10 @@
 {% block style %}
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
   <style>
-    .icon-size {font-size: 20px;}
+    .icon-size {
+        font-size: 20px;
+        margin-top:0px;
+    }
     .check-size {font-size: 10px;}
 
     thead tr:first-child, 
@@ -107,7 +110,7 @@
     </div>
     {# เริ่ม Model แสดงรายการคำขอของหน่วย #}
     <div class="modal fade" id="unit_data_list_modal" tabindex="-1" aria-labelledby="unit_data_list_modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable ">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="unit_data_list_modalLabel">คำขอบ้านพัก [[ unit_data.short_name ]]</h5>
@@ -122,7 +125,7 @@
                     <col width="250">
                     <col width="150">
                     <col width="60">
-                    <col width="60">
+                    <col width="100">
                     <col width="60">
                     <col width="60">
                     <col width="60">
@@ -134,8 +137,7 @@
                         <th>มือถือ</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
-                        <th>กพ.ทอ.</th>
-                        <th>ประเมิน</th>
+                        <th colspan = 2>กพ.ทอ.</th>
                         <th>อนุมัติ</th>
                         <th>หมายเหตุ</th>                        
                     </tr>
@@ -150,25 +152,26 @@
                         <td>[[ hm.MobilePhone ]]</td>
                         <td>
                             <div v-if="hm.RequesterDateSend">
-                                <a  href = "#" :title = "hm.RequesterDateSend"><i class="fa fa-check text-success icon-size" ></i></a>
+                                <a href = "#" :title = "hm.RequesterDateSend"><i class="fa fa-check text-success icon-size" ></i></a>
                             </div>
                             <div v-else-if="hm.ProcessStep === 'RP' ">
                                 <small>ร่าง</small>
                             </div>
                         </td>
                         <td>
-                            <div v-if="hm.UnitApprover">                                
-                                <a href = "#" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
-                            </div>
-                            <div v-else-if="hm.ProcessStep === 'UP' ">
-                                <a href = "#" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">                                
-                                    <small>รับเรื่อง</small>
-                                </a>
-                            </div>                            
+                            <a v-if="hm.UnitApprover" href = "#" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
+                            <a v-else-if="hm.ProcessStep === 'UP'" href = "#" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">                                
+                                <small>รับเรื่อง</small>
+                            </a>                             
+                            &nbsp;
+                            <span v-if="hm.IsUnitEval" class="text-primary font-weight-bold" >
+                                [[ hm.UnitTroubleScore ]]
+                            </span>	  
+                            <i v-else-if="hm.ProcessStep === 'UP' && !hm.IsUnitEval" class="far fa-tasks text-danger icon-size"></i>
                         </td>
                         <td>
                             <div v-if="hm.ProcessStep === 'US'  && ! hm.PersonApprover ">
-                                <button class="btn btn-outline-primary btn-sm" @click="PersonRecieved(i, hm.id)"><small>รับเรื่อง</small></button>                                
+                                <button class="btn btn-outline-primary btn-sm" @click="ConfirmPersonRecieved(i, hm.id)"><small>รับเรื่อง</small></button>                                
                             </div>  
                             <div v-else-if="hm.ProcessStep === 'PP' ">
                                 <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
@@ -178,10 +181,12 @@
                             <div v-else-if="hm.PersonApprover">                                
                                 <a href = "#" :title = "[hm.PersonApproverName, hm.PersonApproverPhone, hm.PersonDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
                             </div>
+                            
+
                         </td>
                         <td>
                             <div v-if="hm.IsPersonEval">
-                                [[ hm.TroubleScore ]]
+                                [[ hm.PersonTroubleScore ]]
                             </div>
                             <div v-else-if="hm.ProcessStep === 'PP' ">
                                 <a href = "#" @click="evaluate(hm.id)" class="fa-stack" style="vertical-align: top;" >
@@ -211,6 +216,25 @@
             </div>
         </div>
     </div> {# modal div#}
+
+    {# Confirm modal #}
+    <div class="modal fade" id="confirm_modal" tabindex="-1" aria-labelledby="confirm_modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirm_modalLabel">กพ.ทอ.ยืนยันการรับเรื่องขอบ้านพัก</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                
+                [[ confirm_text ]]
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" @click="PersonRecieved" class="btn btn-primary">ยืนยัน</button>
+            </div>
+            </div>
+        </div>
+    </div>
 </div> {# vue element div#}
 {% endblock %}
 
@@ -225,6 +249,11 @@
             return {
                 test_counter: 0,
                 unit_data_list_modal : null,
+                confirm_modal : null,
+                confirm_text :"",
+                current_index: 0,
+                current_hr_id: 0,
+
                 object_list : [
                     {% for object in object_list %}
                     {
@@ -249,6 +278,7 @@
         },
         mounted() {
             this.unit_data_list_modal = new bootstrap.Modal(document.getElementById("unit_data_list_modal"), {});
+            this.confirm_modal = new bootstrap.Modal(document.getElementById("confirm_modal"), {});
             console.log("monted function");
         },
         methods : {
@@ -267,9 +297,15 @@
                     });
 
             },
-            PersonRecieved(index, hr_id){
+            ConfirmPersonRecieved(index, hr_id){
+                this.current_index = index;
+                this.current_hr_id = hr_id;
+                this.confirm_text = this.unit_data.HomeRequest[index]["FullName"];
+                this.confirm_modal.show();
+            },
+            PersonRecieved(){
                 urltext = "{% url 'HomeRequest:update_process_step' 88888 '99999' %}";
-                urltext = urltext.replace("88888",hr_id)
+                urltext = urltext.replace("88888",this.current_hr_id)
                 new_urltext = urltext.replace("99999","PP")
                 // console.log(new_urltext);
                 // console.log(index, hr_id);
@@ -278,7 +314,10 @@
                     .then(response => response.json())
                     .then(data => {
                         if(data["success"])
-                            this.unit_data.HomeRequest[index]["ProcessStep"] = 'PP';
+                        {
+                            this.confirm_modal.hide();
+                            this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'PP';
+                        }
                         else
                             alert("เกิดข้อผิดพลาด ไม่สามารถรับเรื่องได้");
                     });

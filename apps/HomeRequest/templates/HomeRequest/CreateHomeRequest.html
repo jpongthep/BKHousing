@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-แบบฟอร์มขอบ้านพัก
+ARMIS แบบฟอร์มขอบ้านพัก
 {% endblock %}
 
 {% block header %}
@@ -271,7 +271,8 @@
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
 
                         </label>
-                        <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1">
+                        {% comment %} <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1"> {% endcomment %}
+                        {{ form.GooglePlusCodes1|as_crispy_field }}
                     </div>
                     <input id="zipcode1" type="hidden">
                 </div>                
@@ -313,7 +314,8 @@
                                  class = "help_goocle_code_plus" 
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
                         </label>
-                        <input type="text" name="hr-GooglePlusCodes2" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes2">
+                        {% comment %} <input type="text" name="hr-GooglePlusCodes2" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes2"> {% endcomment %}
+                        {{ form.GooglePlusCodes2|as_crispy_field }}
                     </div>
                     <input id="zipcode2" type="hidden">
                 </div>                
@@ -451,30 +453,30 @@
             
             <div class="inline {{ co_resident_formset.prefix }}" id = "co_residence">						
                 <div class="row mouse_hover ">
-                        <div class="col-2 mt-1">
-                            {{ formset.FullName|as_crispy_field}}
-                        </div>
-                        <div class="col-1">
-                            {{ formset.Relation|as_crispy_field}}
-                        </div>
-                        <div class="col-2">
-                            {{ formset.PersonID|as_crispy_field}}
-                        </div>
-                        <div class="col-2">
-                            {{ formset.BirthDay|as_crispy_field}}
-                        </div>
-                        <div class="col-2">
-                            {{ formset.Occupation|as_crispy_field}}
-                        </div>
-                        <div class="col-1">
-                            {{ formset.Salary|as_crispy_field}}
-                        </div>
-                        <div class="col-1">
-                            {{ formset.Education|as_crispy_field}}
-                        </div>                        
-                        <div class="col-1">
-                            {{ formset.DELETE|as_crispy_field}}
-                        </div>                            
+                    <div class="col-2 mt-1">
+                        {{ formset.FullName|as_crispy_field}}
+                    </div>
+                    <div class="col-1">
+                        {{ formset.Relation|as_crispy_field}}
+                    </div>
+                    <div class="col-2">
+                        {{ formset.PersonID|as_crispy_field}}
+                    </div>
+                    <div class="col-2">
+                        {{ formset.BirthDay|as_crispy_field}}
+                    </div>
+                    <div class="col-2">
+                        {{ formset.Occupation|as_crispy_field}}
+                    </div>
+                    <div class="col-1">
+                        {{ formset.Salary|as_crispy_field}}
+                    </div>
+                    <div class="col-1">
+                        {{ formset.Education|as_crispy_field}}
+                    </div>                        
+                    <div class="col-1">
+                        {{ formset.DELETE|as_crispy_field}}
+                    </div>                            
                 </div>	                    				
             </div>
         {% endfor %}
@@ -485,7 +487,7 @@
 
     <div class = "mt-3">
         <button type="submit" name="save" class="btn btn-warning">บันทึกร่าง</button>        
-  <button type="submit" name="send" class="btn btn-primary">บันทึกและส่งรายงาน</button>        
+        <button type="submit" name="send" class="btn btn-primary">บันทึกและส่งรายงาน</button>        
     </div>
   
 
@@ -498,7 +500,7 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-body text-center">      
-        <img src = "{% static 'images/google_plus_code.png'%}" width = 886 height = 634>
+        <img src = "{% static 'images/google_plus_code.gif'%}" width = 886 height = 634>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>        

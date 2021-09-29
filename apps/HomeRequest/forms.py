@@ -67,6 +67,10 @@ class HomeRequestForm(forms.ModelForm):
             'ZoneRequestPriority5' : forms.Select(attrs={'disabled':'true', 'data-priority':'5'}),
             'ZoneRequestPriority6' : forms.Select(attrs={'disabled':'true', 'data-priority':'6'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(HomeRequestForm, self).__init__(*args, **kwargs)
+        self.fields['GooglePlusCodes1'].label = False
+        self.fields['GooglePlusCodes2'].label = False
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form

@@ -122,9 +122,11 @@ class HomeRequest(models.Model):
 
     # แบบประเมินความเดือดร้อน 2 ส่วน หน่วยงาน และ กพ.ทอ.
     IsUnitEval = models.BooleanField(verbose_name = 'นขต.ประเมินเรียบร้อย', default = False)
+    UnitTroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน นขต.", null=True,blank = True)
     IsPersonEval =  models.BooleanField(verbose_name = 'กพ.ทอ.ประเมินเรียบร้อย', default = False)
+    PersonTroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน กพ.", null=True,blank = True)
     #คะแนนประเมินล่าสุด
-    TroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน", null=True,blank = True)
+    TroubleScore = models.IntegerField(verbose_name="คะแนนประเมินล่าสุด", null=True,blank = True)
 
     OriginProcessStep = None
 

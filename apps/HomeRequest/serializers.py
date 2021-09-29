@@ -46,6 +46,9 @@ class HomeRequestSerializer(serializers.ModelSerializer):
                     "PersonApproverPhone",
                     "PersonDateApproved",
 
+                    "IsUnitEval",
+                    "UnitTroubleScore",
                     "IsPersonEval",
+                    "PersonTroubleScore",
                     "TroubleScore"
         ]

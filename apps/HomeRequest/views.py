@@ -208,7 +208,11 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         form = self.form_class(request.POST, request.FILES, instance = self.object, prefix='hr')
 
         user_current_data_form = UserCurrentDataForm(self.request.POST, instance = request.user, prefix='userdata')
-        co_resident_formset = CoResidentFormSet(self.request.POST)
+        co_resident_formset = CoResidentFormSet(self.request.POST, instance = self.object)
+        print('form.is_valid() ',form.is_valid())
+        print('user_current_data_form.is_valid() ',user_current_data_form.is_valid())
+        print('co_resident_formset.is_valid() ',co_resident_formset.is_valid())
+
         if form.is_valid() and user_current_data_form.is_valid() and co_resident_formset.is_valid():
             return self.form_valid(form, user_current_data_form, co_resident_formset)
         else:
@@ -413,7 +417,7 @@ def TestDocument(request,home_request_id):
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
             'UnitFN':home_request.Unit.FullName,
-            'UnitStN':home_request.Unit.ShortName,
+            'UnitSN':home_request.Unit.ShortName,
             'OfficePhone':home_request.Requester.OfficePhone,
             'MobilePhone':home_request.Requester.MobilePhone,
             'AddSalary':"{:,}".format(home_request.AddSalary),

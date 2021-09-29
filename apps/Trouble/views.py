@@ -30,8 +30,10 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
         filled_form.home_request_form.TroubleScore = TotalScore
         print('Type = ',Type)
         if Type == 'Unit':
+            filled_form.home_request_form.UnitTroubleScore = TotalScore
             filled_form.home_request_form.IsUnitEval = True
         elif Type == 'Person':
+            filled_form.home_request_form.PersonTroubleScore = TotalScore
             filled_form.home_request_form.IsPersonEval = True
 
         filled_form.home_request_form.save()
