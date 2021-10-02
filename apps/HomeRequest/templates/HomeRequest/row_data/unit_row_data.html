@@ -28,7 +28,7 @@
         </td>
         <td>
             {% if object.get_ProcessStep_display not in 'RequesterProcess,RequesterSended' %}
-            <a href = "{% url 'Trouble:eval' object.id 'Unit' %}" target = "_blank">
+            <a href = "{% url 'Trouble:eval' object.id 'Unit' %}">
                 {% if object.IsUnitEval  %}
                     <strong>{{object.TroubleScore}}</strong>
                 {% else %}

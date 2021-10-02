@@ -6,7 +6,7 @@
     <title>
       {% block title %}
         ARMIS :: Airforce Resident Management Information System
-      {% endblock %}    
+      {% endblock %}
     </title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -19,9 +19,6 @@
     <link href="{% static 'assets/dist/css/navbar-top-fixed.css' %}" rel="stylesheet">
     <link href="{% static 'my_script/logo.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-
-
-
 
     <style>
 
@@ -40,13 +37,12 @@
       }
 
     </style>
-
     <!-- Custom styles for this template -->
-    
     <style>
       html {
         height: 100%;
       }
+
       body {
         min-height: 100%;
         display: grid;
@@ -71,40 +67,73 @@
         width : 35px
       }
 
+  a.button-bg:hover{
+      background-image: linear-gradient(180deg,#0062a2,#1338be);
+  }
+   
+  a.button-bg {
+      display: inline-block;
+      text-align: center;
+      text-decoration:none;
+      max-width: 100%;
+      min-width: 8px;
+      height: 28px;
+      vertical-align: baseline;
+      outline: 1;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      font-size: 13px;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      -ms-touch-action: none;
+      -webkit-font-smoothing: antialiased;
+      border: 1px thin;
+      border-radius: 3px;
+      font-weight: 500;
+      color: #fff;
+      text-shadow: rgba(0,0,0,.05) 0 1px 0;
+      background-image: linear-gradient(180deg,#0892c2,#3944bc);
+      box-shadow: inset 0 1px 0 hsla(0,0%,100%,.2);
+      display: block;
+      padding: 2px 10px;
+      margin: 10px;
+      box-sizing: border-box;
+      color:fffff;  
+   }
 
- 
-    </style>
+</style>
 
     {% block style %}{% endblock %}
-    
     {% block scriptlink %}{% endblock %}
 
-    <script>
-      {% block script %}{% endblock %}
-    </script>  
+    {% block script %}
+
+    {% endblock %}
+    
  </head>
   <body>
     <main>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" aria-label="Fifth navbar example">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" aria-label="Fifth navbar example">
     <div class="container-fluid">      
       <a class="navbar-brand Logo-Brand" href="/" >ARMIS</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample05" aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExample05">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            {% if request.resolver_match.url_name == 'Home' %}
-              <a href="#" class="nav-link text-white"></a>
-            {% else %}
-              <a href="{% url 'HomeRequest:af_person'%}" class="nav-link text-secondary"></a>
-            {% endif %}
-          </li>
-          
+          <li class="nav-item" style= "vertical-align:text-bottom;">
+          {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
+            <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
+              คำขอบ้านพัก
+            </a>
+          {% endif %}
+          </li>          
+          {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-fw fa-edit"></i> รายงานขอบ้านพัก</a>
+              <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown05">
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:process_flow'%}">
@@ -112,14 +141,6 @@
                   ขั้นตอนการดำเนินการ
                 </a>
               </li>
-            {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
-              <li>
-                <a class="dropdown-item" href="{% url 'HomeRequest:af_person'%}">
-                  <i class="fa fa-fw fa-user"></i> 
-                  แบบฟอร์มขอบ้านพัก
-                </a>
-              </li>
-            {% endif %}
             {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
@@ -131,6 +152,7 @@
 
             {% if request.user|has_group:"PERSON_ADMIN" %}
               <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> รายการคำขอ นขต.ทอ.</a></li>
+            {% endif %}
             {% endif %}
             </ul>
           </li>    
@@ -155,17 +177,26 @@
         </form>
 {% endcomment %}
         <ul class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
           <li class="nav-item float-right">
             <a class="nav-link" href="#"><i class="fas fa-address-card"></i> Profiles</a>
           </li>
+          {% endif %}
           {% if request.user.is_staff %}
           <li class="nav-item float-right">
             <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
           </li>
           {% endif %}
+
+          {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> logout</a>
           </li>
+          {% else %}
+            <a class="button-bg button-menu" href="{% url 'Home'%}">
+              เข้าสู่ระบบ
+            </a>
+          {% endif %}
 
         </ul>
 
@@ -191,13 +222,15 @@
           <hr class="mt-0 mb-4">       
         </div>
       </div>      
-      {% block CardRow %}
 
-      {% endblock %}
+{% block CardRow %}
+
+{% endblock %}
+
       <div class="mt-4">
         <div class="col-xl-12">
           {% block content %}
-            <img src = "{% static 'images/requestflow.png' %}"
+            {# <img src = "{% static 'images/requestflow.png' %}" #}
           {% endblock %}
         </div>
       </div>

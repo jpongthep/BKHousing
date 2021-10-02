@@ -2,68 +2,111 @@
 {% load thaidate %}
 {% load humanize %}
 
+
 {% if object.year_round.get_CurrentStep_display != 'YearRoundClose' %}
-    <tr>
-        <td>
-        {{ forloop.counter }}</td>
-        <td>
-            {% if object.RequesterSended %}
-                <i class="fa fa-lock text-dark icon-size" >
-            {% else %}
-                <a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a>
+    {% if object.ProcessStep == 'RC' %}
+        <tr>
+            <td>
+            {{ forloop.counter }}</td>
+            <td>
+
+            </td>
+            <td>
+
+            </td>
+            <td> 
+        
+            </td>
+            <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
+            <td>{{ object.FullName }}</td>
+            <td>{{ object.Unit }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan = 5 class = "text-dark">
+                {{ object.Comment }}
+            </td>
+        </tr>  
+
+    {% else %}
+        <tr>
+            <td>
+            {{ forloop.counter }}</td>
+            <td>
+                {% if object.RequesterSended %}
+                    <i class="fa fa-lock text-dark icon-size" >
+                {% else %}
+                    <a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a>
+                {% endif %}
+            </td>
+            <td>
+                    <a href = "#" onclick = "modal_hr_detail({{ object.id }})">
+                        <i class="fa fa-eye text-info icon-size" ></i>
+                    </a>
+            </td>
+            <td> 
+                {% if object.RequesterSended %} 
+                    <a href = "{% url 'HomeRequest:doc' object.id %}" >
+                    <i class="fas fa-file-word icon-size"></i></a>
+                {% else %} 
+                    <a href = "#" >
+                    <i class="fas fa-file-word icon-size text-muted"></i></a>
+                {% endif %}            
+            </td>
+            <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
+            <td>{{ object.FullName }}</td>
+            <td>{{ object.Unit }}</td>
+            <td>
+                {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
+                {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
+            </td>
+            <td>
+                {% if object.get_Status_display == 'โสด' and object.Requester.Sex == 'ชาย' %}
+                    <img src = "{% static 'my_images/single_m.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'โสด' and object.Requester.Sex == 'หญิง' %}
+                    <img src = "{% static 'my_images/single_f.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'สมรส-อยู่ร่วมกัน' %}
+                    <img src = "{% static 'my_images/together.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'ชาย' %}
+                    <img src = "{% static 'my_images/widow_m.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'หญิง' %}
+                    <img src = "{% static 'my_images/widow_f.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'ชาย' %}
+                    <img src = "{% static 'my_images/divorce_m.jpg' %}" width = 25>
+                {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'หญิง' %}
+                    <img src = "{% static 'my_images/divorce_f.jpg' %}" width = 25>
+                {% endif %}
+            </td>
+            <td>
+                {% if object.CoResident.all.count == 0%}
+                    - 
+                {% else %}
+                    {{ object.CoResident.all.count }}
+                {% endif %}
+            </td>
+            <td>
+                {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
+            </td>
+            <td>
+                {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
+            </td>
+            <td>
+                {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              
+            </td>
+            <td>
+                {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
+            </td>
+            <td class = "text-danger">
+            {% if object.cancel_request %}
+                รออนุมัติการยกเลิกคำขอ
+            {% elif not object.RequesterSended %}
+                *** ยังไม่ได้ส่งเอกสาร ***
+            {% elif object.still_active %}            
+                <a href="#"  onclick= "confirm_cancel();" class="btn btn-danger">แจ้งยกเลิกคำขอ</a>
             {% endif %}
-        </td>
-        <td>
-                <a href = "#" onclick = "modal_hr_detail({{ object.id }})">
-                    <i class="fa fa-eye text-info icon-size" ></i>
-                </a>
-        </td>
-        <td><a href = "{% url 'HomeRequest:doc' object.id %}"><i class="fas fa-file-word icon-size"></i></a></td>
-        <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
-        <td>{{ object.FullName }}</td>
-        <td>{{ object.Unit }}</td>
-        <td>
-            {% if object.Salary %}  {{ object.Salary|intcomma }} {% endif %}
-            {% if object.AddSalary %}  + {{ object.AddSalary|intcomma }} {% endif %}            
-        </td>
-        <td>
-            {% if object.get_Status_display == 'โสด' and object.Requester.Sex == 'ชาย' %}
-                <img src = "{% static 'my_images/single_m.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'โสด' and object.Requester.Sex == 'หญิง' %}
-                <img src = "{% static 'my_images/single_f.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'สมรส-อยู่ร่วมกัน' %}
-                <img src = "{% static 'my_images/together.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'ชาย' %}
-                <img src = "{% static 'my_images/widow_m.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'ม่าย' and object.Requester.Sex == 'หญิง' %}
-                <img src = "{% static 'my_images/widow_f.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'ชาย' %}
-                <img src = "{% static 'my_images/divorce_m.jpg' %}" width = 25>
-            {% elif object.get_Status_display == 'หย่า' and object.Requester.Sex == 'หญิง' %}
-                <img src = "{% static 'my_images/divorce_f.jpg' %}" width = 25>
-            {% endif %}
-        </td>
-        <td>
-            {% if object.CoResident.all.count == 0%}
-                - 
-            {% else %}
-                {{ object.CoResident.all.count }}
-            {% endif %}
-        </td>
-        <td>
-            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
-        </td>
-        <td>
-            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
-        </td>
-        <td>
-            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              
-        </td>
-        <td>
-            {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
-        </td>
-        <td></td>
-    </tr>  
+            </td>
+        </tr>  
+    {% endif %}
 {% else %}
     <tr>                        
         <td>{{ forloop.counter }}</td>

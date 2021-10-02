@@ -1,5 +1,6 @@
 #python module
 import os
+import datetime
 from io import StringIO, BytesIO
 #django Module
 from django.shortcuts import render
@@ -137,8 +138,6 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
 
         self.object.year_round = CurrentYearRound[0]
         self.object.Unit = self.request.user.CurrentUnit
-        self.object.ProcessStep = HomeRequestProcessStep.REQUESTER_PROCESS
-        self.object.save()
         
         # user_current_data_form.save()
 
@@ -147,7 +146,17 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
             cr.home_request = self.object
             cr.save()
 
-        messages.success(self.request, f'เพิ่มข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+        if 'save' in self.request.POST:            
+            self.object.ProcessStep = HomeRequestProcessStep.REQUESTER_PROCESS
+            self.object.save()
+            messages.success(self.request, f'เพิ่มข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+        elif 'send' in self.request.POST:
+            self.object.update_process_step(
+                                    HomeRequestProcessStep.REQUESTER_SENDED, 
+                                    self.request.user)
+            self.object.save()
+            messages.success(self.request, f'บันทึกและส่งข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -371,6 +380,18 @@ class HomeRequestDetail(AuthenUserTestMixin, DetailView):
 
 
 @login_required
+def cancel_request(request, home_request_id):
+    home_request = HomeRequest.objects.get(id = home_request_id)
+    if request.user != home_request.Requester:
+        raise PermissionDenied()
+    else:    
+        home_request.cancel_request = True
+        home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(datetime.date.today())
+        home_request.save()
+        return JsonResponse({"ok": True}, safe=False)
+    
+               
+@login_required
 def update_process_step(request, home_request_id, process_step):
     allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
     allow_access = False
@@ -382,7 +403,6 @@ def update_process_step(request, home_request_id, process_step):
         raise PermissionDenied()
                
     home_request = HomeRequest.objects.get(id = home_request_id)
-    unit_id = home_request.Unit.id
     home_request.ProcessStep = process_step
     home_request.save()
     home_request.update_process_step(process_step, request.user)

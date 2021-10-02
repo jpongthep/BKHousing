@@ -6,7 +6,13 @@
                 <div class="steps">
                     <progress id="progress" value= {% widthratio object.process_value 1 17 %} max=100 ></progress>
                     <div class="step-item">
-                        {% if object.process_value >= 0 %}
+                        {% if object.process_value == 0 %}
+                        <a href = "{% url 'HomeRequest:update' object.id %}">
+                            <button class="step-button text-center" aria-expanded="true" >
+                                <i class="fas fa-check fa-2x"></i>
+                            </button>
+                        </a>
+                        {% elif object.process_value >= 1 %}
                         <button class="step-button text-center" aria-expanded="true" >
                             <i class="fas fa-check fa-2x"></i>
                         </button>

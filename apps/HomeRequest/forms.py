@@ -61,16 +61,26 @@ class HomeRequestForm(forms.ModelForm):
             'SalaryBill': forms.FileInput(attrs={'accept':'application/pdf'}),
             'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),     
             'ZoneRequestPriority1' : forms.Select(attrs={'data-priority':'1'}),
-            'ZoneRequestPriority2' : forms.Select(attrs={'disabled':'true', 'data-priority':'2'}),
-            'ZoneRequestPriority3' : forms.Select(attrs={'disabled':'true', 'data-priority':'3'}),
-            'ZoneRequestPriority4' : forms.Select(attrs={'disabled':'true', 'data-priority':'4'}),
-            'ZoneRequestPriority5' : forms.Select(attrs={'disabled':'true', 'data-priority':'5'}),
-            'ZoneRequestPriority6' : forms.Select(attrs={'disabled':'true', 'data-priority':'6'}),
+            'ZoneRequestPriority2' : forms.Select(attrs={'data-priority':'2'}),
+            'ZoneRequestPriority3' : forms.Select(attrs={'data-priority':'3'}),
+            'ZoneRequestPriority4' : forms.Select(attrs={'data-priority':'4'}),
+            'ZoneRequestPriority5' : forms.Select(attrs={'data-priority':'5'}),
+            'ZoneRequestPriority6' : forms.Select(attrs={'data-priority':'6'}),
         }
+
     def __init__(self, *args, **kwargs):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
         self.fields['GooglePlusCodes2'].label = False
+        instance = getattr(self, 'instance', None)
+
+        if instance.Requester.Rank >= 30411:            
+            self.fields['IsHomeNeed'].widget.attrs['disabled'] = True
+
+        if instance.Requester.current_status not in [2, 7]:            
+            self.fields['IsShopHouseNeed'].widget.attrs['disabled'] = True
+    
+
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
@@ -80,8 +90,7 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         # fields=['PersonID', 'FullName','BirthDay','Relation','Occupation','Salary','Education'], 
 
                                         # labels for the fields
-                                        labels={
-                                            'PersonID': _(u'PersonID'),
+                                        labels={                                            
                                             'FullName': _(u'คำนำหน้า ชื่อ นามสกุล'),
                                         },
                                         widgets = {

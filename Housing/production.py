@@ -3,7 +3,7 @@ import os
 from .settings import *
 
 DEBUG = True
-ALLOWED_HOSTS = ['*','ec2-54-151-164-105.ap-southeast-1.compute.amazonaws.com']
+ALLOWED_HOSTS = ['*']
 
 DATABASES = {
     'default': {

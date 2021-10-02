@@ -6,6 +6,10 @@
     font-size: 25px;
 }
 
+.home-logo {
+    padding: 15px 5px 0px 0px;
+}
+
 .description-brand {
     font-family: 'Mali', cursive;
     font-size: 16px;

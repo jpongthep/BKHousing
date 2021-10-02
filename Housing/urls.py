@@ -8,12 +8,16 @@ from django.conf.urls.static import static
 
 from apps.UserData.views import MyLoginView
 from django.contrib.auth.views import LogoutView
-from .views import minView
+from .views import HomeView
 
+
+admin.site.site_header = 'ARMIS Admin site'
+admin.site.index_title = 'ฐานข้อมูลหลังบ้าน'
+admin.site.site_title = 'หน้าหลัก'
 
 urlpatterns = [
     # path('', blankView.as_view(), name = 'blank'),
-    path('', minView.as_view(), name = 'blank'),
+    path('', HomeView.as_view(), name = 'Home'),
 
     path('login/', MyLoginView.as_view(), name = 'login'),
     path('logout/', LogoutView.as_view(), name = 'logout'),
@@ -22,8 +26,9 @@ urlpatterns = [
     path('pm/', include('apps.Payment.urls')),
     path('hr/', include('apps.HomeRequest.urls')),
     path('pf/', include('apps.UserData.urls')),
-    path('tr/', include('apps.Trouble.urls')),
+    path('tr/', include('apps.Trouble.urls')),    
     path('admin/', admin.site.urls),
+
 ] 
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

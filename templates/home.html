@@ -1,0 +1,26 @@
+{% extends '_minbase.html' %}
+
+{% block title %}ARMIS ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.{% endblock %}
+
+
+{% block header %}
+ข้อมูลปีงบประมาณ 65
+{% endblock %}
+
+{% block header_right %}{{ request.user.FullName}}{% endblock %}
+
+{% block CardRow %}
+    <div class = "row">        
+        {% include "project/card.html" with color="info" awesome="fa-home" number="175" text="บ้านรอจัดสรร"%}          
+        {% include "project/card.html" with color="warning" awesome="fa-users" number="712" text="คำขอบ้านพัก"%}  
+        {% include "project/card.html" with color="success" awesome="fa-check" number="64" text="ได้รับจัดสรร"%}
+        {% include "project/card.html" with color="primary" awesome="fa-home" number="14/65" text="คำสั่งบ้านล่าสุด"%}        
+    </div> 
+{% endblock %}
+
+{% block content%}
+
+{% endblock %}
+
+{% block modal %}
+{% endblock modal %}

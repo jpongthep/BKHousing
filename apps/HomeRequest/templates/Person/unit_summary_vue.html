@@ -94,7 +94,7 @@
                         <td>[[ obj.counter ]]</td>                        
                         <td>[[ obj.short_name ]]</td>                    
                         <td><a href = "#" @click = "show_unit_data_list([[ obj.unit_id ]])" ><i class="fa fa-list text-info icon-size" ></i></a></td>
-                        <td><a href = ""><i class="fas fa-file-excel text-success icon-size"></i></a></td>
+                        <td><a href = "#" @click = "show_xls(obj.unit_id)"><i class="fas fa-file-excel text-success icon-size"></i></a></td>
                         <td>[[ obj.num_RP ]]</td>
                         <td>[[ obj.num_RS ]]</td>
                         <td>[[ obj.num_UP ]]</td>
@@ -321,6 +321,12 @@
                         else
                             alert("เกิดข้อผิดพลาด ไม่สามารถรับเรื่องได้");
                     });
+            },
+            show_xls(unit_id)
+            {
+                urltext = "{% url 'HomeRequest:xls' '99999' %}";
+                xlsURL = urltext.replace("99999",unit_id)                
+                window.open(xlsURL ,'_blank');
             },
             evaluate(hm_id)
             {

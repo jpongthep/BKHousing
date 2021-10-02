@@ -11,7 +11,8 @@ from .views import (ProcessFlow,
                     TestExcel,
                     UnitList4PersonAdmin,
                     AFPersonListView,
-                    update_process_step)
+                    update_process_step,
+                    cancel_request)
 
 from .views_modals import af_person_data_detailview
 # from rest_framework import routers
@@ -35,6 +36,7 @@ urlpatterns = [
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),
+    path('<home_request_id>/hrc',cancel_request, name = 'cancel_request'),
 
     path('<pk>/md',af_person_data_detailview.as_view(), name = 'md'),
 

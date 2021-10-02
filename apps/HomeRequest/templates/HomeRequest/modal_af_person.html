@@ -55,17 +55,7 @@
           </div>
       </div>
       <div class="modal-footer">
-      {% if object.still_active %}
-        <button type="button" class="btn btn-danger me-auto" data-bs-dismiss="modal">ยกเลิกคำขอ</button>
-      {% endif %}
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-      {% if object.still_active %}
-        {% if object.RequesterSended %}
-          <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal" style = "display:none;">ส่งรายงาน</button>
-        {% else %}
-          <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">ส่งรายงาน</button>
-        {% endif %}
-      {% endif %}
       </div>
     </div>
   </div>

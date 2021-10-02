@@ -8,20 +8,41 @@
 
 {% block scriptlink %}
     <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
-  
 {% endblock %}
 
 
 {% block script %}
-    function modal_hr_detail(hr_id)
-    {
-        urltext = "{% url 'HomeRequest:md' 99999 %}"
-        
-        new_urltext = urltext.replace("99999",hr_id)
-        console.log(new_urltext)
-        fetch_show_modal(new_urltext);
-    }
+    <script>
+        function modal_hr_detail(hr_id)
+        {
+            urltext = "{% url 'HomeRequest:md' 99999 %}"
+            
+            new_urltext = urltext.replace("99999",hr_id)
+            console.log(new_urltext)
+            fetch_show_modal(new_urltext);
+        }
 
+    function confirm_cancel()
+    {
+        showModal(
+                "กรุณายืนยัน", "ยกเลิกคำขอบ้านพัก (จะต้องโทรติดต่อเจ้าหน้าที่เพื่อยืนยันอีกครั้ง)", 
+                yesBtnLabel = 'ยืนยัน', noBtnLabel = 'ยกเลิก', 
+                function() {
+                    console.log("Cancel Request");
+                    fetch('/hr/16/hrc', {
+                        method: 'post',
+                        headers: { 
+                            'Accept': 'application/json, text/plain, */*',
+                            'Content-Type': 'application/json',
+                            "X-CSRFToken": "{{ csrf_token }}" }                                    
+                    }).then(res => res.json())
+                      .then(res => console.log(res));
+                }
+        );
+        return false;
+    }
+     
+    </script>
 {% endblock %}
 
 {% block style %}
@@ -108,13 +129,15 @@
 {% endblock %}
 
 {% block header %}
-แบบฟอร์มขอบ้านพัก
+คำขอบ้านพัก
 {% endblock %}
 
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
+
+
 {% block content%}
-    {% if has_request %}  
+    {% if has_request and  object_list.0.ProcessStep != 'RC' %}  
         {% include "HomeRequest/process_step.html" with object=object_list.0 %}
     {% endif %}
     <div>

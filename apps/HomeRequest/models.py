@@ -103,7 +103,7 @@ class HomeRequest(models.Model):
     Comment = models.TextField(verbose_name="หมายเหตุ", null=True, blank = True)
 
     ProcessStep = models.CharField(verbose_name="ขั้นตอนเอกสาร", max_length = 2, choices = HomeRequestProcessStep.choices,default = HomeRequestProcessStep.REQUESTER_PROCESS)
-
+    cancel_request = models.BooleanField(verbose_name = 'ผู้ส่งขอยกเลิกคำขอ', default = False)
     # วันที่ส่งเอกสารของผู้ขอบ้าน
      
     RequesterDateSend = models.DateField(verbose_name = 'วันที่ขรก.ส่งเอกสาร',default = None,null = True, blank = True)
@@ -162,6 +162,14 @@ class HomeRequest(models.Model):
         super(HomeRequest, self).__init__(*args, **kwargs)
         self.OriginProcessStep = self.ProcessStep
 
+    # def clean(self):
+    #     from django.core.exceptions import ValidationError
+    #     print("model clean")
+    #     if self.RequesterDateSend:
+    #         if not self.ZoneRequestPriority1:
+    #             raise ValidationError('กรุณากรอกลำดับความต้องการ')
+        
+
     def get_absolute_url(self):
         return reverse('HomeRequest:af_person')
 
@@ -176,15 +184,15 @@ class HomeRequest(models.Model):
 
     @property
     def still_active(self):
-        CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
-        CurrentYear = CurrentYearRound[0].Year
-        return self.year_round.Year == CurrentYear
+        return self.ProcessStep not in ['RC','RF']
     
     def process_value(self):
-        step = ['RP','RS','UP','US','PP','PA','GH','RC','RF']
-        return step.index(self.ProcessStep)
+        step = ['RP','RS','UP','US','PP','PA','GH']
+        if self.ProcessStep in step:
+            return step.index(self.ProcessStep)
+        elif self.ProcessStep in ['RC','RF']:
+            return 0
+
 
     def status_icon(self):
         if self.Status == 'โสด':
@@ -211,4 +219,4 @@ class CoResident(models.Model):
 
     def get_absolute_url(self):
         hrid = self.home_request.id
-        return reverse('HomeRequest:detail', kwargs={"pk": hrid})        
+        return reverse('HomeRequest:detail', kwargs={"pk": hrid})      
