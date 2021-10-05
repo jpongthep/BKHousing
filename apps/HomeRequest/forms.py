@@ -72,6 +72,13 @@ class HomeRequestForm(forms.ModelForm):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
         self.fields['GooglePlusCodes2'].label = False
+        self.fields['HouseRegistration'].label = False
+        self.fields['DivorceRegistration'].label = False
+        self.fields['SpouseDeathRegistration'].label = False
+        self.fields['HomeRent6006'].label = False
+        self.fields['SpouseHomeRent6006'].label = False
+        self.fields['SalaryBill'].label = False
+        self.fields['SpouseApproved'].label = False
         instance = getattr(self, 'instance', None)
 
         if instance.Requester.Rank >= 30411:            

@@ -10,16 +10,64 @@
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block CardRow %}
+    {% comment %} 
     <div class = "row">        
         {% include "project/card.html" with color="info" awesome="fa-home" number="175" text="บ้านรอจัดสรร"%}          
         {% include "project/card.html" with color="warning" awesome="fa-users" number="712" text="คำขอบ้านพัก"%}  
         {% include "project/card.html" with color="success" awesome="fa-check" number="64" text="ได้รับจัดสรร"%}
         {% include "project/card.html" with color="primary" awesome="fa-home" number="14/65" text="คำสั่งบ้านล่าสุด"%}        
-    </div> 
+    </div>  
+    {% endcomment %}
 {% endblock %}
 
-{% block content%}
+{% block body%}
+<main class = "m-3">
+    <div class="row g-5">
+      <div class="col-md-6">
+        <h2>ระบบสารสนเทศเพื่อการจัดการบ้านพัก ทอ.</h2>
+        <p class="fs-5">
+            การบริหารบ้านพักอาศัยของกองทัพอากาศเป็นหน้าที่ของ คณก.จัดการบ้านพักอาศัย ทอ. ซึ่งมี รอง ผบ.ทอ.เป็นประธานโดยตำแหน่ง และมีหน่วยเกี่ยวข้องหลัก 4 หน่วยประกอบด้วย กพ.ทอ. (เลขานุการ), สน.ผบ.ดม., กง.ทอ. และ ชย.ทอ.โดยแบ่งหน้าที่ดังนี้
+        </p>
+        <ul>
+            <li><b>กพ.ทอ.</b> มีหน้าที่บริหารจัดการในภาพรวม ออกคำสั่งบ้านพัก ตรวจสภาพบ้าน ประสานงานกับหน่วยเกี่ยวข้องต่าง ๆ</li>
+            <li><b>สน.ผบ.ดม.</b> เวสต์คอนแท็ค เชอร์รี่โปสเตอร์ปาสคาลเคส บาร์บี้โนติสต้าอ่วยเอ็กซ์โป </li>
+            <li><b>กง.ทอ.</b> ช็อคสแควร์กิฟท์แคนู จอหงวน ลอจิสติกส์ สแตนดาร์ดโปรเจ็กต์แม็กกาซีน</li>
+            <li><b>ชย.ทอ.</b> หมิงวิกเกจิ ละติน บุญคุณ โฟล์คยิวธัมโม รันเวย์เด้อแกรนด์ไกด์ คำตอบ หล่อฮังก้วยซามูไรม้ง</li>
+        </ul>
+      </div>
 
+      <div class="col-md-6">
+        <h2>การพัฒนา ARMIS แต่ละเฟส</h2>
+        <p>เนื่องจากหน่วยงานที่เกี่ยวข้องกับการบริหารบ้านพักอาศัย ทอ. มีหลายหน่วยซึ่งมีหน้าที่แตกต่างกันตามภาระงาน จึงมีความจำเป็นจะต้องใช้ระบบสารสนเทศที่หลากหลายไม่ว่าจะเป็น จนท.ของหน่วยงานเอง หรือ ขรก.ทอ.ทั้งที่มีบ้านพักอาศัย และยังไม่มีบ้านพักอาศัย ทางทีมพัฒนาจึงแบ่งขั้นตอนการพัฒนาเป็นเฟสต่าง ๆ เบื้องต้นดังนี้</p>
+        <ul class="icon-list">
+            <li>เฟส 1 ส่วนการส่งคำขอบ้านพักแบบ Online</li>
+            <li>เฟส 2 ส่วนการจัดสรร ออกคำสั่งและเข้าพักอาศัย</li>
+            <li>เฟส 3 ส่วนตรวจสภาพบ้านพัก การร้องเรียนร้องทุกข์ การดูแลบ้านพักในส่วน สน.ผบ.ดม.</li>
+            <li>เฟส 4 ตรวจสภาพบ้านพัก </li>
+        </ul>
+        <p class="col-md-12">
+            หากท่านตรวจพบข้อผิดพลาดของโปรแกรม หรือมีข้อเสนอแนะต่าง ๆ สามารถส่งข้อมูลให้ทีมงานเพื่อนำไปปรับปรุงต่อไป
+        </p>
+        <div class="mb-2">
+          <a href="/docs/5.1/examples/" class="btn btn-primary btn-lg px-4">ให้ข้อเสนอแนะ</a>
+        </div>
+      </div>
+    </div>
+    
+    <hr class="col-12 col-md-6 mb-5">
+    <div class="row g-5">
+      <div class="col-md-6">
+        <h2>Guides</h2>
+        <p>Read more detailed instructions and documentation on using or contributing to Bootstrap.</p>
+        <ul class="icon-list">
+          <li><a href="/docs/5.1/getting-started/introduction/">Bootstrap quick start guide</a></li>
+          <li><a href="/docs/5.1/getting-started/webpack/">Bootstrap Webpack guide</a></li>
+          <li><a href="/docs/5.1/getting-started/parcel/">Bootstrap Parcel guide</a></li>
+          <li><a href="/docs/5.1/getting-started/contribute/">Contributing to Bootstrap</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
 {% endblock %}
 
 {% block modal %}

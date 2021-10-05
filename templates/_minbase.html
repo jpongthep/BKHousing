@@ -11,6 +11,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Airforce Resident Management Information System">
     <link rel="icon" href="{% static 'images/armis.png' %}">
     <!-- Bootstrap CSS -->
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
@@ -64,7 +65,8 @@
       }      
 
       footer div img {
-        width : 35px
+        width : 50px;
+        height : 45px;
       }
 
   a.button-bg:hover{
@@ -208,7 +210,7 @@
     
     {% include "DisplayMessage.html" %}
     {% comment %} {{request.resolver_match}} {% endcomment %}
-
+    {% block body %}
       <div class="row mt-2">
         <div class="col-xl-9">
           <h3>{% block header %}ขั้นตอนการขอบ้านพัก{% endblock %}</h3>          
@@ -221,7 +223,9 @@
         <div class="col-xl-12">
           <hr class="mt-0 mb-4">       
         </div>
-      </div>      
+      </div>  
+    {% endblock body %}    
+    
 
 {% block CardRow %}
 

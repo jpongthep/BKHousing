@@ -92,13 +92,15 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     raw_id_fields = ('owner','home')
     list_filter = ('is_stay','home__zone','home__type','owner__CurrentUnit')
     search_fields = ['owner__first_name','owner__last_name','home__number','home__number']
-    inlines = [CoResidentInline,RentPaymentInline,WaterPaymentInline]
+    inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]
 
     def lastest_command(self, obj):
+        from django.utils.html import format_html
         if obj.is_stay:
-            return f'เข้า {obj.enter_command}'
+            return format_html("<b>ย้ายเข้า {}</b>", obj.enter_command)
         else:
-            return f'ออก {obj.leave_command}'
+            return format_html("<font style = 'color:rgb(160, 160, 160);'>ย้ายออก {}</font>", obj.leave_command)
+            
     lastest_command.short_description = 'คำสั่งล่าสุด'
 
     def owner_unit(self, obj):

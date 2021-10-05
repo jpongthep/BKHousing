@@ -13,6 +13,7 @@
 
 
 {% block script %}
+<script>
     function modal_hr_detail(hr_id)
     {
         urltext = "{% url 'HomeRequest:md' 99999 %}"
@@ -21,7 +22,7 @@
         console.log(new_urltext)
         fetch_show_modal(new_urltext);
     }
-
+</script>
 {% endblock %}
 
 {% block style %}

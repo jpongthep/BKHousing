@@ -41,10 +41,48 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 }
             }
 
+            // console.log($("[name = 'hr-RentPermission']:checked").val() == '3')
+            // ถ้าเลือกช่อง "มีและใช้สิทธิ์เบิกค่าเช่าบ้าน" จะต้องกรอกข้อมูลสัญญาให้ครบถ้วน
+            if($("[name = 'hr-RentPermission']:checked").val() == '3')
+            {
+                //console.log('$("#id_hr-RentStartDate").val()', $("#id_hr-RentStartDate").val())
+                if(isEmptyOrSpaces($("#id_hr-RentStartDate").val()) )
+                {
+                    $("#id_hr-RentStartDate").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+                if(isEmptyOrSpaces($("#id_hr-RentEndDate").val()) )
+                {
+                    $("#id_hr-RentEndDate").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+
+                if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes2").val()) )
+                {
+                    $("#id_hr-GooglePlusCodes2").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+            }
+
+            if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes1").val()) )
+            {
+                $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+            if(isEmptyOrSpaces($("#id_hr-TravelDescription").val()) )
+            {
+                $("#id_hr-TravelDescription").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+
+            console.log($("#id_hr-IsNotBuyHome").val());
+
             if(! data_completed)
             {
                 alert("ข้อมูลแบบฟอร์มยังไม่สมบูรณ์ กรุณากรอกข้อมูลในช่องสีแดงให้ครบก่อนส่ง หรือบันทึกร่าง")
+                return false;
             }
+
             var c = confirm("เมื่อส่งข้อมูลแล้วจะไม่สามารถแก้ไขข้อมูลในระบบได้ ยืนยันการบันทึกและส่งข้อมูล");
             return c;
         });
@@ -434,28 +472,91 @@ ARMIS แบบฟอร์มขอบ้านพัก
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3">
-                    {{ form.HouseRegistration|as_crispy_field  }} 
+                <div class="col-md-3">                    
+                    <div class="mb-3">
+                        <label class="form-label">สำเนาทะเบียนบ้าน</label>
+                        {% if form.HouseRegistration.value %}
+                        <a href="{{ form.HouseRegistration.value.url }}" target = "_blank"
+                           title = "{{ form.HouseRegistration.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.HouseRegistration|as_crispy_field  }}
+                    </div>
                 </div>                
                 <div class="col-md-3">
-                    {{ form.DivorceRegistration|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">ทะเบียนหย่า (ถ้ามี)</label>
+                        {% if form.DivorceRegistration.value %}
+                        <a href="{{ form.DivorceRegistration.value.url }}" target = "_blank"
+                           title = "{{ form.DivorceRegistration.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.DivorceRegistration|as_crispy_field  }}
+                    </div>                
                 </div>                
                 <div class="col-md-3">
-                    {{ form.SpouseDeathRegistration|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">มรณบัตรคู่สมรส (ถ้ามี)</label>
+                        {% if form.SpouseDeathRegistration.value %}
+                        <a href="{{ form.SpouseDeathRegistration.value.url }}" target = "_blank"
+                           title = "{{ form.SpouseDeathRegistration.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.SpouseDeathRegistration|as_crispy_field  }}
+                    </div>                  
                 </div>                
                 <div class="col-md-3">
-                    {{ form.HomeRent6006|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">แบบฟอร์มเบิก คชบ. 6006 (ตนเอง)</label>
+                        {% if form.HomeRent6006.value %}
+                        <a href="{{ form.HomeRent6006.value.url }}" target = "_blank"
+                           title = "{{ form.HomeRent6006.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.HomeRent6006|as_crispy_field  }}
+                    </div>  
                 </div> 
             </div>        
             <div class="row">
                 <div class="col-md-3">
-                    {{ form.SpouseHomeRent6006|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">แบบฟอร์มเบิก คชบ. 6006 (คู่สมรส)</label>
+                        {% if form.SpouseHomeRent6006.value %}
+                        <a href="{{ form.SpouseHomeRent6006.value.url }}" target = "_blank"
+                           title = "{{ form.SpouseHomeRent6006.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.SpouseHomeRent6006|as_crispy_field  }}
+                    </div>                 
                 </div>                
                 <div class="col-md-3">
-                    {{ form.SalaryBill|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">สลิปเงินเดือนล่าสุด</label>
+                        {% if form.SalaryBill.value %}
+                        <a href="{{ form.SalaryBill.value.url }}" target = "_blank"
+                           title = "{{ form.SalaryBill.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.SalaryBill|as_crispy_field  }}
+                    </div>                  
                 </div>                
                 <div class="col-md-3">
-                    {{ form.SpouseApproved|as_crispy_field  }} 
+                    <div class="mb-3">
+                        <label class="form-label">หนังสือรับรองของคู่สมรส</label>
+                        {% if form.SpouseHomeRent6006.value %}
+                        <a href="{{ form.SpouseHomeRent6006.value.url }}" target = "_blank"
+                           title = "{{ form.SpouseHomeRent6006.value }}">
+                            <img src = {% static 'images/pdf_icon24.gif'%} >
+                        </a>
+                        {% endif %}
+                        {{ form.SpouseHomeRent6006|as_crispy_field  }}
+                    </div>                                      
                 </div>
             </div>
         </div>      
