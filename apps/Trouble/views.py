@@ -12,6 +12,26 @@ from .models import ( SetForm,
                       QuestionList, 
                       AnsweredForm)
 
+
+def view_eval(request, HomeRequstID = 1, eval_type = 'Unit'):
+    
+    print(HomeRequstID, eval_type)
+    home_request = HomeRequest.objects.get(id = HomeRequstID)
+        
+    set_form = SetForm.objects.get(code = 'F60')
+
+    filled_form = FilledForm.objects.filter(set_form = set_form,
+                                            home_request_form = home_request,
+                                            type = eval_type)
+    Troubleform = filled_form[0]        
+    QAList = AnsweredForm.objects.filter(filled_form = Troubleform)
+    context = {
+        'Troubleform' : Troubleform,
+        'QAList' : QAList
+        }
+
+    return render(request,'Trouble/list_view.html',context)
+
 def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
 
     home_request = HomeRequest.objects.get(id = HomeRequstID)
@@ -66,8 +86,6 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
         'Troubleform' : Troubleform,
         'QAList' : QAList
         }
-    
-
     return render(request,'Trouble/list_question.html',context)
 
 def CreateBlankFrom(set_form, home_request_form, evaluater, type = 'Self', date = datetime.date.today()):

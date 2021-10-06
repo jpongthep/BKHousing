@@ -97,7 +97,8 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     def lastest_command(self, obj):
         from django.utils.html import format_html
         if obj.is_stay:
-            return format_html("<b>ย้ายเข้า {}</b>", obj.enter_command)
+            text = f"<b>ย้ายเข้า {obj.enter_command}</b>" if obj.enter_command else "-"
+            return format_html(text)
         else:
             return format_html("<font style = 'color:rgb(160, 160, 160);'>ย้ายออก {}</font>", obj.leave_command)
             

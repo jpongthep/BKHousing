@@ -3,9 +3,28 @@ from django.forms.fields import DateField
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
+from django.forms.widgets import Widget
+from django.template import loader
+from django.utils.safestring import mark_safe
+
 
 from .models import HomeRequest, CoResident
 from apps.Utility.Constants import HomeRentPermission
+
+
+class UploadFileWidget(forms.FileInput):
+    template_name = 'HomeRequest/upload_file_widget.html'
+
+    def get_context(self, name, value, attrs=None):
+        context = super().get_context(name, value, attrs)
+        context['widget']['name'] = name
+        context['widget']['value'] = value
+        return context
+
+    def render(self, name, value, attrs=None, renderer=None):
+        context = self.get_context(name, value, attrs)
+        template = loader.get_template(self.template_name).render(context)
+        return mark_safe(template)
 
 
 class HomeRequestForm(forms.ModelForm):
@@ -53,13 +72,13 @@ class HomeRequestForm(forms.ModelForm):
             'RentStartDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
             'RentEndDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
             'RentPermission': forms.RadioSelect,
-            'HouseRegistration' : forms.FileInput(attrs={'accept':'application/pdf'}),
-            'DivorceRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SpouseDeathRegistration': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'HomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SpouseHomeRent6006': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SalaryBill': forms.FileInput(attrs={'accept':'application/pdf'}),
-            'SpouseApproved': forms.FileInput(attrs={'accept':'application/pdf'}),     
+            'HouseRegistration' : UploadFileWidget(),
+            'DivorceRegistration': UploadFileWidget(),
+            'SpouseDeathRegistration': UploadFileWidget(),
+            'HomeRent6006': UploadFileWidget(),
+            'SpouseHomeRent6006': UploadFileWidget(),
+            'SalaryBill': UploadFileWidget(),
+            'SpouseApproved': UploadFileWidget(),
             'ZoneRequestPriority1' : forms.Select(attrs={'data-priority':'1'}),
             'ZoneRequestPriority2' : forms.Select(attrs={'data-priority':'2'}),
             'ZoneRequestPriority3' : forms.Select(attrs={'data-priority':'3'}),
@@ -68,26 +87,22 @@ class HomeRequestForm(forms.ModelForm):
             'ZoneRequestPriority6' : forms.Select(attrs={'data-priority':'6'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self,  *args, **kwargs):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
         self.fields['GooglePlusCodes2'].label = False
-        self.fields['HouseRegistration'].label = False
-        self.fields['DivorceRegistration'].label = False
-        self.fields['SpouseDeathRegistration'].label = False
-        self.fields['HomeRent6006'].label = False
-        self.fields['SpouseHomeRent6006'].label = False
-        self.fields['SalaryBill'].label = False
-        self.fields['SpouseApproved'].label = False
-        instance = getattr(self, 'instance', None)
 
-        if instance.Requester.Rank >= 30411:            
-            self.fields['IsHomeNeed'].widget.attrs['disabled'] = True
-
-        if instance.Requester.current_status not in [2, 7]:            
-            self.fields['IsShopHouseNeed'].widget.attrs['disabled'] = True
-    
-
+        # user = None,
+        # try:
+        #     if user.Rank >= 30411:            
+        #         self.fields['IsHomeNeed'].widget.attrs['disabled'] = True
+        #         self.fields['IsHomeNeed'].label += " (เฉพาะนายพลอากาศ)"
+            
+        #     if user.current_status not in [2, 7]:            
+        #         self.fields['IsShopHouseNeed'].widget.attrs['disabled'] = True
+        #         self.fields['IsShopHouseNeed'].label += ' (เฉพาะผู้รายงานสภานภาพ "สมรส")'
+        # except:
+        #     pass
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
@@ -117,6 +132,6 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         can_delete=True,
 
                                         # how many inline-forms are sent to the template by default
-                                        extra = 3)
+                                        extra = 1)
 
 

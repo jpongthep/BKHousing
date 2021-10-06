@@ -205,9 +205,12 @@ ARMIS แบบฟอร์มขอบ้านพัก
 
         function cloneMore(selector, type) {
             var newElement = $(selector).clone(true);
-            var total = $('#id_hr-' + type + '-TOTAL_FORMS').val();
+
+            var total = $('.CoResident').length
             newElement.find(':input').each(function() {
                 var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
+                console.log("total = ", total)
+                console.log("name = ", name)
                 var id = 'id_hr-' + name;
                 $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
             });
@@ -215,13 +218,20 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
                 $(this).attr('for', newFor);
             });
+            
+            $( "input[name^='CoResident-"+ (total-1)"-home_request']" ).each(function() {
+                var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+                $(this).attr('for', newFor);
+            });
+
             total++;
             $('#id_hr-' + type + '-TOTAL_FORMS').val(total);
             $(selector).after(newElement);
         }
 
-        $('#add_more').click(function() {
-            cloneMore('#co_residence:last', 'service');
+        $('#add_more').click(function(event) {
+            event.preventDefault();
+            cloneMore('.CoResident:last', 'service');
         });
 
         status = $("#id_hr-Status").val();
@@ -432,14 +442,14 @@ ARMIS แบบฟอร์มขอบ้านพัก
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     {{ form.IsHomeNeed|as_crispy_field }}
                 </div>
                 <div class="col-md-2">
                     {{ form.IsFlatNeed|as_crispy_field  }}
                 </div>                
             
-                <div class="col-md-2">
+                <div class="col-md-4">
                     {{ form.IsShopHouseNeed|as_crispy_field  }}
                 </div>
             
@@ -472,91 +482,35 @@ ARMIS แบบฟอร์มขอบ้านพัก
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-3">                    
-                    <div class="mb-3">
-                        <label class="form-label">สำเนาทะเบียนบ้าน</label>
-                        {% if form.HouseRegistration.value %}
-                        <a href="{{ form.HouseRegistration.value.url }}" target = "_blank"
-                           title = "{{ form.HouseRegistration.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.HouseRegistration|as_crispy_field  }}
-                    </div>
+                <div class="col-md-3">            
+                    {{ form.HouseRegistration.label  }}             
+                    {{ form.HouseRegistration  }}
                 </div>                
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">ทะเบียนหย่า (ถ้ามี)</label>
-                        {% if form.DivorceRegistration.value %}
-                        <a href="{{ form.DivorceRegistration.value.url }}" target = "_blank"
-                           title = "{{ form.DivorceRegistration.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.DivorceRegistration|as_crispy_field  }}
-                    </div>                
+                    {{ form.DivorceRegistration.label }}
+                    {{ form.DivorceRegistration }}
                 </div>                
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">มรณบัตรคู่สมรส (ถ้ามี)</label>
-                        {% if form.SpouseDeathRegistration.value %}
-                        <a href="{{ form.SpouseDeathRegistration.value.url }}" target = "_blank"
-                           title = "{{ form.SpouseDeathRegistration.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.SpouseDeathRegistration|as_crispy_field  }}
-                    </div>                  
+                    {{ form.SpouseDeathRegistration.label }}
+                    {{ form.SpouseDeathRegistration }}
                 </div>                
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">แบบฟอร์มเบิก คชบ. 6006 (ตนเอง)</label>
-                        {% if form.HomeRent6006.value %}
-                        <a href="{{ form.HomeRent6006.value.url }}" target = "_blank"
-                           title = "{{ form.HomeRent6006.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.HomeRent6006|as_crispy_field  }}
-                    </div>  
+                    {{ form.HomeRent6006.label }}
+                    {{ form.HomeRent6006 }}
                 </div> 
             </div>        
-            <div class="row">
+            <div class="row my-3">
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">แบบฟอร์มเบิก คชบ. 6006 (คู่สมรส)</label>
-                        {% if form.SpouseHomeRent6006.value %}
-                        <a href="{{ form.SpouseHomeRent6006.value.url }}" target = "_blank"
-                           title = "{{ form.SpouseHomeRent6006.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.SpouseHomeRent6006|as_crispy_field  }}
-                    </div>                 
+                    {{ form.SpouseHomeRent6006.label  }}
+                    {{ form.SpouseHomeRent6006  }}
                 </div>                
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">สลิปเงินเดือนล่าสุด</label>
-                        {% if form.SalaryBill.value %}
-                        <a href="{{ form.SalaryBill.value.url }}" target = "_blank"
-                           title = "{{ form.SalaryBill.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.SalaryBill|as_crispy_field  }}
-                    </div>                  
+                    {{ form.SalaryBill.label }}
+                    {{ form.SalaryBill }}
                 </div>                
                 <div class="col-md-3">
-                    <div class="mb-3">
-                        <label class="form-label">หนังสือรับรองของคู่สมรส</label>
-                        {% if form.SpouseHomeRent6006.value %}
-                        <a href="{{ form.SpouseHomeRent6006.value.url }}" target = "_blank"
-                           title = "{{ form.SpouseHomeRent6006.value }}">
-                            <img src = {% static 'images/pdf_icon24.gif'%} >
-                        </a>
-                        {% endif %}
-                        {{ form.SpouseHomeRent6006|as_crispy_field  }}
-                    </div>                                      
+                    {{ form.SpouseHomeRent6006.label }}
+                    {{ form.SpouseHomeRent6006 }}
                 </div>
             </div>
         </div>      
@@ -603,7 +557,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 </div>	                    				
             </div>
         {% endfor %}
+
         </div>
+        <button id = "add_more">เพิ่มผู้อาศัย</button>
+        
         
     </div>
     {% comment %} <input type="button" class="btn btn-info" value="เพิ่มผู้พักอาศัย" id="add_more"> {% endcomment %}

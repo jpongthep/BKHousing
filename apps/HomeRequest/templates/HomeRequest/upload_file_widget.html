@@ -1,0 +1,14 @@
+{% load static %}
+
+    {% if widget.value %}
+    <a href="{{ widget.value.url }}" target = "_blank"
+        title = "{{ widget.value }}">
+        <img src = {% static 'images/pdf_icon24.gif'%} >
+    </a>
+    {% endif %}
+    <input  type="file" 
+            name="{{ widget.name }}" 
+            accept="application/pdf" 
+            class="fileinput fileUpload form-control my-2" 
+            id="id_{{ widget.name }}" >
+ 
