@@ -433,13 +433,11 @@ def TestDocument(request,home_request_id):
     home_request = HomeRequest.objects.get(id = home_request_id)
     docx_title= f"House-{home_request.Requester.AFID}.docx"
 
-    time_and_date = "2019-10-21"
-    employee_name = home_request.FullName
-    manager_name = "Michelle Johnson"
     if home_request.Unit:
         department_name = home_request.Unit.FullName
     else:
         department_name = "ยังไม่ระบุ"
+        
     dic = {
             'FullName':home_request.FullName,
             'PersonID':home_request.Requester.PersonID,
@@ -450,7 +448,6 @@ def TestDocument(request,home_request_id):
             'MobilePhone':home_request.Requester.MobilePhone,
             'AddSalary':"{:,}".format(home_request.AddSalary),
             'Salary':"{:,}".format(home_request.Salary),
-            
             }
     print(dic)
 
@@ -497,9 +494,6 @@ def TestExcel(request,unit_id):
 
     queryset = HomeRequest.objects.filter(Unit = xls_unit)
     
-    # if request.user.groups.filter(name='PERSON_ADMIN').exists():
-    #     queryset = HomeRequest.objects.filter(Unit_id = unit_id)
-    
     queryset = queryset.filter(year_round__Year = get_current_year())
     queryset = queryset.order_by("-year_round__Year")
     first_row = 6
@@ -510,11 +504,6 @@ def TestExcel(request,unit_id):
         sheet[f"D{first_row+i}"] = data.Salary + data.AddSalary
         sheet[f"R{first_row+i}"] = data.Requester.MobilePhone
 
-
-    # Save the spreadsheet
-
-    # Prepare document for download        
-    # -----------------------------
     f = BytesIO()
     
     workbook.save(f)

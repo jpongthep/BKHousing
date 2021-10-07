@@ -90,7 +90,7 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     list_display_links = ['owner']
     ordering = ('-is_stay','owner__Rank',)
     raw_id_fields = ('owner','home')
-    list_filter = ('is_stay','home__zone','home__type','owner__CurrentUnit')
+    list_filter = ('home__zone','home__type','owner__CurrentUnit')
     search_fields = ['owner__first_name','owner__last_name','home__number','home__number']
     inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]
 

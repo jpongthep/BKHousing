@@ -17,13 +17,15 @@ from apps.Utility.Constants import RTAFUnitSection
 
 
 def checkRTAFPassdword(request, username, password):
-    URL = "https://api2-software.rtaf.mi.th:5051/rtaf/v3/ad/internal/login"
+    # URL = "https://api2-software.rtaf.mi.th:5051/rtaf/v3/ad/internal/login"
+    URL = "https://otp.rtaf.mi.th/api/v2/mfa/login"
 
     data = {
         'user' : username.lower(),
         'pass' : password
     } 
 
+    
     try:
         r = rq.post(url = URL, data = data, verify=False)
     except:
@@ -278,8 +280,10 @@ class SettingsBackend(ModelBackend):
             pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
                 UpdateRTAFData(user,pwd_valid)
-                user.set_password(password)
-                user.save()
+                print("login_mode = ",pwd_valid["login_mode"])
+                if pwd_valid["login_mode"] == "AD-Login":                    
+                    user.set_password(password)
+                    user.save()
                 # print('login user = ', user)
                 return user
             else:                
