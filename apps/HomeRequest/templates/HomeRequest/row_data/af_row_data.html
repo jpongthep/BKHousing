@@ -36,7 +36,7 @@
                 {% if object.RequesterSended %}
                     <i class="fa fa-lock text-dark icon-size" >
                 {% else %}
-                    <a href = "{% url 'HomeRequest:update' object.id %}"><i class="fa fa-edit text-primary icon-size" ></i></a>
+                    <a href = "{% url 'HomeRequest:update' object.id %}" title = "แก้ไขคำขอ"><i class="fa fa-edit text-primary icon-size" ></i></a>
                 {% endif %}
             </td>
             <td>

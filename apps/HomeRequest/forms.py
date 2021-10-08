@@ -69,8 +69,8 @@ class HomeRequestForm(forms.ModelForm):
                         'placeholder': 'ข้อมูลบ้านพักหลังเดิมและสาเหตุการออก / ถูกไล่ออกโดยละเอียด',
                         'rows' : 2
                 }),
-            'RentStartDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
-            'RentEndDate' : forms.DateInput(attrs={format:'%d-%m-%Y','type': 'date'}),
+            'RentStartDate' : forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
+            'RentEndDate' : forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
             'RentPermission': forms.RadioSelect,
             'HouseRegistration' : UploadFileWidget(),
             'DivorceRegistration': UploadFileWidget(),
@@ -90,19 +90,19 @@ class HomeRequestForm(forms.ModelForm):
     def __init__(self,  *args, **kwargs):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
-        self.fields['GooglePlusCodes2'].label = False
-
-        # user = None,
-        # try:
-        #     if user.Rank >= 30411:            
-        #         self.fields['IsHomeNeed'].widget.attrs['disabled'] = True
-        #         self.fields['IsHomeNeed'].label += " (เฉพาะนายพลอากาศ)"
+        self.fields['GooglePlusCodes2'].label = False        
+        
+        try:
+            data = self.instance.Requester
+            if data.Rank >= 30411:            
+                self.fields['IsHomeNeed'].widget.attrs['disabled'] = True
+                self.fields['IsHomeNeed'].label += " (เฉพาะนายพลอากาศ)"
             
-        #     if user.current_status not in [2, 7]:            
-        #         self.fields['IsShopHouseNeed'].widget.attrs['disabled'] = True
-        #         self.fields['IsShopHouseNeed'].label += ' (เฉพาะผู้รายงานสภานภาพ "สมรส")'
-        # except:
-        #     pass
+            if data.current_status not in [2, 7]:            
+                self.fields['IsShopHouseNeed'].widget.attrs['disabled'] = True
+                self.fields['IsShopHouseNeed'].label += ' (เฉพาะผู้รายงานสภานภาพ "สมรส")'
+        except:
+            print("HomeRequest.forms : self.instance error ")
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
@@ -132,6 +132,6 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         can_delete=True,
 
                                         # how many inline-forms are sent to the template by default
-                                        extra = 1)
+                                        extra = 3)
 
 

@@ -97,7 +97,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'SpousePID' : request.user.current_spouse_pid,
                             'Address' : request.user.Address
                         }        
-        form = self.form_class(user = request.user, initial = initial_value, prefix='hr')
+        form = self.form_class(initial = initial_value, prefix='hr')
 
         co_resident_formset = CoResidentFormSet()
 
@@ -412,10 +412,13 @@ def update_process_step(request, home_request_id, process_step):
                
     home_request = HomeRequest.objects.get(id = home_request_id)
     home_request.ProcessStep = process_step
+    if process_step == 'RP':
+        home_request.RequesterDateSend = None
     home_request.save()
     home_request.update_process_step(process_step, request.user)
 
-    if process_step in [ HomeRequestProcessStep.UNIT_PROCESS, 
+    if process_step in [ HomeRequestProcessStep.REQUESTER_PROCESS,
+                         HomeRequestProcessStep.UNIT_PROCESS,
                          HomeRequestProcessStep.UNIT_SENDED]:
         messages.info(request,f'บันทึกขั้นตอนคำขอบ้าน {home_request.Requester.FullName} เรียบร้อย')
         return HttpResponseRedirect("/hr/list")
@@ -437,7 +440,7 @@ def TestDocument(request,home_request_id):
         department_name = home_request.Unit.FullName
     else:
         department_name = "ยังไม่ระบุ"
-        
+
     dic = {
             'FullName':home_request.FullName,
             'PersonID':home_request.Requester.PersonID,

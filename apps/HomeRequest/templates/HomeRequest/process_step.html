@@ -8,22 +8,26 @@
                     <div class="step-item">
                         {% if object.process_value == 0 %}
                         <a href = "{% url 'HomeRequest:update' object.id %}">
-                            <button class="step-button text-center" aria-expanded="true" >
-                                <i class="fas fa-check fa-2x"></i>
+                            <button class="step-button text-center" title = "แก้ไขคำขอ" done="false" >
+                                <i class="fas fa-exclamation fa-2x"></i>
                             </button>
                         </a>
                         {% elif object.process_value >= 1 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" done="true" >
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
-                            <button class="step-button text-center" >1</button>
+                            <button class="step-button text-center" done="false">1</button>
                         {% endif %}
                         <div class="step-title">กรอกคำขอ</div>
                     </div>
                     <div class="step-item">
-                        {% if object.process_value >= 1 %}
-                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
+                        {% if object.process_value == 1 %}
+                        <button class="step-button text-center" done="false" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </button>
+                        {% elif object.process_value >= 2 %}
+                        <button class="step-button text-center" done="true" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -32,8 +36,12 @@
                         <div class="step-title">ส่งคำขอ</div>
                     </div>
                     <div class="step-item">
-                        {% if object.process_value >= 2 %}
-                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+                        {% if object.process_value == 2 %}
+                        <button class="step-button text-center" done="false" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </button>
+                        {% elif object.process_value >= 3 %}
+                        <button class="step-button text-center" done="true" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -42,8 +50,12 @@
                         <div class="step-title">กพ.หน่วย รับเรื่อง</div>
                     </div>
                     <div class="step-item">
-                        {% if object.process_value >= 3 %}
-                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
+                        {% if object.process_value == 3 %}
+                        <button class="step-button text-center" done="false" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </button>
+                        {% elif object.process_value >= 4 %}
+                        <button class="step-button text-center" done="true" title = "{{ object.UnitApprover.FullName}} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -52,8 +64,12 @@
                         <div class="step-title">กพ.หน่วย ส่งเรื่อง</div>
                     </div>
                     <div class="step-item">
-                        {% if object.process_value >= 4 %}
-                        <button class="step-button text-center" aria-expanded="true" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+                        {% if object.process_value == 4 %}
+                        <button class="step-button text-center" done="false"  title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </button>
+                        {% elif object.process_value >= 5 %}
+                        <button class="step-button text-center" done="true"  title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -62,8 +78,12 @@
                         <div class="step-title">กพ.ทอ.รับเรื่อง</div>
                     </div>
                     <div class="step-item">
-                        {% if object.process_value >= 5 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        {% if object.process_value == 5 %}
+                        <button class="step-button text-center" done="false" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </button>
+                        {% elif object.process_value >= 6 %}
+                        <button class="step-button text-center" done="true" title = "{{ object.RequesterDateSend|thaidate:"d M y"}}">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -73,7 +93,7 @@
                     </div>
                     <div class="step-item">
                         {% if object.process_value >= 6 %}
-                        <button class="step-button text-center" aria-expanded="true" >
+                        <button class="step-button text-center" done="true">
                             <i class="fas fa-check fa-2x"></i>
                         </button>
                         {% else %}
@@ -81,9 +101,7 @@
                         {% endif %}
                         <div class="step-title">รอจัดสรร</div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </section>

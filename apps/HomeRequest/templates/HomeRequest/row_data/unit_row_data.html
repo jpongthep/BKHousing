@@ -61,6 +61,10 @@
             {% if object.IsUnitEval and object.ProcessStep not in 'US,PP,PA,GH' %}
                 <a href = "#" onclick="return showConfirm('ยืนยันส่งเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'US'%}');" class="btn btn-outline-primary btn-sm">ส่งเรื่อง</a>
             {% endif %}
+            {# ถ้าผู้ขอส่งเรื่องมาแล้ว ปุ่มขอแก้ไขจะปรากฎ #}
+            {% if object.ProcessStep != 'RP' %}
+                <a href = "#" onclick="return showConfirm('ยืนยันส่งคำขอ  {{ object.Requester.FullName }}  กลับไปแก้ไข ', '{% url 'HomeRequest:update_process_step' object.id 'RP'%}');" class="btn btn-warning btn-sm text-danger">ส่งเรื่องกลับ</a>
+            {% endif %}
         </td>
     </tr>      
 

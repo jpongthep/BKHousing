@@ -202,7 +202,7 @@ ARMIS แบบฟอร์มขอบ้านพัก
         });
 
 
-
+{% comment %} 
         function cloneMore(selector, type) {
             var newElement = $(selector).clone(true);
 
@@ -232,7 +232,7 @@ ARMIS แบบฟอร์มขอบ้านพัก
         $('#add_more').click(function(event) {
             event.preventDefault();
             cloneMore('.CoResident:last', 'service');
-        });
+        }); {% endcomment %}
 
         status = $("#id_hr-Status").val();
         married = status == 2 || status == 3;
@@ -254,6 +254,21 @@ ARMIS แบบฟอร์มขอบ้านพัก
         $("#div_id_hr-RentOwnerPID").toggle(has_rent_permission);
         $("#div_id_hr-RentalCost").toggle(has_rent_permission);
         $("#div_RentAddress").toggle(has_rent_permission);
+
+        var allow_home_need = false;
+        {% if form.Rank.value >= 30411 %}
+            allow_home_need = true;
+            $( "label[for='id_hr-IsHomeNeed']" ).text("ต้องการบ้านพัก (ชั้นนายพลอากาศ)");
+        {% endif %}
+        $("#id_hr-IsHomeNeed").attr("disabled", allow_home_need);
+
+        var allow_family_home = false;
+        {% if form.Status.value|stringformat:"i" not in "2,7" %}
+            allow_family_home = true;
+            $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
+        {% endif %}
+        $("#id_hr-IsShopHouseNeed").attr("disabled", allow_family_home);
+
     });
 
 </script>
@@ -408,7 +423,6 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 <div class="col-md-3">
                     {{ form.IsNotBuyHome|as_crispy_field }}
                     {{ form.IsNotOwnHome|as_crispy_field  }}
-                    
                 </div>
                 <div class="col-md-3">
                     {{ form.IsNotRTAFHome|as_crispy_field  }}

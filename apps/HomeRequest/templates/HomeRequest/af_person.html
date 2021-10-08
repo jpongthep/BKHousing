@@ -55,7 +55,7 @@
         text-align: center;
     }
 
-    table td:not(:nth-child(6)):not(:last-child){
+    table td:not(:nth-child(6)){
         text-align: center;
     }
 
@@ -87,10 +87,16 @@
         transition: .4s;
     }
 
-    .step-button[aria-expanded="true"] {
+    .step-button[done="true"] {
         width: 60px;
         height: 60px;
-        background-color: var(--prm-color);
+        background-color: var(--bs-green);
+        color: #fff;
+    }
+    .step-button[done="false"] {
+        width: 60px;
+        height: 60px;
+        background-color: var(--bs-yellow);
         color: #fff;
     }
 
@@ -116,7 +122,7 @@
 
     /* to customize progress bar */
     #progress::-webkit-progress-value {
-        background-color: var(--prm-color);
+        background-color: var(--bs-green);
         transition: .5s ease;
     }
 
@@ -143,7 +149,7 @@
     <div>
         <div>      
         {% if not has_request %}  
-        <a class = "btn btn-info  mb-3 shadow" href = "{% url 'HomeRequest:create'%}" >สร้างรายงานขอบ้านพัก</a>
+        <a class = "btn btn-info  mb-3 shadow" href = "{% url 'HomeRequest:create'%}" >สร้างรายงานคำขอบ้านพัก</a>
         {% endif %}
 
         {% if not object_list %}

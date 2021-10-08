@@ -43,7 +43,7 @@ def checkRTAFPassdword(request, username, password):
         return False
 
 def getUserByRTAFemail(email, token):
-    URL = "https://api2-software.rtaf.mi.th:5051/rtaf/hris_api_1/RTAFHousePerson"
+    URL = "https://otp.rtaf.mi.th/api/gateway/rtaf/hris_api_1/RTAFHousePerson"
     data = {
         "token" : token,
         "email" : email + '@rtaf.mi.th'
@@ -137,7 +137,7 @@ def getUserByRTAFemail(email, token):
 
 def getPersonID(person_data):
 
-    URL = "https://api2-software.rtaf.mi.th:5051/covid19/rtaf/personal/idcard/by/name"
+    URL = "https://otp.rtaf.mi.th/api/gateway/covid19/rtaf/personal/idcard/by/name"
 
     full_name = person_data['user_name']
 
@@ -166,7 +166,7 @@ def getPersonID(person_data):
 
 
 def UpdateRTAFData(current_user,person_data):
-    URL = "https://api2-software.rtaf.mi.th:5051/covid19/rtaf/personal/idcard/by/name"
+    URL = "https://otp.rtaf.mi.th/api/gateway/covid19/rtaf/personal/idcard/by/name"
 
     full_name = person_data['user_name']
 
@@ -208,7 +208,7 @@ def UpdateRTAFData(current_user,person_data):
     current_user.save()
 
 
-    URL = "https://api2-software.rtaf.mi.th:5051/rtaf/hris_api_1/RTAFHousePerson"
+    URL = "https://otp.rtaf.mi.th/api/gateway/rtaf/hris_api_1/RTAFHousePerson"
     data = {
         "token" : person_data['token'],
         "national_id" : current_user.PersonID
@@ -266,8 +266,6 @@ def UpdateRTAFData(current_user,person_data):
         current_user.save()
     
 
-
-
 class SettingsBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
@@ -288,7 +286,7 @@ class SettingsBackend(ModelBackend):
                 return user
             else:                
                 return None
-                
+
         except User.DoesNotExist:
             # ตรวจสอบ username และ password
             ReturnData = checkRTAFPassdword(request, username,password)
@@ -300,7 +298,6 @@ class SettingsBackend(ModelBackend):
             auth_user.set_password(password)
             auth_user.save()
             return auth_user
-
 
     def get_user(self, user_id):
         try:

@@ -126,10 +126,12 @@
       <div class="collapse navbar-collapse" id="navbarsExample05">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item" style= "vertical-align:text-bottom;">
-          {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
-            <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
-              คำขอบ้านพัก
-            </a>
+          {% if request.resolver_match.url_name != "af_person"  %}
+            {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
+              <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
+                คำขอบ้านพัก 
+              </a>
+            {% endif %}
           {% endif %}
           </li>          
           {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
@@ -179,11 +181,13 @@
         </form>
 {% endcomment %}
         <ul class="navbar-nav ms-auto">
+        {% comment %}         
           {% if user.is_authenticated %}
           <li class="nav-item float-right">
             <a class="nav-link" href="#"><i class="fas fa-address-card"></i> Profiles</a>
           </li>
           {% endif %}
+        {% endcomment %}
           {% if request.user.is_staff %}
           <li class="nav-item float-right">
             <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
