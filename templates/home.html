@@ -7,6 +7,19 @@
 ข้อมูลปีงบประมาณ 65
 {% endblock %}
 
+{% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById("form-id");
+
+      document.getElementById("btn-save").addEventListener("click", function () {
+        form.submit();
+      });
+  }, false);
+</script>
+{% endblock %}
+
+
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block CardRow %}
@@ -45,14 +58,45 @@
         <p class="col-md-12">
             หาก ขรก.ท่านใดตรวจพบข้อผิดพลาดของโปรแกรม หรือมีข้อเสนอแนะต่าง ๆ สามารถส่งข้อมูลให้ทีมงานเพื่อนำไปปรับปรุงต่อไป
         </p>
-        <div class="mb-2">
-          <a href="/docs/5.1/examples/" class="btn btn-primary btn-lg px-4">ให้ข้อเสนอแนะ</a>
+        <div class="mb-2">          
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#getFeedbackModalCenter">ให้ข้อเสนอแนะ</button>
         </div>
+        
       </div>
     </div>
     
   </main>
+  
+
 {% endblock %}
 
 {% block modal %}
+<!-- Modal -->
+<div class="modal fade" id="getFeedbackModalCenter" tabindex="-1" aria-labelledby="getFeedbackModalCenterLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="getFeedbackModalCenterLabel">ข้อผิดพลาด/ข้อเสนอแนะ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-id" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">ข้อผิดพลาด/ข้อเสนอแนะ:</label>
+            <textarea name="text" required="" id="id_text" class="form-control"  rows = 4></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">ผู้ส่ง:</label>
+            <input type="text" value = "{{ request.user.FullName }} ({{ request.user.CurrentUnit }})" class="form-control" id="recipient-name" Disabled>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button id = "btn-save" type="button" class="btn btn-primary">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock modal %}

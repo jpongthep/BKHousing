@@ -1,0 +1,143 @@
+{% extends '_minbase.html' %}
+
+{% block header %}
+ยินดีต้อนรับสู่ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.
+{% endblock %}
+{% block style %}
+<style>
+    body {
+    background-image: linear-gradient(180deg, #eee, #fff 100px, #fff);
+    }
+
+    .container {
+    max-width: 960px;
+    }
+
+    .pricing-header {
+    max-width: 700px;
+    }
+
+    .fix-height{
+        display:block;
+        width:100%;
+        height:300px;
+        overflow:auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <h2 class="fw-normal">ทำความเข้าใจก่อน</h2>
+      <p>
+สป็อตทาวน์ สตาร์ทจตุคาม สเกตช์ทัวร์ มอบตัววินพรีเซ็นเตอร์ ไบโอ เบิร์น โฟล์ค นอร์ท อีสเตอร์ยากูซ่าเอ็กซ์โป นาฏยศาลาดาวน์ ภารตะว้าว เซนเซอร์ยิม แบดเวิร์กตรวจสอบตาปรือ โพลล์ ช็อปอัลตราคอมเมนท์ดีไซน์โต๋เต๋ แพทเทิร์นฟยอร์ดไอซ์
+
+</p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 mb-3">
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3 text-center">
+            <h4 class="my-0 fw-normal">ข้อควรรู้เกี่ยวกับการขอบ้านพัก ทอ.</h4>
+          </div>
+          <div class="card-body fix-height">            
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">1. ต้องทำงานอยู่ที่ตั้งดอนเมือง/บางซื่อเท่านั้น</li>
+              <li class="list-group-item">2. สามารถส่งคำขอได้ทั้งปี</li>
+              <li class="list-group-item">3. พิจารณาจัดสรรหลายครั้งในวงรอบปีงบประมาณ</li>
+              <li class="list-group-item">4. ยึดข้อมูลตามฐานข้อมูล กพ. (HRIS)</li>
+              <li class="list-group-item">5. ส่งคำขอในระบบแล้ว print เพื่อส่งทางธุรการเป็นหลักฐาน</li>
+            </ul>           
+          </div>
+          <div class="card-footer text-end">
+                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ProcessStepModal">Read more</button>
+          </div>  
+
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3 text-center">
+            <h4 class="my-0 fw-normal">ประเภทบ้านพักและเขตบ้านพักของ ทอ.</h4>
+          </div>
+          <div class="card-body fix-height">
+            <p class = "my-0 p-1  bg-info">
+              <b>บ้านพัก ทอ. ประเภทครอบครับ</b>
+              <li><b>พ.</b> บ้านเดี่ยวนายพลอากาศ</li>
+              <li><b>น.บ้านเดี่ยว</b> บ้านเดี่ยว น.อ.พิเศษ</li>
+              <li><b>น.5 หลัง</b>  เรือนแถว น.อ.พิเศษ</li>
+              <li><b>ร.</b> เรือนแถวสัญญาบัตร</li>
+              <li><b>ฟส.</b> แฟลตสัญญาบัตร</li>
+              <li><b>ฟป.</b> แฟลตประทวน</li>
+              <li><b>ป.</b> เรือนแถวประทวน</li>
+            </p>
+
+            <p class = "my-0 p-1 bg-info">
+              <b>บ้านพัก ทอ. ประเภทโสดชาย</b>
+              <li><b>ฟส.(โสด)</b> แฟลตสัญญาบัตร (โสด)</li>
+              <li><b>ฟป.(โสด)</b> แฟลตประทวน (โสด)</li>
+            </p>
+
+            <p class = "my-0 p-1 bg-info">
+              <b>บ้านพัก ทอ. ประเภทโสดหญิง</b>
+              <li><b>ฟส.(โสด ญ.)</b> แฟลตสัญญาบัตร (โสดหญิง)</li>
+              <li><b>ฟป.(โสด ญ.)</b> แฟลตประทวน (โสดหญิง)</li>
+            </p>
+
+            <p class = "my-0 p-1 text-white bg-primary">
+              <b>เขตบ้านพักฝั่งท่าดินแดง</b> 
+              <li><b>เขต 1</b> (ติด รร.นนก - รร.ฤทธิยะ)</li> 
+              <li><b>เขต 2</b> (บริเวณร้านค้า ทอ.เดิม - รร.อนุบาลฤทธิยะ)</li>
+              <li><b>เขต 3</b> (รร.อนุบาลฤทธิยะ - ปั๊ม ปตท.สะพานใหม่)</li>
+            </p>
+            <p class = "my-0 p-1 text-white bg-primary">
+              <b>เขตบ้านพักฝั่งดอนเมือง</b>
+              <li><b>เขต 6 สีกัน</b> (ก่อนถึง รพ.สีกัน หลังสถานีตำรวจดอนเมือง)</li>
+              <li><b>เขต 6 รถไฟ</b> (สถานีรถไฟดอนเมือง)</li>
+            </p>
+            <p class = "my-0 p-1 text-white bg-primary">
+              <b>เขตบ้านพักบางซื่อ</b>              
+              <li><b>เขต เขตบางซื่อ</b> (บางซื่อ)</li>
+            </p>
+          </div>
+          <div class="card-footer text-end">
+                <button class="btn btn-secondary">Read more</button>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm ">
+          <div class="card-header py-3 text-center">
+            <h4 class="my-0 fw-normal">คณก.บ้านพักอาศัย ทอ.</h4>
+          </div>
+          <div class="card-body fix-height">
+            <p>
+            ตี๋อิ่มแปร้โปรเจกเตอร์เวอร์ซีอีโอ บัตเตอร์สต๊อค แซวสเปคเฟรมแฟล็ตสตริง ซะจตุคามกัมมันตะโปร บูติกวอลซ์อะภควัมปติ ฮาโลวีนมาร์ก สะกอม เอ๊าะโอเลี้ยงพาสตาโมจิชนะเลิศ ไคลแม็กซ์มาร์ค จังโก้ ตะหงิดเกจิว้อดก้า สงบสุข เมาท์ ภารตะ นายแบบวอลล์เฟรม ว้าวโซลาร์ซามูไรมัฟฟินไทเฮา
+
+            </p>
+          </div>
+          <div class="card-footer text-end">
+                <button class="btn btn-secondary">Read more</button>
+          </div>  
+        </div>
+      </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="ProcessStepModal" tabindex="-1" aria-labelledby="ProcessStepModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ProcessStepModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer text-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

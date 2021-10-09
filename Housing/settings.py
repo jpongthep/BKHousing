@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.Trouble',
     'apps.Configurations',
     'apps.Utility',
+    'apps.Various',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,7 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login'
+LOGOUT_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = [
                             'apps.UserData.AFAuthentications.SettingsBackend',
                             'django.contrib.auth.backends.ModelBackend'

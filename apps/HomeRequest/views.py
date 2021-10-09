@@ -216,8 +216,8 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         self.object = self.get_object()
         form = self.form_class(request.POST, request.FILES, instance = self.object, prefix='hr')
         # print("form error", form.errors)
-        for k, v in request.POST.items():
-            print(f"key = {k} value = {v}")
+        # for k, v in request.POST.items():
+        #     print(f"key = {k} value = {v}")
 
         user_current_data_form = UserCurrentDataForm(self.request.POST, instance = request.user, prefix='userdata')
         co_resident_formset = CoResidentFormSet(self.request.POST, instance = self.object)
@@ -234,12 +234,15 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
 
     def form_valid(self, form, user_current_data_form, co_resident_formset):
 
+        print('co_resident_formset = ',co_resident_formset)
         user_current_data_form.save()
         co_resident = co_resident_formset.save(commit=False)
 
-
+        for cr in co_resident_formset.deleted_objects:
+            cr.delete()
 
         for cr in co_resident:
+            print('coresident = ',cr)
             cr.home_request = self.object
             cr.save()
 

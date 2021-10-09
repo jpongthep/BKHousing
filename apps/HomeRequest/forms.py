@@ -132,6 +132,6 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                         can_delete=True,
 
                                         # how many inline-forms are sent to the template by default
-                                        extra = 3)
+                                        extra = 1)
 
 

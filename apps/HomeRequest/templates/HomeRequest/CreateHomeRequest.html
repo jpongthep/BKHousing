@@ -92,6 +92,11 @@ ARMIS แบบฟอร์มขอบ้านพัก
             return c;
         });
 
+        $('#add_more').click(function(event) {
+            event.preventDefault();
+            cloneMore('.CoResident:last', 'service');
+        }); 
+
         $("#id_hr-Status").change(function() {
             married = this.value == 2 || this.value == 7;
 
@@ -202,37 +207,30 @@ ARMIS แบบฟอร์มขอบ้านพัก
         });
 
 
-{% comment %} 
         function cloneMore(selector, type) {
-            var newElement = $(selector).clone(true);
+            var newElement = $ (selector).clone(true);
 
-            var total = $('.CoResident').length
+            var total = $('.CoResident').length;
             newElement.find(':input').each(function() {
                 var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
-                console.log("total = ", total)
-                console.log("name = ", name)
+                console.log(name);                
+                var hidden_element_name = new RegExp("home_request$").test(name);
+                if(name)
+                    $(name).val(10);
+                // console.log("total = ", total)
+                // console.log("name = ", name)
                 var id = 'id_hr-' + name;
                 $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
             });
+
             newElement.find('label').each(function() {
                 var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
                 $(this).attr('for', newFor);
             });
-            
-            $( "input[name^='CoResident-"+ (total-1)"-home_request']" ).each(function() {
-                var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
-                $(this).attr('for', newFor);
-            });
-
             total++;
-            $('#id_hr-' + type + '-TOTAL_FORMS').val(total);
+            $('#id_CoResident-TOTAL_FORMS').val(total);
             $(selector).after(newElement);
         }
-
-        $('#add_more').click(function(event) {
-            event.preventDefault();
-            cloneMore('.CoResident:last', 'service');
-        }); {% endcomment %}
 
         status = $("#id_hr-Status").val();
         married = status == 2 || status == 3;
@@ -256,13 +254,15 @@ ARMIS แบบฟอร์มขอบ้านพัก
         $("#div_RentAddress").toggle(has_rent_permission);
 
         var allow_home_need = false;
-        {% if form.Rank.value >= 30411 %}
+
+        {% if request.user.Rank >= 30411 %}
             allow_home_need = true;
             $( "label[for='id_hr-IsHomeNeed']" ).text("ต้องการบ้านพัก (ชั้นนายพลอากาศ)");
         {% endif %}
         $("#id_hr-IsHomeNeed").attr("disabled", allow_home_need);
 
         var allow_family_home = false;
+        console.log("form.Status.value =  {{ form.Status.value }}")
         {% if form.Status.value|stringformat:"i" not in "2,7" %}
             allow_family_home = true;
             $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
@@ -279,13 +279,12 @@ ARMIS แบบฟอร์มขอบ้านพัก
     .mouse_hover:hover{
         background-color: #eeeeee;
     }
-
     select[disabled]{ color:#aaa;  }
 </style>    
 {% endblock%}
 
 {% block content%}
-<form method = "POST" enctype="multipart/form-data" >
+<form method = "POST" id = "hr_form" enctype="multipart/form-data" >
     {% csrf_token %}  
     <div class="card shadow">
         <div class="card-header bg-info">
@@ -353,10 +352,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 <div class="col-md-6">
                     {{ form.Address|as_crispy_field }}
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes1" class="form-label">
-                            Google Plus Codes 1
+                            Google Plus Codes 1 คืออะไร <i class="fas fa-arrow-right"></i>
                             <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25 
                                  class = "help_goocle_code_plus" 
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
@@ -396,10 +395,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 <div class="col-md-6">
                     {{ form.RentAddress|as_crispy_field }}
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes2" class="form-label">
-                            Google Plus Codes 2
+                            Google Plus Codes 2 คืออะไร <i class="fas fa-arrow-right"></i>
                             <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25  
                                  class = "help_goocle_code_plus" 
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
@@ -466,7 +465,6 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 <div class="col-md-4">
                     {{ form.IsShopHouseNeed|as_crispy_field  }}
                 </div>
-            
             </div>        
             <div class="row">
                 <div class="col-md-2">
@@ -538,12 +536,12 @@ ARMIS แบบฟอร์มขอบ้านพัก
         {{ co_resident_formset.management_form }}
         {{ co_resident_formset.non_form_errors }}
         {% for formset in co_resident_formset %}
-            {% for hidden in formset.hidden_fields %}
-                {{ hidden }}
-            {% endfor %}
-            
+           
             <div class="inline {{ co_resident_formset.prefix }}" id = "co_residence">						
                 <div class="row mouse_hover ">
+                    {% for hidden in formset.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
                     <div class="col-2 mt-1">
                         {{ formset.FullName|as_crispy_field}}
                     </div>
@@ -571,9 +569,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 </div>	                    				
             </div>
         {% endfor %}
-
+        <p class = "btn btn-info" id = "add_more" style="cursor: pointer;" ><i class="fa fa-plus text-dark"></i> เพิ่มผู้อาศัย</p>
         </div>
-        <button id = "add_more">เพิ่มผู้อาศัย</button>
+        
+        
         
         
     </div>
