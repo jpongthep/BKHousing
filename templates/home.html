@@ -13,7 +13,12 @@
       var form = document.getElementById("form-id");
 
       document.getElementById("btn-save").addEventListener("click", function () {
-        form.submit();
+        if(document.getElementById("comment-text").value == "")
+        {
+          return false;
+        }
+        if(confirm("ยืนยันส่งข้อมูล"))
+          form.submit();
       });
   }, false);
 </script>
@@ -76,7 +81,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="getFeedbackModalCenterLabel">ข้อผิดพลาด/ข้อเสนอแนะ</h5>
+        <h5 class="modal-title" id="getFeedbackModalCenterLabel">ส่งข้อมูล</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -84,7 +89,7 @@
           {% csrf_token %}
           <div class="mb-3">
             <label for="message-text" class="col-form-label">ข้อผิดพลาด/ข้อเสนอแนะ:</label>
-            <textarea name="text" required="" id="id_text" class="form-control"  rows = 4></textarea>
+            <textarea name="text" required="" id="comment-text" class="form-control"  rows = 4></textarea>
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label">ผู้ส่ง:</label>

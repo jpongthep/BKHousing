@@ -42,7 +42,7 @@ class HomeRequestForm(forms.ModelForm):
                 'IsHomelessDisaster','IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
                 'IsHomeNeed','IsFlatNeed','IsShopHouseNeed',
                 'ZoneRequestPriority1','ZoneRequestPriority2','ZoneRequestPriority3','ZoneRequestPriority4','ZoneRequestPriority5','ZoneRequestPriority6',
-                'HouseRegistration','DivorceRegistration','SpouseDeathRegistration','HomeRent6006','SpouseHomeRent6006','SalaryBill','SpouseApproved',
+                'HouseRegistration','MarriageRegistration','DivorceRegistration','SpouseDeathRegistration','HomeRent6006','SpouseHomeRent6006','SalaryBill','SpouseApproved',
                 ]        
 
         widgets = {
@@ -73,6 +73,7 @@ class HomeRequestForm(forms.ModelForm):
             'RentEndDate' : forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
             'RentPermission': forms.RadioSelect,
             'HouseRegistration' : UploadFileWidget(),
+            'MarriageRegistration': UploadFileWidget(),
             'DivorceRegistration': UploadFileWidget(),
             'SpouseDeathRegistration': UploadFileWidget(),
             'HomeRent6006': UploadFileWidget(),
@@ -86,11 +87,21 @@ class HomeRequestForm(forms.ModelForm):
             'ZoneRequestPriority5' : forms.Select(attrs={'data-priority':'5'}),
             'ZoneRequestPriority6' : forms.Select(attrs={'data-priority':'6'}),
         }
+        labels = {
+            'RentStartDate': _(u'วันเริ่มสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
+            'RentEndDate': _(u'วันสิ้นสุดสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
+        }
 
     def __init__(self,  *args, **kwargs):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
         self.fields['GooglePlusCodes2'].label = False        
+
+        for name, field in self.fields.items():
+            # add ng-model to each model field
+            ng_model_prefix = getattr(self,  'hr', '')
+            ng_model = '{}{}'.format(ng_model_prefix, name)
+            field.widget.attrs.setdefault('hr', ng_model)
         
         try:
             data = self.instance.Requester
@@ -106,14 +117,16 @@ class HomeRequestForm(forms.ModelForm):
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
-                                        CoResident,  # inline-form
+                                          CoResident,  # inline-form
                                         # inline-form fields
                                         fields=['PersonID', 'FullName','BirthDay','Relation','Occupation','Salary','Education'], 
                                         # fields=['PersonID', 'FullName','BirthDay','Relation','Occupation','Salary','Education'], 
 
                                         # labels for the fields
                                         labels={                                            
-                                            'FullName': _(u'คำนำหน้า ชื่อ นามสกุล'),
+                                            'FullName': _(u'คำนำหน้า ชื่อ นามสกุล'),                           
+                                            'BirthDay': _(u'วันเกิด (ใช้ปี ค.ศ.)'),
+                                            # 'DELETE': _(u'ต้องการลบ ?'),
                                         },
                                         widgets = {
                                             'BirthDay': forms.DateInput(
@@ -126,6 +139,7 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                                     attrs={
                                                         'placeholder': 'เลขประจำตัวประชาชน',
                                                         }),
+                                            
                                         },
 
                                         # set to false because cant' delete an non-exsitant instance

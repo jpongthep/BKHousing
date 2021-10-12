@@ -22,21 +22,32 @@
             fetch_show_modal(new_urltext);
         }
 
-    function confirm_cancel()
+    function confirm_cancel(hr_id)
     {
-        showModal(
-                "กรุณายืนยัน", "ยกเลิกคำขอบ้านพัก (จะต้องโทรติดต่อเจ้าหน้าที่เพื่อยืนยันอีกครั้ง)", 
+        showMemoModal(
+                "กรุณายืนยัน", "กรุณากรอกเหตุผลของการยกเลิกคำขอบ้านพัก (จะต้องโทรติดต่อเจ้าหน้าที่เพื่อยืนยันอีกครั้ง)", 
                 yesBtnLabel = 'ยืนยัน', noBtnLabel = 'ยกเลิก', 
                 function() {
-                    console.log("Cancel Request");
-                    fetch('/hr/16/hrc', {
+                    data = { comment: document.getElementById("memo-input").value };
+                    console.log("Cancel Request : ", data.comment);
+
+                    urltext = "{% url 'HomeRequest:cancel_request' 99999 %}"            
+                    new_urltext = urltext.replace("99999", hr_id)
+
+                    fetch(new_urltext, {
                         method: 'post',
                         headers: { 
-                            'Accept': 'application/json, text/plain, */*',
                             'Content-Type': 'application/json',
-                            "X-CSRFToken": "{{ csrf_token }}" }                                    
+                            'Accept': 'application/json',
+                            "X-CSRFToken": "{{ csrf_token }}" } ,
+                        body: JSON.stringify(data),                                   
                     }).then(res => res.json())
-                      .then(res => console.log(res));
+                      .then(
+                            res => { 
+                                console.log(res);
+                                document.getElementById("comment"+hr_id).innerHTML  = "รออนุมัติการยกเลิกคำขอ";
+                            }
+                        );
                 }
         );
         return false;

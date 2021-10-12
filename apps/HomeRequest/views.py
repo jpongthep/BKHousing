@@ -1,6 +1,7 @@
 #python module
 import os
 import datetime
+import json
 from io import StringIO, BytesIO
 #django Module
 from django.shortcuts import render
@@ -160,7 +161,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def form_invalid(self, form, co_resident_formset):
+    def form_invalid(self, form, user_current_data_form, co_resident_formset):
         print(form.errors)
         return self.render_to_response(
                  self.get_context_data(form=form,
@@ -189,7 +190,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         co_resident_formset = CoResidentFormSet(instance = home_request, 
                                                 queryset = home_request.CoResident.order_by("Relation"))
 
-        print("update -> get method ")
+        print("UpdateHomeRequestView:get")
 
         return self.render_to_response(
                   self.get_context_data(form = HomeRequestForm(instance=self.object, prefix='hr'),
@@ -200,31 +201,31 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        print('get_context_data kwargs = ',kwargs)
-        if self.request.POST:
-            data['form'] = HomeRequestForm(self.request.POST, prefix='hr')
-            data["user_current_data_form"] = UserCurrentDataForm(self.request.POST, prefix='userdata')
-            data["co_resident"] = CoResidentFormSet(self.request.POST, instance=self.object)
-        else:
+        print("UpdateHomeRequestView:get_context_data")
+
+        if self.request.GET:
+            print('get_context_data:self.request.GET')
             data['form'] = HomeRequestForm(instance=self.object, prefix='hr')
             data["user_current_data_form"] = UserCurrentDataForm(instance = self.request.user, prefix='userdata')
             data["co_resident"] = CoResidentFormSet(instance=self.object)
-        # print('data = ',data)
+        elif self.request.POST:
+            print('get_context_data:self.request.POST')
+            data['form'] = HomeRequestForm(self.request.POST, prefix='hr')
+            data["user_current_data_form"] = UserCurrentDataForm(self.request.POST, prefix='userdata')
+            data["co_resident_formset"] = CoResidentFormSet(self.request.POST)
         return data
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.form_class(request.POST, request.FILES, instance = self.object, prefix='hr')
-        # print("form error", form.errors)
-        # for k, v in request.POST.items():
-        #     print(f"key = {k} value = {v}")
 
         user_current_data_form = UserCurrentDataForm(self.request.POST, instance = request.user, prefix='userdata')
         co_resident_formset = CoResidentFormSet(self.request.POST, instance = self.object)
 
-        print('form.is_valid() ',form.is_valid())
-        print('user_current_data_form.is_valid() ',user_current_data_form.is_valid())
-        print('co_resident_formset.is_valid() ',co_resident_formset.is_valid())
+        print('UpdateHomeRequestView:post:form.is_valid() ',form.is_valid())
+        
+        print('UpdateHomeRequestView:post:user_current_data_form.is_valid() ',user_current_data_form.is_valid())
+        print('UpdateHomeRequestView:post:co_resident_formset.is_valid() ',co_resident_formset.is_valid())
 
         if form.is_valid() and user_current_data_form.is_valid() and co_resident_formset.is_valid():
             # print('co_resident_formset ', co_resident_formset)
@@ -234,7 +235,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
 
     def form_valid(self, form, user_current_data_form, co_resident_formset):
 
-        print('co_resident_formset = ',co_resident_formset)
+        print('UpdateHomeRequestView:form_valid co_resident_formset = ',co_resident_formset)
         user_current_data_form.save()
         co_resident = co_resident_formset.save(commit=False)
 
@@ -247,7 +248,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
             cr.save()
 
         if 'save' in self.request.POST:
-            messages.info(self.request, f'บันทึกการแก้ไขข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย')
+            messages.warning(self.request, f'บันทึกการแก้ไขข้อมูลบ้านพักของ {self.object.FullName} เรียบร้อย *** ขั้นตอนการส่งยังไม่เรียบร้อย ***')
         elif 'send' in self.request.POST:
             self.object.update_process_step(
                                     HomeRequestProcessStep.REQUESTER_SENDED, 
@@ -258,9 +259,8 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form, user_current_data_form, co_resident_formset):
-        print("="*60)
-        print('form_invalid => formerrors  ',form.errors)
-        print('co_resident_formset => co_resident_formseterrors  ',co_resident_formset.errors)
+        print('UpdateHomeRequestView:form_invalid => user_current_data_form  ') #, user_current_data_form)
+        print('UpdateHomeRequestView:form_invalid => co_resident_formset => ') #, co_resident_formset)
         return super().form_invalid(form)
 
     def get_success_url(self):        
@@ -395,9 +395,13 @@ def cancel_request(request, home_request_id):
     home_request = HomeRequest.objects.get(id = home_request_id)
     if request.user != home_request.Requester:
         raise PermissionDenied()
-    else:    
+    else:
+        if request.method == "POST":
+            data = json.loads(request.body.decode("utf-8"))
+            Comment = data["comment"]
+            print("data =  " ,Comment)
         home_request.cancel_request = True
-        home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(datetime.date.today())
+        home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(datetime.date.today()) + Comment
         home_request.save()
         return JsonResponse({"ok": True}, safe=False)
     

@@ -14,20 +14,26 @@
 </div>
 {% endif %}
 
-{% if form.errors %}
-    <div class="alert alert-error">
-      <h4>Please fix the following errors</h4>
-      <ul>
-        {% for field in form %}
-          {% if field.errors %}
-            {% for error in field.errors %}
-              <li><a href="#id_{{ field.name }}" class="error">{{ error|escape }}</a></li>
-            {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </ul>
+{% if form.errors or co_resident_formset.errors %}
+<div class="alert alert-error">
+  <h4>เกิดข้อผิดพลาด</h4>
+  <ul>
+    {% if form.errors  %}
+      {% for field in form %}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <li><a href="#{{ field.id_for_label }}" class="error"><strong>{{ field.label }}:</strong> {{ error|escape }}</a></li>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
       {% if form.non_field_errors %}
         {{ form.non_field_errors }}
       {% endif %}
-    </div>
-  {% endif %}
+    {% endif %}
+
+    {% if co_resident_formset.errors %}
+            <li><a href="#co_residence" class="error"><strong>{{ field.label }}:</strong> ข้อมูลผู้อาศัยร่วมผิดพลาด</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}

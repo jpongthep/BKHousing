@@ -31,6 +31,11 @@ def in_group(user, groups_name):
             return True   
     return False
 
+@register.filter(name='file_ext')
+def file_ext(filename):
+    '''Returns the given key from a dictionary.'''
+    return filename[-3:].lower()
+
 @register.filter(name='dict_key')
 def dict_key(d, k):
     '''Returns the given key from a dictionary.'''

@@ -23,8 +23,12 @@
             <td></td>
             <td></td>
             <td></td>
-            <td colspan = 5 class = "text-dark">
-                {{ object.Comment }}
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class = "text-danger">
+                คำขอถูกยกเลิก
             </td>
         </tr>  
 
@@ -96,13 +100,13 @@
             <td>
                 {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
             </td>
-            <td class = "text-danger">
+            <td class = "text-danger" id = "comment{{object.id}}">
             {% if object.cancel_request %}
                 รออนุมัติการยกเลิกคำขอ
             {% elif not object.RequesterSended %}
                 *** ยังไม่ได้ส่งเอกสาร ***
             {% elif object.still_active %}            
-                <a href="#"  onclick= "confirm_cancel();" class="btn btn-danger">แจ้งยกเลิกคำขอ</a>
+                <a href="#"  onclick= "confirm_cancel({{object.id}});" class="btn btn-danger">แจ้งยกเลิกคำขอ</a>
             {% endif %}
             </td>
         </tr>  

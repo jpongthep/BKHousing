@@ -2,13 +2,9 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}
-ARMIS แบบฟอร์มขอบ้านพัก
-{% endblock %}
+{% block title %}ARMIS แบบฟอร์มขอบ้านพัก{% endblock %}
 
-{% block header %}
-แบบฟอร์มขอบ้านพัก
-{% endblock %}
+{% block header %}แบบฟอร์มขอบ้านพัก{% endblock %}
 
 {% block scriptlink %}
     <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
@@ -24,11 +20,22 @@ ARMIS แบบฟอร์มขอบ้านพัก
         return str === null || str.match(/^ *$/) !== null;
     }
 
-    $(document).ready(function(){
+    function checkID(id) {
 
+        if (id.length != 13) return false;
+
+        for (i = 0, sum = 0; i < 12; i++)
+            sum += parseFloat(id.charAt(i)) * (13 - i);
+
+        if ((11 - sum % 11) % 10 != parseFloat(id.charAt(12)))
+            return false;
+
+        return true;
+    }
+
+    $(document).ready(function(){
         $('button[name="send"]').click(function() {
             var data_completed = true;
-            
             married = ["2", "7"];
                    
             if( married.includes($("#id_hr-Status").val()))
@@ -39,50 +46,92 @@ ARMIS แบบฟอร์มขอบ้านพัก
                     $("#id_hr-SpousePID").css("box-shadow","0 0 10px #e80c4d");                    
                     data_completed = false;
                 }
+
+                if(! isEmptyOrSpaces($("#id_hr-SpousePID").val()))
+                {
+                    if(!checkID($("#id_hr-SpousePID").val()))
+                    {
+                        $("#id_hr-SpousePID").css("box-shadow","0 0 10px #e80c4d");
+                        $( "label[for='id_hr-SpousePID']" ).html("<span class = 'text-danger'>รหัสคู่สมรสไม่ถูกต้อง</span>");
+                        data_completed = false;
+                    }
+                }                
             }
 
-            // console.log($("[name = 'hr-RentPermission']:checked").val() == '3')
-            // ถ้าเลือกช่อง "มีและใช้สิทธิ์เบิกค่าเช่าบ้าน" จะต้องกรอกข้อมูลสัญญาให้ครบถ้วน
             if($("[name = 'hr-RentPermission']:checked").val() == '3')
             {
-                //console.log('$("#id_hr-RentStartDate").val()', $("#id_hr-RentStartDate").val())
-                if(isEmptyOrSpaces($("#id_hr-RentStartDate").val()) )
-                {
+                if(isEmptyOrSpaces($("#id_hr-RentStartDate").val()) ){
                     $("#id_hr-RentStartDate").css("box-shadow","0 0 10px #e80c4d");             
                     data_completed = false;
                 }
-                if(isEmptyOrSpaces($("#id_hr-RentEndDate").val()) )
-                {
+                if(isEmptyOrSpaces($("#id_hr-RentEndDate").val()) ){
                     $("#id_hr-RentEndDate").css("box-shadow","0 0 10px #e80c4d");             
                     data_completed = false;
                 }
 
-                if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes2").val()) )
-                {
+                if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes2").val()) ){
                     $("#id_hr-GooglePlusCodes2").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+                if(isEmptyOrSpaces($("#id_hr-RentOwner").val()) ){
+                    $("#id_hr-RentOwner").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+                if(isEmptyOrSpaces($("#id_hr-RentOwnerPID").val()) ){
+                    $("#id_hr-RentOwnerPID").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+                if(! isEmptyOrSpaces($("#id_hr-RentOwnerPID").val()))
+                {
+                    if(!checkID($("#id_hr-RentOwnerPID").val()))
+                    {
+                        $("#id_hr-RentOwnerPID").css("box-shadow","0 0 10px #e80c4d");
+                        $( "label[for='id_hr-RentOwnerPID']" ).html("<span class = 'text-danger'>รหัสผู้ให้เช่าไม่ถูกต้อง</span>");
+                        data_completed = false;
+                    }
+                }                
+                if(isEmptyOrSpaces($("#id_hr-RentalCost").val()) ){
+                    $("#id_hr-RentalCost").css("box-shadow","0 0 10px #e80c4d");             
+                    data_completed = false;
+                }
+                if(isEmptyOrSpaces($("#id_hr-RentAddress").val()) ){
+                    $("#id_hr-RentAddress").css("box-shadow","0 0 10px #e80c4d");             
                     data_completed = false;
                 }
             }
 
-            if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes1").val()) )
-            {
+            if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes1").val()) ){
                 $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");             
                 data_completed = false;
             }
-            if(isEmptyOrSpaces($("#id_hr-TravelDescription").val()) )
-            {
+            if(isEmptyOrSpaces($("#id_hr-TravelDescription").val()) ){
                 $("#id_hr-TravelDescription").css("box-shadow","0 0 10px #e80c4d");             
                 data_completed = false;
             }
 
+            $('[id ^=id_CoResident][id $=PersonID]').each(function(i, obj) {
+                
+                name = $(this).attr("id");
+                if($(this).val().length == 13)
+                {
+                    if(!checkID($(this).val()))
+                    {
+                        $(this).css("box-shadow","0 0 10px #e80c4d");
+                        $( `label[for='${name}']` ).html("<span class = 'text-danger'>รหัสผู้พักอาศัยไม่ถูกต้อง</span>");
+                        data_completed = false;
+                    }
+                }
+            });
+
+            
+            
             console.log($("#id_hr-IsNotBuyHome").val());
 
-            if(! data_completed)
-            {
+            if(!data_completed){
                 alert("ข้อมูลแบบฟอร์มยังไม่สมบูรณ์ กรุณากรอกข้อมูลในช่องสีแดงให้ครบก่อนส่ง หรือบันทึกร่าง")
                 return false;
             }
-
+            
             var c = confirm("เมื่อส่งข้อมูลแล้วจะไม่สามารถแก้ไขข้อมูลในระบบได้ ยืนยันการบันทึกและส่งข้อมูล");
             return c;
         });
@@ -99,19 +148,15 @@ ARMIS แบบฟอร์มขอบ้านพัก
 
         $("#id_hr-Status").change(function() {
             married = this.value == 2 || this.value == 7;
-
             widow_divote = this.value == 3 || this.value == 4;
 
             $("#div_id_hr-IsHRISReport").toggle(married || widow_divote);
-
             $("#div_id_hr-SpouseName").toggle(married);
             $("#div_id_hr-SpousePID").toggle(married);
             $("#div_id_hr-SpouseAFID").toggle(married);
-
         });
 
         $("[name = 'hr-RentPermission']").change(function() {
-            //console.log($("[name = 'hr-RentPermission']:checked").val())
 
             has_rent_permission =$("[name = 'hr-RentPermission']:checked").val() == '3';
 
@@ -142,8 +187,6 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
         }
 
-        //console.log('priority_options = ', priority_options)
-
         function filterOptions(type) {
             localStorage.type = type
             if (type === "All") {
@@ -158,8 +201,6 @@ ARMIS แบบฟอร์มขอบ้านพัก
             changed_item = $(this).data('priority');
             selected_value = $(`select[data-priority='${changed_item}']`).val();
 
-            //console.log('changed_item = ',changed_item)
-
             priority_selected.length = changed_item - 1;
             if($(this).find(':selected').val() == '')
             {
@@ -171,32 +212,19 @@ ARMIS แบบฟอร์มขอบ้านพัก
                 $(`select[data-priority='${changed_item+1}']`).prop('disabled', false);
             }
             
-           //console.log('priority_selected = ', priority_selected);
-
-            //console.log(`select[data-priority='${changed_item+1}']`)
             $(`select[data-priority='${changed_item+1}']`).focus();
             remain_options = [];
             remain_options.push(priority_options[0]); 
             for(i = 0; i < priority_options.length;i++)
             {
-                //console.log('i = ',i, priority_selected.indexOf(i) == -1);
                 if(priority_selected.indexOf(i) == -1)
                 {                    
                     remain_options.push(priority_options[i+1]);                    
                 }
             }
 
-            //console.log('all_choices = ',all_choices);
-            //console.log('remain_options = ',remain_options);
-            //console.log('priority_options = ',priority_options);
             $(`select[data-priority='${changed_item+1}'] option`).empty();
             $(`select[data-priority='${changed_item+1}']`).html(remain_options);
-            
-            
-            //$(`select[data-priority='${changed_item+1}']`).empty();
-            //priority_options.appendTo($(`select[data-priority='${changed_item+1}']`))
-
-            //console.log(priority_options);
 
             for(i = changed_item + 2; i <= 6; i++)
             {
@@ -210,15 +238,22 @@ ARMIS แบบฟอร์มขอบ้านพัก
         function cloneMore(selector, type) {
             var newElement = $ (selector).clone(true);
 
+            console.log($(newElement));
+
             var total = $('.CoResident').length;
+            newElement.find('div').each(function() {
+                //var name = $(this).attr('class').replace('odd','even');
+                var name = $(this).attr('class').replace('even','odd');
+                console.log(name);
+            });
+
             newElement.find(':input').each(function() {
                 var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
                 console.log(name);                
                 var hidden_element_name = new RegExp("home_request$").test(name);
                 if(name)
                     $(name).val(10);
-                // console.log("total = ", total)
-                // console.log("name = ", name)
+
                 var id = 'id_hr-' + name;
                 $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
             });
@@ -268,7 +303,7 @@ ARMIS แบบฟอร์มขอบ้านพัก
             $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
         {% endif %}
         $("#id_hr-IsShopHouseNeed").attr("disabled", allow_family_home);
-
+         
     });
 
 </script>
@@ -276,14 +311,18 @@ ARMIS แบบฟอร์มขอบ้านพัก
 
 {% block style %}
 <style>
-    .mouse_hover:hover{
-        background-color: #eeeeee;
-    }
+
     select[disabled]{ color:#aaa;  }
+
+    .cr-row:hover {
+        background-color: rgb(192,224,192);        
+    }
 </style>    
 {% endblock%}
 
 {% block content%}
+
+
 <form method = "POST" id = "hr_form" enctype="multipart/form-data" >
     {% csrf_token %}  
     <div class="card shadow">
@@ -293,51 +332,51 @@ ARMIS แบบฟอร์มขอบ้านพัก
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    {{ form.FullName|as_crispy_field  }}
+                    {{ form.FullName |as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
-                    {{ form.Position|as_crispy_field  }}
+                    {{ form.Position |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.Unit|as_crispy_field  }}
+                    {{ form.Unit |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.Salary|as_crispy_field }}
+                    {{ form.Salary |as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.AddSalary|as_crispy_field  }}
+                    {{ form.AddSalary |as_crispy_field  }}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-2">
-                    {{ form.Status|as_crispy_field }}
+                    {{ form.Status |as_crispy_field }}
                 </div>
                 <div class="col-md-3">
-                    {{ form.IsHRISReport|as_crispy_field  }}
+                    {{ form.IsHRISReport |as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
-                    {{ form.SpouseName|as_crispy_field  }}
+                    {{ form.SpouseName |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.SpousePID|as_crispy_field  }}
+                    {{ form.SpousePID |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.SpouseAFID|as_crispy_field  }}
+                    {{ form.SpouseAFID |as_crispy_field  }}
                 </div>
 
             </div>
             <div class="row">
                 <div class="col-md-2">
-                    {{ user_current_data_form.OfficePhone|as_crispy_field }}
+                    {{ user_current_data_form.OfficePhone |as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ user_current_data_form.MobilePhone|as_crispy_field  }}
+                    {{ user_current_data_form.MobilePhone |as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ user_current_data_form.RTAFEMail|as_crispy_field  }}
+                    {{ user_current_data_form.RTAFEMail |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ user_current_data_form.email|as_crispy_field  }}
+                    {{ user_current_data_form.email |as_crispy_field  }}
                 </div>
             </div>
         </div>
@@ -349,10 +388,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
-                    {{ form.Address|as_crispy_field }}
+                <div class="col-md-8">
+                    {{ form.Address |as_crispy_field }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes1" class="form-label">
                             Google Plus Codes 1 คืออะไร <i class="fas fa-arrow-right"></i>
@@ -361,41 +400,41 @@ ARMIS แบบฟอร์มขอบ้านพัก
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
                         </label>
                         {% comment %} <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1"> {% endcomment %}
-                        {{ form.GooglePlusCodes1|as_crispy_field }}
+                        {{ form.GooglePlusCodes1 | as_crispy_field }}
                     </div>
                     <input id="zipcode1" type="hidden">
                 </div>                
             </div>
             <div class="row">
                 <div class="col-md-12">
-                     {{ form.TravelDescription|as_crispy_field  }}
+                     {{ form.TravelDescription |as_crispy_field  }}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-2">
-                    {{ form.RentPermission|as_crispy_field }}
+                    {{ form.RentPermission |as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentStartDate|as_crispy_field  }}                    
+                    {{ form.RentStartDate |as_crispy_field  }}                    
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentEndDate|as_crispy_field  }}                    
+                    {{ form.RentEndDate |as_crispy_field  }}                    
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentOwner|as_crispy_field  }}
+                    {{ form.RentOwner |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentOwnerPID|as_crispy_field  }}
+                    {{ form.RentOwnerPID |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentalCost|as_crispy_field  }}
+                    {{ form.RentalCost |as_crispy_field  }}
                 </div>
             </div>
             <div class="row" id = "div_RentAddress">
-                <div class="col-md-6">
-                    {{ form.RentAddress|as_crispy_field }}
+                <div class="col-md-8">
+                    {{ form.RentAddress |as_crispy_field }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes2" class="form-label">
                             Google Plus Codes 2 คืออะไร <i class="fas fa-arrow-right"></i>
@@ -404,7 +443,7 @@ ARMIS แบบฟอร์มขอบ้านพัก
                                  data-bs-toggle="modal" data-bs-target="#google_help_modal">
                         </label>
                         {% comment %} <input type="text" name="hr-GooglePlusCodes2" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes2"> {% endcomment %}
-                        {{ form.GooglePlusCodes2|as_crispy_field }}
+                        {{ form.GooglePlusCodes2 | as_crispy_field }}
                     </div>
                     <input id="zipcode2" type="hidden">
                 </div>                
@@ -420,30 +459,30 @@ ARMIS แบบฟอร์มขอบ้านพัก
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    {{ form.IsNotBuyHome|as_crispy_field }}
-                    {{ form.IsNotOwnHome|as_crispy_field  }}
+                    {{ form.IsNotBuyHome  |as_crispy_field}}
+                    {{ form.IsNotOwnHome |as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
-                    {{ form.IsNotRTAFHome|as_crispy_field  }}
-                    {{ form.IsMoveFromOtherUnit|as_crispy_field  }}
+                    {{ form.IsNotRTAFHome |as_crispy_field  }}
+                    {{ form.IsMoveFromOtherUnit |as_crispy_field  }}
                 </div>                
                 <div class="col-md-3">
-                    {{ form.IsHomelessEvict|as_crispy_field }}
-                    {{ form.IsNeverRTAFHome|as_crispy_field  }}                 
+                    {{ form.IsHomelessEvict |as_crispy_field }}
+                    {{ form.IsNeverRTAFHome |as_crispy_field  }}                 
                 </div>
                 <div class="col-md-3">
-                    {{ form.IsHomelessDisaster|as_crispy_field  }}
-                    {{ form.ImportanceDuty|as_crispy_field  }}
+                    {{ form.IsHomelessDisaster |as_crispy_field  }}
+                    {{ form.ImportanceDuty |as_crispy_field  }}
                 </div>
             </div>        
             <div>
                 <div class="col-md-12">
-                    {{ form.RTAFHomeLeaveReason|as_crispy_field  }}
+                    {{ form.RTAFHomeLeaveReason |as_crispy_field  }}
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    {{ form.OtherTrouble|as_crispy_field  }}    
+                    {{ form.OtherTrouble |as_crispy_field  }}    
                 </div>
             </div>  
         </div>      
@@ -456,34 +495,34 @@ ARMIS แบบฟอร์มขอบ้านพัก
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    {{ form.IsHomeNeed|as_crispy_field }}
+                    {{ form.IsHomeNeed |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.IsFlatNeed|as_crispy_field  }}
+                    {{ form.IsFlatNeed |as_crispy_field  }}
                 </div>                
             
                 <div class="col-md-4">
-                    {{ form.IsShopHouseNeed|as_crispy_field  }}
+                    {{ form.IsShopHouseNeed |as_crispy_field  }}
                 </div>
             </div>        
             <div class="row">
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority1|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority1|as_crispy_field   }} 
                 </div>                
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority2|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority2|as_crispy_field   }} 
                 </div>                
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority3|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority3|as_crispy_field   }} 
                 </div>
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority4|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority4|as_crispy_field   }} 
                 </div>
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority5|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority5|as_crispy_field   }} 
                 </div>
                 <div class="col-md-2">
-                    {{ form.ZoneRequestPriority6|as_crispy_field  }} 
+                    {{ form.ZoneRequestPriority6 |as_crispy_field    }} 
                 </div>
             </div>
         </div>      
@@ -499,6 +538,10 @@ ARMIS แบบฟอร์มขอบ้านพัก
                     {{ form.HouseRegistration  }}
                 </div>                
                 <div class="col-md-3">
+                    {{ form.MarriageRegistration.label }}
+                    {{ form.MarriageRegistration }}
+                </div>                
+                <div class="col-md-3">
                     {{ form.DivorceRegistration.label }}
                     {{ form.DivorceRegistration }}
                 </div>                
@@ -506,12 +549,12 @@ ARMIS แบบฟอร์มขอบ้านพัก
                     {{ form.SpouseDeathRegistration.label }}
                     {{ form.SpouseDeathRegistration }}
                 </div>                
+            </div>        
+            <div class="row my-3">
                 <div class="col-md-3">
                     {{ form.HomeRent6006.label }}
                     {{ form.HomeRent6006 }}
                 </div> 
-            </div>        
-            <div class="row my-3">
                 <div class="col-md-3">
                     {{ form.SpouseHomeRent6006.label  }}
                     {{ form.SpouseHomeRent6006  }}
@@ -532,58 +575,52 @@ ARMIS แบบฟอร์มขอบ้านพัก
         <div class="card-header  bg-success text-white">
             <h5>ผู้พักอาศัยร่วม (ที่จะมาพักด้วยกัน)</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
         {{ co_resident_formset.management_form }}
         {{ co_resident_formset.non_form_errors }}
         {% for formset in co_resident_formset %}
            
-            <div class="inline {{ co_resident_formset.prefix }}" id = "co_residence">						
-                <div class="row mouse_hover ">
+            <div class=" {{ co_resident_formset.prefix }} cr-row px-2 m-0" id = "co_residence">						
+                <div class="row">
                     {% for hidden in formset.hidden_fields %}
                         {{ hidden }}
                     {% endfor %}
-                    <div class="col-2 mt-1">
-                        {{ formset.FullName|as_crispy_field}}
+                    <div class="col-md-4 col-lg-3 col-xl-2 mt-1">
+                        {{ formset.FullName |as_crispy_field}}
                     </div>
-                    <div class="col-1">
-                        {{ formset.Relation|as_crispy_field}}
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Relation |as_crispy_field}}
                     </div>
-                    <div class="col-2">
-                        {{ formset.PersonID|as_crispy_field}}
+                    <div class="col-md-3 col-lg-3 col-xl-2">
+                        {{ formset.PersonID |as_crispy_field}}
                     </div>
-                    <div class="col-2">
-                        {{ formset.BirthDay|as_crispy_field}}
+                    <div class="col-md-3 col-lg-3 col-xl-2">
+                        {{ formset.BirthDay |as_crispy_field}}
                     </div>
-                    <div class="col-2">
-                        {{ formset.Occupation|as_crispy_field}}
+                    <div class="col-md-4 col-lg-3 col-xl-2">
+                        {{ formset.Occupation |as_crispy_field}}
                     </div>
-                    <div class="col-1">
-                        {{ formset.Salary|as_crispy_field}}
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Salary |as_crispy_field}}
                     </div>
-                    <div class="col-1">
-                        {{ formset.Education|as_crispy_field}}
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Education |as_crispy_field}}
                     </div>                        
-                    <div class="col-1">
-                        {{ formset.DELETE|as_crispy_field}}
-                    </div>                            
+                    <div class="col-lg-1">
+                        {{ formset.DELETE |as_crispy_field }}                        
+                    </div>
                 </div>	                    				
             </div>
         {% endfor %}
         <p class = "btn btn-info" id = "add_more" style="cursor: pointer;" ><i class="fa fa-plus text-dark"></i> เพิ่มผู้อาศัย</p>
         </div>
-        
-        
-        
-        
     </div>
-    {% comment %} <input type="button" class="btn btn-info" value="เพิ่มผู้พักอาศัย" id="add_more"> {% endcomment %}
 
     <div class = "mt-3">
         <button type="submit" name="save" class="btn btn-warning">บันทึกร่าง</button>        
         <button type="submit" name="send" class="btn btn-primary">บันทึกและส่งรายงาน</button>        
     </div>
   
-
   </form>
   
   <!-- Button trigger modal -->

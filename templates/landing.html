@@ -20,7 +20,7 @@
     .fix-height{
         display:block;
         width:100%;
-        height:300px;
+        height:260px;
         overflow:auto;
     }
 </style>
@@ -28,40 +28,115 @@
 
 {% block content %}
 <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-      <h2 class="fw-normal">ทำความเข้าใจก่อน</h2>
+      <h2 class="fw-normal">อ่านทำความเข้าใจก่อน</h2>
       <p>
-สป็อตทาวน์ สตาร์ทจตุคาม สเกตช์ทัวร์ มอบตัววินพรีเซ็นเตอร์ ไบโอ เบิร์น โฟล์ค นอร์ท อีสเตอร์ยากูซ่าเอ็กซ์โป นาฏยศาลาดาวน์ ภารตะว้าว เซนเซอร์ยิม แบดเวิร์กตรวจสอบตาปรือ โพลล์ ช็อปอัลตราคอมเมนท์ดีไซน์โต๋เต๋ แพทเทิร์นฟยอร์ดไอซ์
-
-</p>
+        เพื่อลดความผิดพลาดที่อาจเกิดขึ้น ขอให้ ขรก.ทำความเข้าใจเกี่ยวกับรายละเอียดการขอบ้านพัก ไม่ว่าจะเป็น วงรอบการปฏิบัติ  ระเบียบการขอบ้านพัก ประเภทและเขตบ้านพักของ ทอ. และหน่วยเกี่ยวข้องต่าง ๆ 
+      </p>
     </div>
     <div class="row row-cols-1 row-cols-md-3 mb-3">
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
+        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
           <div class="card-header py-3 text-center">
             <h4 class="my-0 fw-normal">ข้อควรรู้เกี่ยวกับการขอบ้านพัก ทอ.</h4>
           </div>
           <div class="card-body fix-height">            
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">1. ต้องทำงานอยู่ที่ตั้งดอนเมือง/บางซื่อเท่านั้น</li>
-              <li class="list-group-item">2. สามารถส่งคำขอได้ทั้งปี</li>
-              <li class="list-group-item">3. พิจารณาจัดสรรหลายครั้งในวงรอบปีงบประมาณ</li>
-              <li class="list-group-item">4. ยึดข้อมูลตามฐานข้อมูล กพ. (HRIS)</li>
-              <li class="list-group-item">5. ส่งคำขอในระบบแล้ว print เพื่อส่งทางธุรการเป็นหลักฐาน</li>
-            </ul>           
+            <p class = "my-0 p-1  bg-info">
+              <b>รูปแบบการดำเนิน</b>
+              <li>ขอปีละครั้ง, ออกคำสั่งหลายครั้ง, ส่งคำขอตลอดปี, มี กพ.ทอ.เป็นผู้ดูแล</li>              
+            </p>
+            <p class = "my-0 p-1 bg-info">
+              <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
+              <li>อยู่ส่วนกลาง, ไม่เบิกเช่าซื้อ, มีแบบฟอร์มประเมิน, ยึดข้อมูลตาม HRIS</li>
+            </p>      
           </div>
           <div class="card-footer text-end">
-                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ProcessStepModal">Read more</button>
+                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ProcessStepModal">รายละเอียด</button>
           </div>  
 
         </div>
       </div>
       <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
+        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
           <div class="card-header py-3 text-center">
-            <h4 class="my-0 fw-normal">ประเภทบ้านพักและเขตบ้านพักของ ทอ.</h4>
+            <h4 class="my-0 fw-normal">ประเภทและเขตบ้านพักของ ทอ.</h4>
           </div>
           <div class="card-body fix-height">
-            <p class = "my-0 p-1  bg-info">
+            <p class = "p-0 my-0 bg-info">
+              <b>ประเภท บ้านพัก ทอ.</b>
+              <li><b>ครอบครัว </b> พ., น.บ้านเดี่ยว,น.5 หลัง, ร., ฟส., ฟป., ป.</li>
+              <li><b>โสดชาย</b> ฟส.(โสด), ฟป.(โสด)</li>
+              <li><b>โสดหญิง</b> ฟส.(โสด ญ.), ฟป.(โสด ญ.)</li>
+            </p>
+
+            <p class = "my-0 p-0 bg-info">
+              <b>เขตบ้าน ทอ. </b> 
+              <li><b>ฝั่งท่าดินแดง </b> เขต 1, เขต 2, เขต 3</li>
+              <li><b>ฝั่งดอนเมือง</b> เขต 6 สีกัน, เขต 6 รถไฟ</li>
+              <li><b>เขตบ้านพักบางซื่อ</b> บางซื่อ</li>
+            </p>
+
+          </div>
+          <div class="card-footer text-end">
+                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ZoneAndTypeModal">รายละเอียด</button>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
+          <div class="card-header py-3 text-center">
+            <h4 class="my-0 fw-normal">คณก.บ้านพักอาศัย ทอ.</h4>
+          </div>
+          <div class="card-body fix-height">
+            <p>
+              มี รอง ผบ.ทอ.เป็นประธาน ประกอบด้วยหน่วยเกี่ยวข้องต่าง ๆ มี กพ.ทอ.กำหนดนโยบาย สน.ผบ.ดม.ดูแลความเรียบร้อย กบ.ทอ./ ชย.ทอ. สนับสนุน 
+            </p>
+          </div>
+          <div class="card-footer text-end">
+                <button class="btn btn-secondary">รายละเอียด</button>
+          </div>  
+        </div>
+      </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="ProcessStepModal" tabindex="-1" aria-labelledby="ProcessStepModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ProcessStepModalLabel">ขั้นตอนและระเบียบการขอบ้านพัก ทอ.</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p class = "my-0 p-1  bg-info">
+              <b>รูปแบบการดำเนินการเกี่ยวกับการขอ/จัดสรรบ้านพัก</b>
+              <li><b>ขอครั้งเดียวพิจารณา 1 ปี งป.</b></li>
+              <li><b>ออกคำสั่งบ้านพักปีละหลายครั้ง</b></li>
+              <li><b>ส่งคำขอได้ตลอดทั้งปี</b></li>
+              <li><b>มี กปค.สปพ.กพ.ทอ.เป็นผู้ดูแล</b></li>              
+            </p>
+            <p class = "my-0 p-1 bg-info">
+              <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
+              <li><b>ดำรงตำแหน่งอยู่ส่วนกลาง</b></li>
+              <li><b>ไม่เบิกค่าเช่าซื้อ</b></li>
+              <li><b>ยึดข้อมูลตาม HRIS</b></li>
+            </p>
+      </div>
+      <div class="modal-footer text-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="ZoneAndTypeModal" tabindex="-1" aria-labelledby="ZoneAndTypeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ZoneAndTypeModalLabel">เขตบ้านพัก ทอ.</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p class = "my-0 p-1  bg-info">
               <b>บ้านพัก ทอ. ประเภทครอบครับ</b>
               <li><b>พ.</b> บ้านเดี่ยวนายพลอากาศ</li>
               <li><b>น.บ้านเดี่ยว</b> บ้านเดี่ยว น.อ.พิเศษ</li>
@@ -99,40 +174,7 @@
               <b>เขตบ้านพักบางซื่อ</b>              
               <li><b>เขต เขตบางซื่อ</b> (บางซื่อ)</li>
             </p>
-          </div>
-          <div class="card-footer text-end">
-                <button class="btn btn-secondary">Read more</button>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm ">
-          <div class="card-header py-3 text-center">
-            <h4 class="my-0 fw-normal">คณก.บ้านพักอาศัย ทอ.</h4>
-          </div>
-          <div class="card-body fix-height">
-            <p>
-            ตี๋อิ่มแปร้โปรเจกเตอร์เวอร์ซีอีโอ บัตเตอร์สต๊อค แซวสเปคเฟรมแฟล็ตสตริง ซะจตุคามกัมมันตะโปร บูติกวอลซ์อะภควัมปติ ฮาโลวีนมาร์ก สะกอม เอ๊าะโอเลี้ยงพาสตาโมจิชนะเลิศ ไคลแม็กซ์มาร์ค จังโก้ ตะหงิดเกจิว้อดก้า สงบสุข เมาท์ ภารตะ นายแบบวอลล์เฟรม ว้าวโซลาร์ซามูไรมัฟฟินไทเฮา
 
-            </p>
-          </div>
-          <div class="card-footer text-end">
-                <button class="btn btn-secondary">Read more</button>
-          </div>  
-        </div>
-      </div>
-    </div>
-
-<!-- Modal -->
-<div class="modal fade" id="ProcessStepModal" tabindex="-1" aria-labelledby="ProcessStepModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered ">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="ProcessStepModalLabel">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
       </div>
       <div class="modal-footer text-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

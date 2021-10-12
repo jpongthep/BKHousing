@@ -15,9 +15,10 @@ from .views import LandingTemplate
 admin.site.site_header = 'ARMIS Admin site'
 admin.site.index_title = 'ฐานข้อมูลหลังบ้าน'
 admin.site.site_title = 'หน้าหลัก'
+admin.site.site_url = '/home'
 
 urlpatterns = [
-    path('', LandingTemplate.as_view(), name = 'blank'),
+    path('', LandingTemplate.as_view(), name = 'ldn'),
     path('home', FeedbackCreate.as_view(), name = 'Home'),
 
     path('login/', MyLoginView.as_view(), name = 'login'),

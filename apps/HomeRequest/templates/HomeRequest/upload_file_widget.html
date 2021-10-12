@@ -1,10 +1,16 @@
 {% load static %}
+{% load common_tags %}
+
 
     {% if widget.value %}
-    <a href="{{ widget.value.url }}" target = "_blank"
-        title = "{{ widget.value }}">
-        <img src = {% static 'images/pdf_icon24.gif'%} >
-    </a>
+        {% if widget.value.url|file_ext == "pdf" %}
+            <a href="{{ widget.value.url }}" target = "_blank"
+                title = "{{ widget.value }}">
+                <img src = {% static 'images/pdf_icon24.gif'%} >
+            </a>
+        {% else %}
+            <span class = "text-danger">{{ widget.value  }}</span>
+        {% endif %}
     {% endif %}
     <input  type="file" 
             name="{{ widget.name }}" 

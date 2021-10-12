@@ -39,7 +39,7 @@ class HomeRequest(models.Model):
     SubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
     Distinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="อำเภอ")    
     Province = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
-    GooglePlusCodes1 = models.CharField(max_length = 20, null=True, blank=True, verbose_name="Google Plus Codes 1")
+    GooglePlusCodes1 = models.CharField(max_length = 60, null=True, blank=True, verbose_name="Google Plus Codes 1")
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
@@ -49,7 +49,7 @@ class HomeRequest(models.Model):
     RentSubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
     RentDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="อำเภอ")    
     RentProvince = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
-    GooglePlusCodes2 = models.CharField(max_length = 20, null=True, blank=True, verbose_name="Google Plus Codes 2")
+    GooglePlusCodes2 = models.CharField(max_length = 60, null=True, blank=True, verbose_name="Google Plus Codes 2")
 
     RentStartDate = models.DateField(verbose_name = "วันเริ่มสัญญาเช่าบ้าน", default=None, null=True, blank=True)
     RentEndDate = models.DateField(verbose_name = "วันสิ้นสุดสัญญาเช่าบ้าน", default=None, null=True, blank=True)
@@ -93,6 +93,7 @@ class HomeRequest(models.Model):
 
     #เอกสารหลักฐาน    
     HouseRegistration = models.FileField(verbose_name='สำเนาทะเบียนบ้าน', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    MarriageRegistration = models.FileField(verbose_name='ทะเบียนสมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     HomeRent6006 = models.FileField(verbose_name='แบบฟอร์มเบิก คชบ. 6006 (ตนเอง)',default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])

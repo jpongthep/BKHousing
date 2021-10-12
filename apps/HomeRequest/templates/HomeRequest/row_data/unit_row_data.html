@@ -53,17 +53,21 @@
             {% comment %} <a href = "#"><i class="fa fa-home text-primary icon-size" ></i></a> {% endcomment %}
         </td>
         <td>
-            {# ถ้าส่งเรื่องมาแล้วให้แสดงปุ่มรับเรื่อง #}
-            {% if object.get_ProcessStep_display == 'RequesterSended' %}
-                <a href = "#" onclick="return showConfirm('ยืนยันรับเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'UP'%}');" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>                
-            {% endif %}
-            {# ถ้าประเมินแล้วให้แสดงปุ่มส่งเรื่อง #}
-            {% if object.IsUnitEval and object.ProcessStep not in 'US,PP,PA,GH' %}
-                <a href = "#" onclick="return showConfirm('ยืนยันส่งเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'US'%}');" class="btn btn-outline-primary btn-sm">ส่งเรื่อง</a>
-            {% endif %}
-            {# ถ้าผู้ขอส่งเรื่องมาแล้ว ปุ่มขอแก้ไขจะปรากฎ #}
-            {% if object.ProcessStep != 'RP' %}
-                <a href = "#" onclick="return showConfirm('ยืนยันส่งคำขอ  {{ object.Requester.FullName }}  กลับไปแก้ไข ', '{% url 'HomeRequest:update_process_step' object.id 'RP'%}');" class="btn btn-warning btn-sm text-danger">ส่งเรื่องกลับ</a>
+            {% if object.cancel_request %}
+                <a href = "#" onclick="return showConfirm('ยืนยันการยกเลิกคำขอ {{ object.Comment }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'RC'%}');" class="btn btn-outline-danger btn-sm">ยืนยันการยกเลิกคำขอ</a>
+            {% else %}
+                {# ถ้าส่งเรื่องมาแล้วให้แสดงปุ่มรับเรื่อง #}
+                {% if object.get_ProcessStep_display == 'RequesterSended' %}
+                    <a href = "#" onclick="return showConfirm('ยืนยันรับเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'UP'%}');" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
+                {% endif %}
+                {# ถ้าประเมินแล้วให้แสดงปุ่มส่งเรื่อง #}
+                {% if object.IsUnitEval and object.ProcessStep not in 'US,PP,PA,GH' %}
+                    <a href = "#" onclick="return showConfirm('ยืนยันส่งเรื่องขอบ้านพัก {{ object.Requester.FullName }} และข้อมูลของผู้รับ/วันที่รับ จะถูกบันทึกลงระบบ', '{% url 'HomeRequest:update_process_step' object.id 'US'%}');" class="btn btn-outline-primary btn-sm">ส่งเรื่อง</a>
+                {% endif %}
+                {# ถ้าผู้ขอส่งเรื่องมาแล้ว ปุ่มขอแก้ไขจะปรากฎ #}
+                {% if object.ProcessStep != 'RP' %}
+                    <a href = "#" onclick="return showConfirm('ยืนยันส่งคำขอ  {{ object.Requester.FullName }}  กลับไปแก้ไข ', '{% url 'HomeRequest:update_process_step' object.id 'RP'%}');" class="btn btn-warning btn-sm text-danger">ส่งเรื่องกลับ</a>
+                {% endif %}
             {% endif %}
         </td>
     </tr>      
@@ -71,28 +75,24 @@
 {% else %}
                     <tr class = "text-muted">
                         <td>{{ forloop.counter }}</td>
-                        <td><a href = "#"><i class="fa fa-times text-danger icon-size" ></i></a></td>
-                        <td><a href = "#"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><i class="fa fa-times text-danger icon-size" ></i></td>
+                        <td><a href = "#"><i class="fa fa-eye  icon-size" ></i></a></td>
                         <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
                         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
                         <td>{{ object.FullName }}</td>                        
                         <td>{{ object.Unit }}</td>
                         <td>{{ object.Requester.MobilePhone }}</td>
                         <td>
-                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
+                            <i class="fa fa-times text-danger icon-size" ></i>
                         </td>
                         <td>
-                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
+                            <i class="fa fa-times text-danger icon-size" ></i>
                         </td>                        
                         <td>
-                            {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              
+                            <i class="fa fa-times text-danger icon-size" ></i>
                         </td>
                         <td>
-                            <span class="fa-stack" style="vertical-align: top;">
-                                <i class="far fa-tasks  icon-size"></i>                                
-                                <i class="fas fa-check text-success fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
-                                <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 20px;"></i>
-                            </span>
+                            <i class="fa fa-times text-danger icon-size" ></i>
                         </td>
                         <td></td>
                         <td>ผู้ขอยกเลิกคำขอ</td>

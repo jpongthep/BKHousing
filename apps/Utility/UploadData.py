@@ -19,4 +19,4 @@ def UploadFolderCommandFile(instance, filename):
 
 def only_pdf(value):    
     if not value.name.lower().endswith('.pdf'):
-        raise ValidationError(u'Error message', code='only pdf file allowed')
+        raise ValidationError(u'เฉพาะ pdf file เท่านั้น', code='only pdf file allowed')

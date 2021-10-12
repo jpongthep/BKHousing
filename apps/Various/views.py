@@ -23,4 +23,4 @@ class FeedbackCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 class ThankyouTemplate(TemplateView):
-    template_name = "Various/Thankyou.html"
+    template_name = "Various/thankyou.html"

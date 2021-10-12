@@ -234,12 +234,15 @@ def UpdateRTAFData(current_user,person_data):
     current_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d')
     current_user.current_salary = float(return_data['SALARY'])
     current_user.Address = return_data['ADDRESS']
+    # print("return_data['MARRIED'] ", return_data['MARRIED'])
+    # print("type(return_data['MARRIED)'] ", type(int(return_data['MARRIED'])))
+    current_user.current_status = int(return_data['MARRIED'])
     current_user.save()
 
     # ตรวจสอบว่ามีคู่สมรสหรือไม่
     if not return_data['SPOUSE_IDCARD']:
         return 
-    else:
+    elif return_data['MARRIED'] == "2":
         current_user.current_spouse_pid = return_data['SPOUSE_IDCARD']
         current_user.save()
 
