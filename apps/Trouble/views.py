@@ -71,9 +71,10 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
 
     filled_form = FilledForm.objects.filter(set_form = set_form,
                                             home_request_form = home_request,
-                                            evaluater = request.user)
+                                            type = Type)
     if filled_form.exists():
-        Troubleform = filled_form[0]        
+        filled_form[0].evaluater = request.user
+        Troubleform = filled_form[0]     
     else:
         Troubleform = CreateBlankFrom(set_form, home_request, request.user, type = Type)
     

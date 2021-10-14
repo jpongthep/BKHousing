@@ -1,6 +1,6 @@
 #python module
 import os
-import datetime
+from datetime import date, timedelta
 import json
 from io import StringIO, BytesIO
 #django Module
@@ -32,10 +32,12 @@ from openpyxl import load_workbook
 #My module
 from .models import HomeRequest, CoResident
 from .forms import HomeRequestForm, CoResidentFormSet
-from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep)
+from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep,PERSON_STATUS, 
+                                    HomeRentPermission, FINANCE_CODE)
 from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm
+from apps.Payment.models import FinanceData
 from .serializers import HomeRequestSerializer
 
 
@@ -97,7 +99,36 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'SpouseName' : request.user.current_spouse_name,
                             'SpousePID' : request.user.current_spouse_pid,
                             'Address' : request.user.Address
-                        }        
+                        }       
+
+        # เช็คข้อมูลการเบิก คชบ.ของตนเอง ในช่วง 6 เดือนล่าสุด
+        homerent_data = FinanceData.objects.filter(PersonID =  request.user.PersonID
+                                          ).filter(date__gte = date.today() - timedelta(days = 185)
+                                          ).filter(code = FINANCE_CODE.HOMERENT
+                                          ).filter(money__gt = 0
+                                          ).order_by("money")
+            
+        print('homerent_data',homerent_data)
+        if(homerent_data.exists()):
+            initial_value['RentPermission'] = HomeRentPermission.used
+            initial_value['have_rent'] = True
+            initial_value['RentalCost'] = homerent_data[0].money
+        else:
+            initial_value['RentPermission'] = HomeRentPermission.no_permission
+
+        # ถ้ามีสถานภาพสมรส
+        if(request.user.current_status in [PERSON_STATUS.MARRIES_TOGETHER, PERSON_STATUS.MARRIES_SEPARATE]):
+            # เช็คข้อมูลการเบิก คชบ.ของคู่สมรส ในช่วง 6 เดือนล่าสุด
+            homerent_data = FinanceData.objects.filter(PersonID =  request.user.current_spouse_pid
+                                          ).filter(date__gte = date.today() - timedelta(days = 185)
+                                          ).filter(code = FINANCE_CODE.HOMERENT
+                                          ).filter(money__gt = 0
+                                          ).order_by("money")
+            if(homerent_data.exists()):
+                initial_value['have_rent_spouse'] = True
+                initial_value['RentalCostSpouse'] = homerent_data[0].money
+
+
         form = self.form_class(initial = initial_value, prefix='hr')
 
         co_resident_formset = CoResidentFormSet()
@@ -162,12 +193,13 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, user_current_data_form, co_resident_formset):
-        print(form.errors)
+        # print(form.errors)
         return self.render_to_response(
                  self.get_context_data(form=form,
                                        co_resident_formset=co_resident_formset
                                        )
         )
+
 
 class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
     allow_groups = ['RTAF_NO_HOME_USER']
@@ -190,7 +222,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         co_resident_formset = CoResidentFormSet(instance = home_request, 
                                                 queryset = home_request.CoResident.order_by("Relation"))
 
-        print("UpdateHomeRequestView:get")
+        # print("UpdateHomeRequestView:get")
 
         return self.render_to_response(
                   self.get_context_data(form = HomeRequestForm(instance=self.object, prefix='hr'),
@@ -201,15 +233,15 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        print("UpdateHomeRequestView:get_context_data")
+        # print("UpdateHomeRequestView:get_context_data")
 
         if self.request.GET:
-            print('get_context_data:self.request.GET')
+            # print('get_context_data:self.request.GET')
             data['form'] = HomeRequestForm(instance=self.object, prefix='hr')
             data["user_current_data_form"] = UserCurrentDataForm(instance = self.request.user, prefix='userdata')
             data["co_resident"] = CoResidentFormSet(instance=self.object)
         elif self.request.POST:
-            print('get_context_data:self.request.POST')
+            # print('get_context_data:self.request.POST')
             data['form'] = HomeRequestForm(self.request.POST, prefix='hr')
             data["user_current_data_form"] = UserCurrentDataForm(self.request.POST, prefix='userdata')
             data["co_resident_formset"] = CoResidentFormSet(self.request.POST)
@@ -222,10 +254,10 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         user_current_data_form = UserCurrentDataForm(self.request.POST, instance = request.user, prefix='userdata')
         co_resident_formset = CoResidentFormSet(self.request.POST, instance = self.object)
 
-        print('UpdateHomeRequestView:post:form.is_valid() ',form.is_valid())
+        # print('UpdateHomeRequestView:post:form.is_valid() ',form.is_valid())
         
-        print('UpdateHomeRequestView:post:user_current_data_form.is_valid() ',user_current_data_form.is_valid())
-        print('UpdateHomeRequestView:post:co_resident_formset.is_valid() ',co_resident_formset.is_valid())
+        # print('UpdateHomeRequestView:post:user_current_data_form.is_valid() ',user_current_data_form.is_valid())
+        # print('UpdateHomeRequestView:post:co_resident_formset.is_valid() ',co_resident_formset.is_valid())
 
         if form.is_valid() and user_current_data_form.is_valid() and co_resident_formset.is_valid():
             # print('co_resident_formset ', co_resident_formset)
@@ -235,7 +267,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
 
     def form_valid(self, form, user_current_data_form, co_resident_formset):
 
-        print('UpdateHomeRequestView:form_valid co_resident_formset = ',co_resident_formset)
+        # print('UpdateHomeRequestView:form_valid co_resident_formset = ',co_resident_formset)
         user_current_data_form.save()
         co_resident = co_resident_formset.save(commit=False)
 
@@ -243,7 +275,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
             cr.delete()
 
         for cr in co_resident:
-            print('coresident = ',cr)
+            # print('coresident = ',cr)
             cr.home_request = self.object
             cr.save()
 
@@ -259,8 +291,8 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form, user_current_data_form, co_resident_formset):
-        print('UpdateHomeRequestView:form_invalid => user_current_data_form  ') #, user_current_data_form)
-        print('UpdateHomeRequestView:form_invalid => co_resident_formset => ') #, co_resident_formset)
+        # print('UpdateHomeRequestView:form_invalid => user_current_data_form  ') #, user_current_data_form)
+        # print('UpdateHomeRequestView:form_invalid => co_resident_formset => ') #, co_resident_formset)
         return super().form_invalid(form)
 
     def get_success_url(self):        
@@ -399,9 +431,9 @@ def cancel_request(request, home_request_id):
         if request.method == "POST":
             data = json.loads(request.body.decode("utf-8"))
             Comment = data["comment"]
-            print("data =  " ,Comment)
+            # print("data =  " ,Comment)
         home_request.cancel_request = True
-        home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(datetime.date.today()) + Comment
+        home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(date.today()) + Comment
         home_request.save()
         return JsonResponse({"ok": True}, safe=False)
     
@@ -459,7 +491,7 @@ def TestDocument(request,home_request_id):
             'AddSalary':"{:,}".format(home_request.AddSalary),
             'Salary':"{:,}".format(home_request.Salary),
             }
-    print(dic)
+    # print(dic)
 
     for para in document.paragraphs:
         for key, value in dic.items():
@@ -481,7 +513,7 @@ def TestDocument(request,home_request_id):
         f.getvalue(),
         content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
-    print('docx_title = ',docx_title)
+    # print('docx_title = ',docx_title)
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(docx_title)
     response['Content-Length'] = length
     return response
@@ -523,7 +555,7 @@ def TestExcel(request,unit_id):
         f.getvalue(),
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    print('xls = ',xls_title)
+    # print('xls = ',xls_title)
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(xls_title)
     response['Content-Length'] = length
     return response

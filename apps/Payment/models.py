@@ -1,9 +1,9 @@
 from datetime import date, datetime
 from django.db import models
-
+from django.db.models.constraints import UniqueConstraint
 
 from apps.Home.models import HomeOwner
-from apps.Utility.Constants import PAYMENT_METHOD
+from apps.Utility.Constants import PAYMENT_METHOD, FINANCE_CODE
 
 def first_day_of_month():
     return datetime.today().replace(day=1)
@@ -50,4 +50,24 @@ class RentPayment(models.Model):
             return self.home_owner.owner.FullName + ' : ' + str(self.date)
         else:
             return "need home_owner" + ' : ' + str(self.date)
+
+
+class FinanceData(models.Model):
+    class Meta:
+        verbose_name_plural = "FinanceData : ข้อมูลจาก กง.ทอ."
+        constraints = [
+            UniqueConstraint(fields=['PersonID', 'date','code'], name='finance_data')
+        ]        
+    PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
+    date = models.DateField(verbose_name="เดือน-ปี", null = True, blank = True, default = first_day_of_month)
+    code = models.IntegerField(verbose_name="รหัสสั่งจ่าย", choices = FINANCE_CODE.choices, null = True, blank = True, default = FINANCE_CODE.HOMERENT)
+    money = models.IntegerField(verbose_name="เงิน", null = True, blank = True, default = 0)
+    comment = models.TextField(verbose_name="หมายเหตุ",null = True, blank = True)
+    
+    def get_absolute_url(self):
+        pass
+        # return reverse('Home:owner_detail', kwargs={"pk": hmowner_id}) 
+
+    def __str__(self):
+            return f"{self.PersonID}:{self.date.month}-{(self.date.year + 543) % 100}"
 

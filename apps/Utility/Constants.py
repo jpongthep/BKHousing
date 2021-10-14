@@ -132,6 +132,10 @@ class PAYMENT_METHOD(models.IntegerChoices):
     CASH = 1, _('จ่ายเงินสด')
     ACCOUNT = 2, _('หักบัญชี')
 
+class FINANCE_CODE(models.IntegerChoices):
+    HOMERENT = 20001, _('ค่าเช่าบ้าน')
+    AIRFORCEHOME = 40915, _('ค่าบ้านพัก ทอ.')
+
 class HomeDataGrade(models.TextChoices):    
     NO = '?', _('?')
     A = 'A', _('A')

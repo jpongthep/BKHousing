@@ -27,7 +27,7 @@
             {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
         </td>
         <td>
-            {% if object.get_ProcessStep_display not in 'RequesterProcess,RequesterSended,UnitSended' %}
+            {% if object.get_ProcessStep_display == 'UnitProcess' %}
             <a href = "{% url 'Trouble:eval' object.id 'Unit' %}">
                 {% if object.IsUnitEval  %}
                     <strong>{{object.TroubleScore}}</strong>
@@ -39,7 +39,7 @@
                 {% endif %}
             </a>
             {% elif object.get_ProcessStep_display == "UnitSended" %}
-                <a href = "{% url 'Trouble:view_eval' object.id %}">
+                <a href = "{% url 'Trouble:view_eval' object.id 'Unit' %}">
                     <strong>{{object.TroubleScore}}</strong>
                 </a>
             {% endif %}

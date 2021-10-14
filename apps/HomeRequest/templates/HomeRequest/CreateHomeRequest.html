@@ -58,46 +58,32 @@
                 }                
             }
 
+            if(isEmptyOrSpaces($("#id_userdata-OfficePhone").val())){
+                $("#id_userdata-OfficePhone").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+            
+            if(isEmptyOrSpaces($("#id_userdata-MobilePhone").val())){
+                $("#id_userdata-MobilePhone").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+            
             if($("[name = 'hr-RentPermission']:checked").val() == '3')
-            {
-                if(isEmptyOrSpaces($("#id_hr-RentStartDate").val()) ){
-                    $("#id_hr-RentStartDate").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
-                if(isEmptyOrSpaces($("#id_hr-RentEndDate").val()) ){
-                    $("#id_hr-RentEndDate").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
-
-                if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes2").val()) ){
-                    $("#id_hr-GooglePlusCodes2").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
-                if(isEmptyOrSpaces($("#id_hr-RentOwner").val()) ){
-                    $("#id_hr-RentOwner").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
-                if(isEmptyOrSpaces($("#id_hr-RentOwnerPID").val()) ){
-                    $("#id_hr-RentOwnerPID").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
-                if(! isEmptyOrSpaces($("#id_hr-RentOwnerPID").val()))
-                {
-                    if(!checkID($("#id_hr-RentOwnerPID").val()))
-                    {
-                        $("#id_hr-RentOwnerPID").css("box-shadow","0 0 10px #e80c4d");
-                        $( "label[for='id_hr-RentOwnerPID']" ).html("<span class = 'text-danger'>รหัสผู้ให้เช่าไม่ถูกต้อง</span>");
-                        data_completed = false;
-                    }
-                }                
+            {                               
                 if(isEmptyOrSpaces($("#id_hr-RentalCost").val()) ){
                     $("#id_hr-RentalCost").css("box-shadow","0 0 10px #e80c4d");             
                     data_completed = false;
                 }
-                if(isEmptyOrSpaces($("#id_hr-RentAddress").val()) ){
-                    $("#id_hr-RentAddress").css("box-shadow","0 0 10px #e80c4d");             
-                    data_completed = false;
-                }
+            }
+
+            if(isEmptyOrSpaces($("#id_userdata-RTAFEMail").val())){
+                $("#id_userdata-RTAFEMail").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+
+            if(isEmptyOrSpaces($("#id_userdata-email").val())){
+                $("#id_userdata-email").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
             }
 
             if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes1").val()) ){
@@ -123,8 +109,6 @@
                 }
             });
 
-            
-            
             console.log($("#id_hr-IsNotBuyHome").val());
 
             if(!data_completed){
@@ -137,6 +121,22 @@
         });
 
         $('button[name="save"]').click(function() {
+            
+            var data_completed = true;
+            if(isEmptyOrSpaces($("#id_userdata-OfficePhone").val())){
+                $("#id_userdata-OfficePhone").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+            
+            if(isEmptyOrSpaces($("#id_userdata-MobilePhone").val())){
+                $("#id_userdata-MobilePhone").css("box-shadow","0 0 10px #e80c4d");             
+                data_completed = false;
+            }
+
+            if(!data_completed){
+                alert("กรุณากรอกเบอร์โทรศัพท์ก่อนบันทึกร่าง")
+                return false;
+            }
             var c = confirm("บันทึกเพื่อส่งภายหลัง");
             return c;
         });
@@ -154,18 +154,16 @@
             $("#div_id_hr-SpouseName").toggle(married);
             $("#div_id_hr-SpousePID").toggle(married);
             $("#div_id_hr-SpouseAFID").toggle(married);
+
+            $("#HomeRentSpouse").toggle(married);
+            $("#SpouseEvidence").toggle(married || widow_divote);
         });
 
         $("[name = 'hr-RentPermission']").change(function() {
 
-            has_rent_permission =$("[name = 'hr-RentPermission']:checked").val() == '3';
-
-            $("#div_id_hr-RentStartDate").toggle(has_rent_permission);
-            $("#div_id_hr-RentEndDate").toggle(has_rent_permission);
-            $("#div_id_hr-RentOwner").toggle(has_rent_permission);
-            $("#div_id_hr-RentOwnerPID").toggle(has_rent_permission);
+            has_rent_permission = $("[name = 'hr-RentPermission']").find('option:selected').val() == '3';
+            console.log('has_rent_permission =', $("[name = 'hr-RentPermission']").find('option:selected').val());
             $("#div_id_hr-RentalCost").toggle(has_rent_permission);
-            $("#div_RentAddress").toggle(has_rent_permission);
         });
 
         $("#id_hr-IsNeverRTAFHome").change(function() {
@@ -231,7 +229,6 @@
                 $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
                 $(`select[data-priority='${i}']`).val('');
             }
-
         });
 
 
@@ -281,12 +278,7 @@
         
         has_rent_permission = {{ form.RentPermission.value|default_if_none:"0" }} == 3;
 
-        $("#div_id_hr-RentStartDate").toggle(has_rent_permission);
-        $("#div_id_hr-RentEndDate").toggle(has_rent_permission);
-        $("#div_id_hr-RentOwner").toggle(has_rent_permission);
-        $("#div_id_hr-RentOwnerPID").toggle(has_rent_permission);
         $("#div_id_hr-RentalCost").toggle(has_rent_permission);
-        $("#div_RentAddress").toggle(has_rent_permission);
 
         var allow_home_need = false;
 
@@ -297,7 +289,6 @@
         $("#id_hr-IsHomeNeed").attr("disabled", allow_home_need);
 
         var allow_family_home = false;
-        console.log("form.Status.value =  {{ form.Status.value }}")
         {% if form.Status.value|stringformat:"i" not in "2,7" %}
             allow_family_home = true;
             $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
@@ -311,7 +302,6 @@
 
 {% block style %}
 <style>
-
     select[disabled]{ color:#aaa;  }
 
     .cr-row:hover {
@@ -415,40 +405,17 @@
                     {{ form.RentPermission |as_crispy_field }}
                 </div>
                 <div class="col-md-2">
-                    {{ form.RentStartDate |as_crispy_field  }}                    
-                </div>
-                <div class="col-md-2">
-                    {{ form.RentEndDate |as_crispy_field  }}                    
-                </div>
-                <div class="col-md-2">
-                    {{ form.RentOwner |as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
-                    {{ form.RentOwnerPID |as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
+                    {{ form.have_rent |as_crispy_field }}
                     {{ form.RentalCost |as_crispy_field  }}
                 </div>
-            </div>
-            <div class="row" id = "div_RentAddress">
-                <div class="col-md-8">
-                    {{ form.RentAddress |as_crispy_field }}
+                <div class="col-md-2" id = "HomeRentSpouse">
+                    {{ form.have_rent_spouse |as_crispy_field }}
+                    {{ form.RentalCostSpouse |as_crispy_field  }}
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="id_hr-GooglePlusCodes2" class="form-label">
-                            Google Plus Codes 2 คืออะไร <i class="fas fa-arrow-right"></i>
-                            <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25  
-                                 class = "help_goocle_code_plus" 
-                                 data-bs-toggle="modal" data-bs-target="#google_help_modal">
-                        </label>
-                        {% comment %} <input type="text" name="hr-GooglePlusCodes2" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes2"> {% endcomment %}
-                        {{ form.GooglePlusCodes2 | as_crispy_field }}
-                    </div>
-                    <input id="zipcode2" type="hidden">
-                </div>                
-
-            </div>            
+                <div class="col-md-6">
+                    {{ form.rent_comment |as_crispy_field }}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -536,11 +503,18 @@
                 <div class="col-md-3">            
                     {{ form.HouseRegistration.label  }}             
                     {{ form.HouseRegistration  }}
+                </div> 
+            </div>
+            <div class="row" id = "SpouseEvidence">
+                <div class="col-md-3">
+                    {{ form.SpouseApproved.label }}
+                    {{ form.SpouseApproved }}
                 </div>                
                 <div class="col-md-3">
                     {{ form.MarriageRegistration.label }}
                     {{ form.MarriageRegistration }}
                 </div>                
+
                 <div class="col-md-3">
                     {{ form.DivorceRegistration.label }}
                     {{ form.DivorceRegistration }}
@@ -549,24 +523,6 @@
                     {{ form.SpouseDeathRegistration.label }}
                     {{ form.SpouseDeathRegistration }}
                 </div>                
-            </div>        
-            <div class="row my-3">
-                <div class="col-md-3">
-                    {{ form.HomeRent6006.label }}
-                    {{ form.HomeRent6006 }}
-                </div> 
-                <div class="col-md-3">
-                    {{ form.SpouseHomeRent6006.label  }}
-                    {{ form.SpouseHomeRent6006  }}
-                </div>                
-                <div class="col-md-3">
-                    {{ form.SalaryBill.label }}
-                    {{ form.SalaryBill }}
-                </div>                
-                <div class="col-md-3">
-                    {{ form.SpouseHomeRent6006.label }}
-                    {{ form.SpouseHomeRent6006 }}
-                </div>
             </div>
         </div>      
     </div>

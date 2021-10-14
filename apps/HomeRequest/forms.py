@@ -36,24 +36,19 @@ class HomeRequestForm(forms.ModelForm):
                 'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
                 'Address','GooglePlusCodes1',
                 'TravelDescription',
-                'RentPermission','RentStartDate','RentEndDate','RentOwner','RentOwnerPID','RentalCost',
-                'RentAddress', 'GooglePlusCodes2',
+                'RentPermission','have_rent', 'have_rent_spouse', 'RentalCost', 'RentalCostSpouse', 'rent_comment',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
                 'IsHomelessDisaster','IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
                 'IsHomeNeed','IsFlatNeed','IsShopHouseNeed',
                 'ZoneRequestPriority1','ZoneRequestPriority2','ZoneRequestPriority3','ZoneRequestPriority4','ZoneRequestPriority5','ZoneRequestPriority6',
-                'HouseRegistration','MarriageRegistration','DivorceRegistration','SpouseDeathRegistration','HomeRent6006','SpouseHomeRent6006','SalaryBill','SpouseApproved',
+                'HouseRegistration', 'MarriageRegistration', 'SpouseApproved', 'DivorceRegistration','SpouseDeathRegistration',
                 ]        
 
         widgets = {
             'FullName': forms.TextInput(attrs = {'placeholder': 'น.อ.ทัพฟ้าไทย ใส่ใจการงาน'}),
             'Position': forms.TextInput(
                 attrs={'placeholder': 'หัวหน้ากองสนับสนุนการบิน สำนักจัดการการบิน กรมการบินทหารอากาศ'}),
-            'SubDistinct': forms.TextInput(
-                attrs={
-                    'placeholder': 'กรอกตำบลแล้วเลือก',
-                }),
-            
+                        
             'TravelDescription': forms.Textarea(
                 attrs={
                         'placeholder': 'ในวันทำงานจะตื่นตั้งแต่ 0500 และปฏิบัติภารกิจส่วนตัว ออกจากบ้านเวลา 0540 แวะซื้อข้าวเพื่อทานเช้าและเที่ยง ถึงที่ทำงานเวลาประมาณ 0630',
@@ -69,17 +64,18 @@ class HomeRequestForm(forms.ModelForm):
                         'placeholder': 'ข้อมูลบ้านพักหลังเดิมและสาเหตุการออก / ถูกไล่ออกโดยละเอียด',
                         'rows' : 2
                 }),
-            'RentStartDate' : forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
-            'RentEndDate' : forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
-            'RentPermission': forms.RadioSelect,
             'HouseRegistration' : UploadFileWidget(),
             'MarriageRegistration': UploadFileWidget(),
             'DivorceRegistration': UploadFileWidget(),
             'SpouseDeathRegistration': UploadFileWidget(),
-            'HomeRent6006': UploadFileWidget(),
-            'SpouseHomeRent6006': UploadFileWidget(),
-            'SalaryBill': UploadFileWidget(),
             'SpouseApproved': UploadFileWidget(),
+            'RentPermission' : forms.Select(attrs={'class':'mt-2'}),
+            'rent_comment': forms.Textarea(
+                attrs={
+                        'placeholder': 'สาเหตุ/เหตุผล ที่เบิกหรือไม่เบิก คชบ.',
+                        'rows' : 3,
+                        'class' : "mt-2"
+                }),
             'ZoneRequestPriority1' : forms.Select(attrs={'data-priority':'1'}),
             'ZoneRequestPriority2' : forms.Select(attrs={'data-priority':'2'}),
             'ZoneRequestPriority3' : forms.Select(attrs={'data-priority':'3'}),
@@ -87,15 +83,16 @@ class HomeRequestForm(forms.ModelForm):
             'ZoneRequestPriority5' : forms.Select(attrs={'data-priority':'5'}),
             'ZoneRequestPriority6' : forms.Select(attrs={'data-priority':'6'}),
         }
-        labels = {
-            'RentStartDate': _(u'วันเริ่มสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
-            'RentEndDate': _(u'วันสิ้นสุดสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
-        }
+        # labels = {
+        #     'RentStartDate': _(u'วันเริ่มสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
+        #     'RentEndDate': _(u'วันสิ้นสุดสัญญาเช่าบ้าน (ใช้ปี ค.ศ.)'),
+        # }
 
     def __init__(self,  *args, **kwargs):
         super(HomeRequestForm, self).__init__(*args, **kwargs)
         self.fields['GooglePlusCodes1'].label = False
-        self.fields['GooglePlusCodes2'].label = False        
+        self.fields['RentalCost'].label = False
+        self.fields['RentalCostSpouse'].label = False
 
         for name, field in self.fields.items():
             # add ng-model to each model field

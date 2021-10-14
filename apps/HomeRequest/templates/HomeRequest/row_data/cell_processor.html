@@ -21,6 +21,11 @@
             รับเรื่อง
         </a>
     {% endif %}
+    {% if object.IsUnitEval %}
+        <a href = "{% url 'Trouble:view_eval' object.id 'Unit' %}" >        
+        {{ object.UnitTroubleScore }}
+        </a>
+    {% endif %}
 {% elif processor == "PersonAdmin" %}    
     {% if object.PersonApprover %}
         <a href = "#" title = "{{ object.PersonApprover.FullName}} ({{ object.PersonApprover.OfficePhone}}) {{ object.PersonDateApproved|thaidate:"d M y"}}">
@@ -31,4 +36,9 @@
             <small>รับเรื่อง</small>
         </a>
     {% endif %}   
+    {% if object.IsPersonEval %}
+        <a href = "{% url 'Trouble:view_eval' object.id 'Person' %}" >        
+            {{ object.PersonTroubleScore }}
+        </a>
+    {% endif %}
 {% endif %}
