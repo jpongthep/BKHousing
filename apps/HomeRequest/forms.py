@@ -72,7 +72,7 @@ class HomeRequestForm(forms.ModelForm):
             'RentPermission' : forms.Select(attrs={'class':'mt-2'}),
             'rent_comment': forms.Textarea(
                 attrs={
-                        'placeholder': 'สาเหตุ/เหตุผล ที่เบิกหรือไม่เบิก คชบ.',
+                        'placeholder': 'ชี้แจงเพิ่มเติมถึงสาเหตุ/เหตุผลพิเศษ เกี่ยวกับ คชบ.',
                         'rows' : 3,
                         'class' : "mt-2"
                 }),

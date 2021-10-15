@@ -12,7 +12,7 @@
 
 {% block script %}
 <script>
-    var priority_options;
+    var home_zone_full_options_html;
     var priority_selected = [];
     var all_choices = ['1','2','3','6T','6S','7S','BS']
 
@@ -33,7 +33,185 @@
         return true;
     }
 
+    function addzone(v1, v2)
+    {
+        var result = new Array();
+        for(i = 0;i < Math.max(v1.length,v2.length) ;i++)
+        {
+            if(v1[i] != 0)
+                result.push(v1[i]);
+            else if(v2[i] != 0)
+                result.push(v2[i]);  
+            else              
+                result.push(0);  
+        }
+            
+        return result;
+    }
+
+
     $(document).ready(function(){
+
+        var remain_options = [];
+        var remain_options_html = [];
+        var home_zone_option = [];
+        var home_zone_full_options_html = []
+        var rank = {{ request.user.Rank }};
+        var user_status = {{ request.user.current_status }};
+        var select_option = ['1','2','3','6T','6S','7S','BS'];
+
+        console.log('home_zone_full_options_html = ',home_zone_full_options_html);
+
+        function setZoneSelectOption()
+        {
+            var user_sex = "{{request.user.Sex}}";
+            var user_unit = "{{request.user.CurrentUnit.ShortName }}";
+            var is_home_need = $('#id_hr-IsHomeNeed').is(":checked");
+            var is_flat_need = $('#id_hr-IsFlatNeed').is(":checked");
+            var is_shop_need = $('#id_hr-IsShopHouseNeed').is(":checked");
+
+            user_status = $("#id_hr-Status").val();
+
+            // console.log('rank = ',rank);
+            // console.log('user_status = ',user_status);
+            // console.log('user_sex = ',user_sex);
+            // console.log('is_home_need = ',is_home_need);
+            // console.log('is_flat_need = ',is_flat_need);
+            // console.log('is_shop_need = ',is_shop_need);
+
+            // console.log('rank = ',rank)
+            
+            select_option = [0,0,0,0,0,0,0];
+            if(rank <= 30302) // น.อ.พิเศษขึ้นไป
+            {
+                console.log('select_option = ',select_option)
+
+                if(is_home_need)
+                    select_option = addzone(select_option, ['1','2','3',0,0,0,0]);
+                if(is_flat_need)
+                    select_option = addzone(select_option, ['1','2','3','6T','6S',0,'BS']);
+                if(is_shop_need)
+                    select_option = addzone(select_option, ['1','2','3','6T', 0, 0,'BS']);
+                console.log('น.5 +  - select_option = ', select_option)
+            }
+            else if(user_status == 1) // กรณีสถานภาพเป็นโสด
+            {
+                console.log('โสด - rank = ',rank);
+                console.log('โสด - user_sex = ',user_sex);
+                $('#id_hr-IsFlatNeed').prop('checked', true);
+
+                if(rank <= 30500 || (rank > 31400 && rank < 31600)) // ชั้นสัญญาบัตร โสด
+                {
+                    console.log('โสด - if rank');
+                    if(user_sex == "ชาย")
+                    {
+                        select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
+                        console.log('โสด - if rank if sex ช.');
+                    }
+                    if(user_sex == "หญิง")
+                    {
+                        select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
+                        console.log('โสด - if rank if sex ญ.');
+                    }
+                }
+                else // ชั้นประทวน โสด
+                {
+                    if(user_sex == "ชาย")
+                    {
+                        select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
+                        console.log('โสด - if rank if sex ช.');
+                    }
+                    if(user_sex == "หญิง")
+                    {
+                        select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
+                        console.log('โสด - if rank if sex ญ.');
+                    }
+                }
+                console.log('โสด - select_option = ', select_option)
+            }
+            else if(user_status == 2 || user_status == 7) // กรณีสถานภาพสมรส
+            {
+                if(rank <= 30500 || (rank > 31400 && rank < 31600)) // ชั้นสัญญาบัตร
+                {   
+                    console.log('สมรส - if rank')
+                    if(is_flat_need)
+                    {
+                        console.log('สมรส - if rank if flat');
+                        select_option = addzone(select_option, ['1','2','3','6T' ,'6S', 0 ,'BS']);
+                    }
+                    if(is_shop_need)
+                    {
+                        console.log('สมรส - if rank if shop');
+                        select_option = addzone(select_option, ['1','2','3',0, '6S', 0, 0 ]);
+                    }
+                }
+                console.log('สมรส - select_option = ', select_option)
+            }
+            if (user_unit == "อย.")
+            {
+                select_option = addzone(select_option, [0,0,0,0, 0, '7S', 0 ]);
+            }
+            // console.log('select_option = ',select_option);
+            remain_options = [];
+            remain_options_html = [];
+            // remain_options = select_option;
+            remain_options_html.push(home_zone_full_options_html[0]);                                       
+            for(i = 0; i < home_zone_full_options_html.length;i++)
+            {
+                if(select_option[i] != 0 )
+                {
+                    // console.log("- typeof select_option[i]", typeof select_option[i]);
+                    //console.log("- i = ",i,"select_option[i] = ",select_option[i]);
+                    remain_options.push(select_option[i]);
+                    remain_options_html.push(home_zone_full_options_html[i+1]);                    
+                }
+            }
+            console.log('select_option = ',select_option);
+            console.log('remain_options = ', remain_options);
+            console.log('remain_options_html = ',remain_options_html);
+            home_zone_option = remain_options;
+            $("select[data-priority=1] option").empty();
+            $("select[data-priority=1]").html(remain_options_html);
+        }
+
+        $("select[data-priority=1] option").each(function(){
+            optionValue = this.value;
+            optionText =  this.innerHTML;
+            optiontext = `<option value="${optionValue}">${optionText}</option>`
+            home_zone_full_options_html.push(optiontext);
+        });
+
+        for(i = 2; i <= 6; i++)
+        {
+            if($(`select[data-priority='${i}']`).val() == '')
+                $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
+        }
+
+        $('#id_hr-IsHomeNeed, #id_hr-IsFlatNeed, #id_hr-IsShopHouseNeed, #id_hr-Status').change(function() {
+            console.log('check box change');
+            setZoneSelectOption();
+            
+        });
+
+        function setMarriedComponent(married, widow_divote)
+        {
+            married = $("#id_hr-Status").val() == 2 || $("#id_hr-Status").val() == 7;
+            widow_divote = $("#id_hr-Status").val() == 3 || $("#id_hr-Status").val() == 4;
+
+            $("#div_id_hr-IsHRISReport").toggle(married || widow_divote);
+            $("#div_id_hr-SpouseName").toggle(married);
+            $("#div_id_hr-SpousePID").toggle(married);
+            $("#div_id_hr-SpouseAFID").toggle(married);
+            $("#div_id_hr-IsNotRTAFHome").toggle(married);
+
+            $("#HomeRentSpouse").toggle(married);
+            $("#SpouseEvidence").toggle(married || widow_divote);
+
+            $("#id_hr-IsShopHouseNeed").prop('disabled', ! (married || widow_divote));
+
+            
+        }
+
         $('button[name="send"]').click(function() {
             var data_completed = true;
             married = ["2", "7"];
@@ -67,7 +245,7 @@
                 $("#id_userdata-MobilePhone").css("box-shadow","0 0 10px #e80c4d");             
                 data_completed = false;
             }
-            
+
             if($("[name = 'hr-RentPermission']:checked").val() == '3')
             {                               
                 if(isEmptyOrSpaces($("#id_hr-RentalCost").val()) ){
@@ -90,13 +268,14 @@
                 $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");             
                 data_completed = false;
             }
+
             if(isEmptyOrSpaces($("#id_hr-TravelDescription").val()) ){
                 $("#id_hr-TravelDescription").css("box-shadow","0 0 10px #e80c4d");             
                 data_completed = false;
             }
 
             $('[id ^=id_CoResident][id $=PersonID]').each(function(i, obj) {
-                
+
                 name = $(this).attr("id");
                 if($(this).val().length == 13)
                 {
@@ -146,17 +325,8 @@
             cloneMore('.CoResident:last', 'service');
         }); 
 
-        $("#id_hr-Status").change(function() {
-            married = this.value == 2 || this.value == 7;
-            widow_divote = this.value == 3 || this.value == 4;
-
-            $("#div_id_hr-IsHRISReport").toggle(married || widow_divote);
-            $("#div_id_hr-SpouseName").toggle(married);
-            $("#div_id_hr-SpousePID").toggle(married);
-            $("#div_id_hr-SpouseAFID").toggle(married);
-
-            $("#HomeRentSpouse").toggle(married);
-            $("#SpouseEvidence").toggle(married || widow_divote);
+        $("#id_hr-Status").change(function() {           
+            setMarriedComponent();
         });
 
         $("[name = 'hr-RentPermission']").change(function() {
@@ -171,58 +341,50 @@
             $("#div_id_hr-RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
         });
 
-        priority_options = []
-        $("select[data-priority=1] option").each(function(){
-            optionValue = this.value;
-            optionText =  this.innerHTML;
-            optiontext = `<option value="${optionValue}">${optionText}</option>`
-            priority_options.push(optiontext);
-        });
-
-        for(i = 2; i <= 6; i++)
-        {
-            if($(`select[data-priority='${i}']`).val() == '')
-                $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
-        }
-
-        function filterOptions(type) {
-            localStorage.type = type
-            if (type === "All") {
-                $("#targetReport").html(options)
-            } else {
-                $("#targetReport").empty()
-                options.filter("." + type).appendTo($("#targetReport"))
-            }
-        }
-
         $('[data-priority]').change(function(){
             changed_item = $(this).data('priority');
             selected_value = $(`select[data-priority='${changed_item}']`).val();
 
+            // ปรับขนาด array ตัวที่เลือกไว้แล้วให้ถูกต้อง
             priority_selected.length = changed_item - 1;
+
+            //ถ้าไม่ได้เลือกอะไร ก็ทำให้ตัวถัดไปว่าง (รอเลือก)
             if($(this).find(':selected').val() == '')
             {
                 $(`select[data-priority='${changed_item+1}']`).prop('disabled', 'disabled');                
             }
+            // ถ้ามีการเลือก Zone ก็บันทึกตัวที่เลือกไว้
             else
             {
-                priority_selected.push(all_choices.indexOf(selected_value));
+                priority_selected.push($(this).find(':selected').val());
                 $(`select[data-priority='${changed_item+1}']`).prop('disabled', false);
+                // console.log('home_zone_option = ',home_zone_option);
+                // console.log('selected_value = ',selected_value);
+                // console.log('remain_options = ',remain_options);
+                // console.log('remain_options_html = ',remain_options_html);
             }
-            
+
+            // ใส่  Option ที่เหลือให้ Select ตัวถัดไป
             $(`select[data-priority='${changed_item+1}']`).focus();
-            remain_options = [];
-            remain_options.push(priority_options[0]); 
-            for(i = 0; i < priority_options.length;i++)
+
+            // console.log('home_zone_full_options_html = ', home_zone_full_options_html);
+            // console.log('-home_zone_option = ', home_zone_option);
+            // console.log('-priority_selected = ', priority_selected);
+            // console.log('-remain_options = ', remain_options);
+            // console.log('-remain_options_html = ', remain_options_html);
+            // remain_options = [];
+            // remain_options_html =[home_zone_full_options_html[0]];
+            for(i = 0; i < remain_options.length;i++)
             {
-                if(priority_selected.indexOf(i) == -1)
+                if(priority_selected.indexOf(remain_options[i]) != -1)
                 {                    
-                    remain_options.push(priority_options[i+1]);                    
+                    remain_options.splice(i, 1);
+                    remain_options_html.splice(i + 1, 1);
                 }
             }
 
             $(`select[data-priority='${changed_item+1}'] option`).empty();
-            $(`select[data-priority='${changed_item+1}']`).html(remain_options);
+            $(`select[data-priority='${changed_item+1}']`).html(remain_options_html);
 
             for(i = changed_item + 2; i <= 6; i++)
             {
@@ -264,20 +426,12 @@
             $(selector).after(newElement);
         }
 
-        status = $("#id_hr-Status").val();
-        married = status == 2 || status == 3;
-        widow_divote = status == 4 || status == 5;
-
-        $("#div_id_hr-SpouseName").toggle(married);
-        $("#div_id_hr-SpousePID").toggle(married);
-        $("#div_id_hr-SpouseAFID").toggle(married);
-        $("#div_id_hr-IsHRISReport").toggle(married);
+        setMarriedComponent();
 
         IsNeverRTAFHome = ! $('#id_hr-IsNeverRTAFHome').is(":checked");
         $("#div_id_hr-RTAFHomeLeaveReason").toggle(IsNeverRTAFHome);
-        
-        has_rent_permission = {{ form.RentPermission.value|default_if_none:"0" }} == 3;
 
+        has_rent_permission = {{ form.RentPermission.value|default_if_none:"0" }} == 3;
         $("#div_id_hr-RentalCost").toggle(has_rent_permission);
 
         var allow_home_need = false;
@@ -294,7 +448,8 @@
             $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
         {% endif %}
         $("#id_hr-IsShopHouseNeed").attr("disabled", allow_family_home);
-         
+
+        setZoneSelectOption();
     });
 
 </script>
@@ -427,19 +582,19 @@
             <div class="row">
                 <div class="col-md-3">
                     {{ form.IsNotBuyHome  |as_crispy_field}}
-                    {{ form.IsNotOwnHome |as_crispy_field  }}
+                    {{ form.ImportanceDuty |as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
-                    {{ form.IsNotRTAFHome |as_crispy_field  }}
+                    {{ form.IsNotOwnHome |as_crispy_field  }}
                     {{ form.IsMoveFromOtherUnit |as_crispy_field  }}
                 </div>                
                 <div class="col-md-3">
-                    {{ form.IsHomelessEvict |as_crispy_field }}
                     {{ form.IsNeverRTAFHome |as_crispy_field  }}                 
+                    {{ form.IsHomelessEvict |as_crispy_field }}
                 </div>
                 <div class="col-md-3">
+                    {{ form.IsNotRTAFHome |as_crispy_field  }}
                     {{ form.IsHomelessDisaster |as_crispy_field  }}
-                    {{ form.ImportanceDuty |as_crispy_field  }}
                 </div>
             </div>        
             <div>
@@ -466,8 +621,7 @@
                 </div>
                 <div class="col-md-2">
                     {{ form.IsFlatNeed |as_crispy_field  }}
-                </div>                
-            
+                </div>
                 <div class="col-md-4">
                     {{ form.IsShopHouseNeed |as_crispy_field  }}
                 </div>

@@ -170,6 +170,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
 
         self.object.year_round = CurrentYearRound[0]
         self.object.Unit = self.request.user.CurrentUnit
+        self.object.save()
         
         # user_current_data_form.save()
 

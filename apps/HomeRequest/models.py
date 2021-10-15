@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.db import models
 from django.urls import reverse
@@ -115,6 +115,9 @@ class HomeRequest(models.Model):
     PersonTroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน กพ.", null=True,blank = True)
     #คะแนนประเมินล่าสุด
     TroubleScore = models.IntegerField(verbose_name="คะแนนประเมินล่าสุด", null=True,blank = True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
     OriginProcessStep = None
 

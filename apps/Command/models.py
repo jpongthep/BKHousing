@@ -5,10 +5,12 @@ from apps.Utility.UploadData import UploadFolderCommandFile
 
 class Command(models.Model):
     class Meta:
-        verbose_name_plural = "Command : คำสั่งบ้านพัก"        
+        verbose_name_plural = "Command : คำสั่งบ้านพัก"
         constraints = [
-        models.UniqueConstraint(fields=['number', 'year'], name='command_number')
-    ]
+            models.UniqueConstraint(fields=['number', 'year'], name='command_number')
+            ]
+        ordering = ('-year','-number')
+
         
     number = models.PositiveIntegerField(verbose_name='เลขที่', null = False, blank = False, default = 1)
     year = models.PositiveIntegerField(verbose_name='ปี', null = False, blank = False, default = 64)

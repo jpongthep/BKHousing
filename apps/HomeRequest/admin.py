@@ -10,7 +10,7 @@ class CoResidentInline(admin.TabularInline):
 
 class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName',]
-    list_display = ['year_round', 'FullName', 'Unit','ProcessStep']
+    list_display = ['year_round', 'created', 'FullName', 'Unit','ProcessStep']
     list_filter = ('year_round','Requester__CurrentUnit')
     list_display_links = ['FullName']
     raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover')
