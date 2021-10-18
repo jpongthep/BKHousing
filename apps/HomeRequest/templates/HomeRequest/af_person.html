@@ -217,4 +217,18 @@
 {% endblock %}
 
 {% block modal %}
+<!-- Modal -->
+<div class="modal fade" id="e-admin_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-body text-center">      
+        <img src = "{% static 'images/eadmin.gif'%}" width = 750 height = 450 border = 1>
+        <h5>กดที่นี่เพื่อ download เอกสาร / ปรับการตัดคำ, แก้ไขตำแหน่ง / ส่งทางธุรการถึง กพ.นขต.</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock modal %}

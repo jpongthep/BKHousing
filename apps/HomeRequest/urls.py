@@ -8,11 +8,13 @@ from .views import (ProcessFlow,
                     HomeRequestDetail,
                     HomeRequestUnitSummaryListView,
                     TestDocument,
+                    ConsentForm,
                     TestExcel,
                     UnitList4PersonAdmin,
                     AFPersonListView,
                     update_process_step,
-                    cancel_request)
+                    cancel_request
+                    )
 
 from .views_modals import af_person_data_detailview
 # from rest_framework import routers
@@ -41,5 +43,6 @@ urlpatterns = [
     path('<pk>/md',af_person_data_detailview.as_view(), name = 'md'),
 
     path('<unit_id>/xls', TestExcel, name = 'xls'),
+    path('cf', ConsentForm, name = 'ConsentForm'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),
 ] 

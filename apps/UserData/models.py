@@ -62,7 +62,10 @@ class User(AbstractUser):
     def Sex(self):
         RankDisplay = self.get_Rank_display()
 
-        if RankDisplay in ['นาง', 'นางสาว','ญ.']:
+        if RankDisplay in ['นาง', 'น.ส.']:
+            return 'หญิง'
+            
+        if "ญ." in RankDisplay:
             return 'หญิง'
 
         if re.findall("หญิง", RankDisplay):

@@ -1,7 +1,7 @@
 {% extends '_minbase.html' %}
 
 {% block header %}
-ยินดีต้อนรับสู่ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.
+<h5>อ่านกันสักนิด จะไม่ผิดกติกา ลดเวลาแก้ไข</h5>
 {% endblock %}
 {% block style %}
 <style>
@@ -20,7 +20,7 @@
     .fix-height{
         display:block;
         width:100%;
-        height:260px;
+        height:130px;
         overflow:auto;
     }
 </style>
@@ -28,10 +28,6 @@
 
 {% block content %}
 <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-      <h2 class="fw-normal">อ่านทำความเข้าใจก่อน</h2>
-      <p>
-        เพื่อลดความผิดพลาดที่อาจเกิดขึ้น ขอให้ ขรก.ทำความเข้าใจเกี่ยวกับรายละเอียดการขอบ้านพัก ไม่ว่าจะเป็น วงรอบการปฏิบัติ  ระเบียบการขอบ้านพัก ประเภทและเขตบ้านพักของ ทอ. และหน่วยเกี่ยวข้องต่าง ๆ 
-      </p>
     </div>
     <div class="row row-cols-1 row-cols-md-3 mb-3">
       <div class="col">
@@ -40,13 +36,9 @@
             <h4 class="my-0 fw-normal">ข้อควรรู้เกี่ยวกับการขอบ้านพัก ทอ.</h4>
           </div>
           <div class="card-body fix-height">            
-            <p class = "my-0 p-1  bg-info">
-              <b>รูปแบบการดำเนิน</b>
-              <li>ขอปีละครั้ง, ออกคำสั่งหลายครั้ง, ส่งคำขอตลอดปี, มี กพ.ทอ.เป็นผู้ดูแล</li>              
-            </p>
-            <p class = "my-0 p-1 bg-info">
-              <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
-              <li>อยู่ส่วนกลาง, ไม่เบิกเช่าซื้อ, มีแบบฟอร์มประเมิน, ยึดข้อมูลตาม HRIS</li>
+            <p class = "my-0 p-1">
+              <li>จะต้องส่งคำขอบ้านพักเมื่อไร ขั้นตอนการพิจารณาอย่างไร</li> 
+              <li>คุณสมบัติของผู้ขอบ้านพักอาศัย</li>
             </p>      
           </div>
           <div class="card-footer text-end">
@@ -61,23 +53,11 @@
             <h4 class="my-0 fw-normal">ประเภทและเขตบ้านพักของ ทอ.</h4>
           </div>
           <div class="card-body fix-height">
-            <p class = "p-0 my-0 bg-info">
-              <b>ประเภท บ้านพัก ทอ.</b>
-              <li><b>ครอบครัว </b> พ., น.บ้านเดี่ยว,น.5 หลัง, ร., ฟส., ฟป., ป.</li>
-              <li><b>โสดชาย</b> ฟส.(โสด), ฟป.(โสด)</li>
-              <li><b>โสดหญิง</b> ฟส.(โสด ญ.), ฟป.(โสด ญ.)</li>
-            </p>
-
-            <p class = "my-0 p-0 bg-info">
-              <b>เขตบ้าน ทอ. </b> 
-              <li><b>ฝั่งท่าดินแดง </b> เขต 1, เขต 2, เขต 3</li>
-              <li><b>ฝั่งดอนเมือง</b> เขต 6 สีกัน, เขต 6 รถไฟ</li>
-              <li><b>เขตบ้านพักบางซื่อ</b> บางซื่อ</li>
-            </p>
-
+              <li>บ้านพักอาศัย ทอ. มีกี่แบบ  พ., ร., ฟส., ฟป., ป. และใครสามารถขอพักในบ้านแบบใดได้บ้าง</li>
+              <li>เขตที่ตั้งของบ้านพัก เขต 1, เขต 2, เขต 3, สีกัน ดอนเมือง ฯ</li>
           </div>
           <div class="card-footer text-end">
-                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ZoneAndTypeModal">รายละเอียด</button>
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ZoneAndTypeModal">รายละเอียด</button>
           </div>
         </div>
       </div>
@@ -88,11 +68,11 @@
           </div>
           <div class="card-body fix-height">
             <p>
-              มี รอง ผบ.ทอ.เป็นประธาน ประกอบด้วยหน่วยเกี่ยวข้องต่าง ๆ มี กพ.ทอ.กำหนดนโยบาย สน.ผบ.ดม.ดูแลความเรียบร้อย กบ.ทอ./ ชย.ทอ. สนับสนุน 
+              หน่วยงานต่าง ๆ ที่เป็นผู้ดูแล/บริหารจัดการบ้านพักอาศัย ทอ. 
             </p>
           </div>
           <div class="card-footer text-end">
-                <button class="btn btn-secondary">รายละเอียด</button>
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#CommiteeModal">รายละเอียด</button>
           </div>  
         </div>
       </div>
@@ -164,6 +144,7 @@
               <li><b>เขต 1</b> (ติด รร.นนก - รร.ฤทธิยะ)</li> 
               <li><b>เขต 2</b> (บริเวณร้านค้า ทอ.เดิม - รร.อนุบาลฤทธิยะ)</li>
               <li><b>เขต 3</b> (รร.อนุบาลฤทธิยะ - ปั๊ม ปตท.สะพานใหม่)</li>
+              <li><b>เขต 7</b> (ลาดเป็ด)</li>
             </p>
             <p class = "my-0 p-1 text-white bg-primary">
               <b>เขตบ้านพักฝั่งดอนเมือง</b>
@@ -174,6 +155,37 @@
               <b>เขตบ้านพักบางซื่อ</b>              
               <li><b>เขต เขตบางซื่อ</b> (บางซื่อ)</li>
             </p>
+
+      </div>
+      <div class="modal-footer text-end">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="CommiteeModal" tabindex="-1" aria-labelledby="CommiteeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="CommiteeModalLabel">ข้อมูล คณก.บ้านพัก</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p class = "my-0 p-1">
+             
+              <p>
+พุทธศตวรรษกิฟท์ฮาโลวีน แฟรี่ ออกแบบ โบรชัวร์สตูดิโอโอเคแมกกาซีนดีลเลอร์ บาบูนเอ็นจีโอโอเพ่นเซ็นเซอร์ คอร์ปอเรชั่นอาร์พีจีปัจเจกชน วิว รีไทร์สจ๊วตไพลินท็อปบูต หลวงตายูวีซีเรียสป๋อหลอซิม โซลาร์บร็อคโคลีแคมเปญตี๋ แฟนตาซีโหลยโท่ยพีเรียด เอาท์พรีเมียร์บ๊อกซ์ซาบะซูเอี๋ย สเตชั่นออร์แกน โปรโมททอมออร์แกนทอร์นาโด แหววแพนด้าสปาตัวตน แล็บอัลบัมอาร์พีจีเอสเพรสโซ
+
+</p>
+
+<p>
+ศากยบุตรบิลไลท์เดโม เทอร์โบสังโฆคันถธุระปัจเจกชน วีเจ โฟล์ควัคค์วาไรตี้เทวาโพลารอยด์ เยอบีร่าเทรลเลอร์ไทม์ชาร์ป ซัพพลายบลูเบอร์รีลิมิตบูมตุ๊กตุ๊ก วอเตอร์รีทัชโจ๋จูนบริกร บูติคซันตาคลอสไชน่าก๋ากั่นนางแบบ ลีเมอร์ป๊อกไอติม กู๋วิทย์ราเมนแบ็กโฮเอาต์ พันธกิจโพลล์อุรังคธาตุ คอมเมนท์เทรนด์ชาร์ป แบล็คสตูดิโอซันตาคลอส เช็งเม้งมาม่าอุปการคุณ คอร์ปอเรชั่นโปรโมเตอร์อุปทาน จูนเอสเปรสโซเอนทรานซ์
+
+</p>
+              
+            </p>
+
 
       </div>
       <div class="modal-footer text-end">

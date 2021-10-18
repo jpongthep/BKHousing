@@ -40,7 +40,7 @@ class HomeRequest(models.Model):
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
-    RentPermission = models.IntegerField(verbose_name="สิทธิ์เบิกค่าเช่าบ้าน", choices = HomeRentPermission.choices, default=3)
+    RentPermission = models.IntegerField(verbose_name="สิทธิ์เบิกค่าเช่าบ้าน", choices = HomeRentPermission.choices, default = 3)
     have_rent = models.BooleanField(verbose_name = 'มีข้อมูลเบิก (6 เดือน)', default = False)
     have_rent_spouse = models.BooleanField(verbose_name = 'คู่สมรสเบิก (6 เดือน)', default = False)
     RentalCost = models.IntegerField(verbose_name = "ค่าเช่าบ้าน", null=True, blank=True)
@@ -64,9 +64,10 @@ class HomeRequest(models.Model):
     # ความเดือดร้อนเบื้องต้น
     IsHomelessDisaster = models.BooleanField(default = False, verbose_name = 'เป็นผู้ไร้บ้านจากอุบัติภัยธรรมชาติ')
     IsHomelessEvict = models.BooleanField(default = False, verbose_name = 'เป็นผู้ไร้บ้านจากการโดนไล่ที่')    
-    IsMoveFromOtherUnit = models.BooleanField(default = False, verbose_name = 'เป็นผู้โยกย้ายจากภายนอกพื้นที่')
-    ImportanceDuty = models.BooleanField(default = False, verbose_name = 'เป็นผู้ปฏิบัติหน้าที่สำคัญ')
-    OtherTrouble  = models.TextField(null=True, blank=True, verbose_name='เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ (ระบุ) ')
+    ContinueHouse = models.BooleanField(default = False, verbose_name = 'ขอเข้าพักอาศัยต่อจากบุพการีหรือคู่สมรส')    
+    IsMoveFromOtherUnit = models.BooleanField(default = False, verbose_name = 'เป็นผู้โยกย้ายจากหน่วยที่ตั้งต่างจังหวัดหรือต่างประเทศ')
+    ImportanceDuty = models.BooleanField(default = False, verbose_name = 'เป็นผู้ปฏิบัติหน้าที่ราชการสำคัญ')
+    OtherTrouble  = models.TextField(null=True, blank=True, verbose_name='เป็นผู้มีความจำเป็นและเดือดร้อนอื่น ๆ ')
 
     # ความต้องการบ้านประเภทต่าง ๆ 
     IsHomeNeed = models.BooleanField(default = False, verbose_name = 'ต้องการบ้านพัก')

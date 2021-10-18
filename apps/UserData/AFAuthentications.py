@@ -24,6 +24,10 @@ def checkRTAFPassdword(request, username, password):
         'user' : username.lower(),
         'pass' : password
     } 
+    # data = {
+    #     'user' : "pongthep",
+    #     'pass' : "********"
+    # } 
 
     
     try:
@@ -179,6 +183,11 @@ def UpdateRTAFData(current_user,person_data):
         "fname" : first_name,
         "lname": last_name
     } 
+    # data = {
+    #     "token" : person_data['token'],
+    #     "fname" : "จุฑามาศ",
+    #     "lname": "เกียรติสูงส่ง"
+    # } 
 
     r = rq.post(url = URL, data = data, verify=False) 
 
@@ -262,9 +271,13 @@ def UpdateRTAFData(current_user,person_data):
         if  not return_data['data']: 
             return      
 
-        return_data = return_data['data']
+        return_data = return_data['data'][0]
         # กรณีที่คู่สมรสเป็น ทอ.
         # print(return_data)
+        # print(return_data['RANK'])
+        # print(return_data['FIRSTNAME'])
+        # print(return_data['LASTNAME'])
+        # print(return_data['RANK'] + return_data['FIRSTNAME'] + '  ' + return_data['LASTNAME'])
         current_user.current_spouse_name = return_data['RANK'] + return_data['FIRSTNAME'] + '  ' + return_data['LASTNAME']
         current_user.save()
     

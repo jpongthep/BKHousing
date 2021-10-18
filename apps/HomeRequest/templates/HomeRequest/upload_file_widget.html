@@ -3,11 +3,8 @@
 
 
     {% if widget.value %}
-        {% if widget.value.url|file_ext == "pdf" %}
-            <a href="{{ widget.value.url }}" target = "_blank"
-                title = "{{ widget.value }}">
-                <img src = {% static 'images/pdf_icon24.gif'%} >
-            </a>
+        {% if widget.value.url|file_ext == "pdf" %}            
+                <img src = {% static 'images/lock_file.png'%} title = "{{widget.value}}" width = 25>
         {% else %}
             <span class = "text-danger">{{ widget.value  }}</span>
         {% endif %}
@@ -16,5 +13,5 @@
             name="{{ widget.name }}" 
             accept="application/pdf" 
             class="fileinput fileUpload form-control my-2" 
-            id="id_{{ widget.name }}" >
+            id="id_{{ widget.name }}" accept=".pdf">
  

@@ -1,15 +1,15 @@
+import io
+
 from django import forms
-from django.forms.fields import DateField
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
-from django.forms.widgets import Widget
 from django.template import loader
 from django.utils.safestring import mark_safe
 
 
 from .models import HomeRequest, CoResident
-from apps.Utility.Constants import HomeRentPermission
+from apps.Utility.utils import encryp_file
 
 
 class UploadFileWidget(forms.FileInput):
@@ -38,7 +38,7 @@ class HomeRequestForm(forms.ModelForm):
                 'TravelDescription',
                 'RentPermission','have_rent', 'have_rent_spouse', 'RentalCost', 'RentalCostSpouse', 'rent_comment',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
-                'IsHomelessDisaster','IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
+                'IsHomelessDisaster','ContinueHouse', 'IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',
                 'IsHomeNeed','IsFlatNeed','IsShopHouseNeed',
                 'ZoneRequestPriority1','ZoneRequestPriority2','ZoneRequestPriority3','ZoneRequestPriority4','ZoneRequestPriority5','ZoneRequestPriority6',
                 'HouseRegistration', 'MarriageRegistration', 'SpouseApproved', 'DivorceRegistration','SpouseDeathRegistration',
@@ -111,6 +111,30 @@ class HomeRequestForm(forms.ModelForm):
                 self.fields['IsShopHouseNeed'].label += ' (เฉพาะผู้รายงานสภานภาพ "สมรส")'
         except:
             print("HomeRequest.forms : self.instance error ")
+
+    def clean_HouseRegistration(self):
+        data = self.cleaned_data['HouseRegistration']
+
+        if not data:
+            return data
+
+        # ถ้าไม่ได้แก้ไขไฟล์เข้ารหัสเดิม ก็ไม่ต้องทำอะไร
+        if data.name[-8:] == ".enc.pdf":
+            return data
+
+        file_data = data.read()
+        encryp_data = encryp_file(file_data)
+
+        # data.write(encryp_data)
+        # print('HouseRegistration = ', data)
+        data.size = len(encryp_data)
+        
+        data.name = data.name[:-4] + ".enc.pdf"
+        # print('data.name  =', data.name)
+
+        data.file  = io.BytesIO(encryp_data)
+
+        return data
 
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form

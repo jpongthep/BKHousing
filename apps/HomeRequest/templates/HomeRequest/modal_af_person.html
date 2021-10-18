@@ -18,7 +18,7 @@
               <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
               <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
             </div>
-
+        {% if object.CoResident.all %}
             <div class="row mt-5 fw-bold">
               <div class="col-md-2">ชื่อ</div>
                 <div class="col-2">ความสัมพันธ์</div>
@@ -27,32 +27,33 @@
                 <div class="col-2">อาชีพ</div>
                 <div class="col-1">รายได้</div>
                 <div class="col-1">การศึกษา</div>
-            </div>
-            <div class="row">
+              </div>
+              <div class="row">
             
-            {% for cr in object.CoResident.all %}
-              <div class="col-md-2">{{ cr.FullName }}</div>
-              <div class="col-2">
-                  {{ cr.get_Relation_display }}
-              </div>
-              <div class="col-2">
-                  {{ cr.PersonID }}
-              </div>
-              <div class="col-2">
-                  {{ cr.BirthDay|thaidate:"d M y"  }}
-              </div>
-              <div class="col-2">
-                  {{ cr.Occupation }}
-              </div>
-              <div class="col-1">
-                  {{ cr.Salary }}
-              </div>
-              <div class="col-1">
-                  {{ cr.get_Education_display }}
-              </div>
-            {% endfor %}
+              {% for cr in object.CoResident.all %}
+                <div class="col-md-2">{{ cr.FullName }}</div>
+                <div class="col-2">
+                    {{ cr.get_Relation_display }}
+                </div>
+                <div class="col-2">
+                    {{ cr.PersonID }}
+                </div>
+                <div class="col-2">
+                    {{ cr.BirthDay|thaidate:"d M y"  }}
+                </div>
+                <div class="col-2">
+                    {{ cr.Occupation }}
+                </div>
+                <div class="col-1">
+                    {{ cr.Salary }}
+                </div>
+                <div class="col-1">
+                    {{ cr.get_Education_display }}
+                </div>
+              {% endfor %}
             </div>
           </div>
+          {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>

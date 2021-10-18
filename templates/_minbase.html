@@ -216,10 +216,10 @@
     {% comment %} {{request.resolver_match}} {% endcomment %}
     {% block body %}
       <div class="row mt-2">
-        <div class="col-xl-9">
+        <div class="col-xl-8">
           <h3>{% block header %}ขั้นตอนการขอบ้านพัก{% endblock %}</h3>          
         </div>
-        <div class="col-xl-3 ms-auto text-end">
+        <div class="col-xl-4 ms-auto text-end">
             <h5>{% block header_right %} {{ request.user.FullName }} : {{ request.user.CurrentUnit }}{% endblock %}</h5>
         </div>
       </div>

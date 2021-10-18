@@ -27,6 +27,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from docx import Document
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from openpyxl import load_workbook
 
 #My module
@@ -98,6 +100,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'Status' : request.user.current_status,
                             'SpouseName' : request.user.current_spouse_name,
                             'SpousePID' : request.user.current_spouse_pid,
+                            'IsHRISReport' : request.user.current_spouse_pid,
                             'Address' : request.user.Address
                         }       
 
@@ -197,7 +200,8 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         # print(form.errors)
         return self.render_to_response(
                  self.get_context_data(form=form,
-                                       co_resident_formset=co_resident_formset
+                                       co_resident_formset=co_resident_formset,
+                                       user_current_data_form = user_current_data_form
                                        )
         )
 
@@ -467,41 +471,173 @@ def update_process_step(request, home_request_id, process_step):
         return JsonResponse({"success": True})
 
 
-def TestDocument(request,home_request_id):
+def ArabicToThai(number_string): 
+    dic = { 
+        '0':'๐', 
+        '1':'๑', 
+        '2':'๒', 
+        '3':'๓', 
+        '4':'๔', 
+        '5':'๕', 
+        '6':'๖', 
+        '7':'๗', 
+        '8':'๘', 
+        '9':'๙', 
+    }
+    result = ""
+    for ch in number_string:
+        if ch in "0123456789":
+            result += dic[ch]
+        else:
+            result += ch
+    
+    return result
+
+month_text = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."]
+full_month_text = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]
+
+def TestDocument(request, home_request_id):
     # testdoc = static('documents/test_doc.docx')
-    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/request_data.docx')
+    home_request = HomeRequest.objects.get(id = home_request_id)
+
+    if home_request.ProcessStep == 'RP':
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_draft.docx')
+        docx_title= f"Draft-{home_request.Requester.AFID}.docx"
+    else:
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data.docx')
+        docx_title= f"House-{home_request.Requester.AFID}.docx"
 
     document = Document(testdoc)
 
-    home_request = HomeRequest.objects.get(id = home_request_id)
-    docx_title= f"House-{home_request.Requester.AFID}.docx"
+    self_call = "กระผม" if home_request.Requester.Sex == "ชาย" else "ดิฉัน"
+    SpouseName = home_request.SpouseName if home_request.SpouseName else ""
 
-    if home_request.Unit:
-        department_name = home_request.Unit.FullName
+    
+    Salary = int(home_request.Salary) if home_request.Salary is not None else "0"
+    add_salary = int(home_request.AddSalary) if home_request.AddSalary is not None else "0"
+
+    Income = int(Salary) + int(add_salary)
+    
+    RentalCost = ""
+    if home_request.RentPermission == 1:
+        Z1, Z2, Z3 = "X", "  ", "  "
+    elif home_request.RentPermission == 2:
+        Z1, Z2, Z3 = "  ", "X", "  "
+    elif home_request.RentPermission == 3:
+        Z1, Z2, Z3 = "  ", "X", "X"
+        RentalCost = home_request.RentalCost  if home_request.RentalCost is not None else 0
+        RentalCost = "{:,} บาท".format(RentalCost)
+    
+    if home_request.have_rent_spouse:
+        ZK = "X"
+        WifeRentalCost = home_request.RentalCostSpouse if home_request.RentalCostSpouse  is not None  else 0
+        WifeRentalCost = "{:,} บาท".format(WifeRentalCost)        
     else:
-        department_name = "ยังไม่ระบุ"
+        ZK = "  "
+        WifeRentalCost = " -"  
 
+    if home_request.Status in [2, 7]: # ถ้าสถานะเป็นสมรส
+        IsNotRTAFHome = "X" if home_request.IsNotRTAFHome else "  "
+        SpouseName = "{}".format(SpouseName)
+    else:
+        IsNotRTAFHome = "-"
+        ZK = "-"
+        SpouseName = " - "
+
+    IsNotBuyHome = "X" if home_request.IsNotBuyHome else "  "
+    IsNotOwnHome = "X" if home_request.IsNotOwnHome else "  "
+    IsNeverRTAFHome = "X" if home_request.IsNeverRTAFHome else "  "
+    ImportanceDuty = "X" if home_request.ImportanceDuty else "  "
+    IsMoveFromOtherUnit = "X" if home_request.IsMoveFromOtherUnit else "  "
+    IsHomelessEvict = "X" if home_request.IsHomelessEvict else "  "
+    ContinueHouse = "X" if home_request.ContinueHouse else "  "
+    IsHomelessDisaster = "X" if home_request.IsHomelessDisaster else "  "
+    OtherTrouble = "X" if home_request.OtherTrouble else "  "
+    IsHomeNeed = "X" if home_request.IsHomeNeed else "  "
+    IsFlatNeed = "X" if home_request.IsFlatNeed else "  "
+    IsShopHouseNeed = "X" if home_request.IsShopHouseNeed else "  "
+    NumResidence = home_request.CoResident.all().count()
+    NumResidence = "-" if NumResidence == 0 else NumResidence
+
+    HouseRegistration = "X" if home_request.HouseRegistration else "  "
+    MarriageRegistration = "X" if home_request.MarriageRegistration else "  "
+    SpouseApproved = "X" if home_request.SpouseApproved else "  "
+    DivorceRegistration = "X" if home_request.DivorceRegistration else "  "
+    SpouseDeathRegistration = "X" if home_request.SpouseDeathRegistration else "  "
+    Month = month_text[date.today().month]
+    Year =  str((date.today().year + 543) % 100)
+
+    PR1 = home_request.get_ZoneRequestPriority1_display() if home_request.ZoneRequestPriority1 else " - "
+    PR2 = home_request.get_ZoneRequestPriority2_display() if home_request.ZoneRequestPriority2 else " - "
+    PR3 = home_request.get_ZoneRequestPriority3_display() if home_request.ZoneRequestPriority3 else " - "
+    PR4 = home_request.get_ZoneRequestPriority4_display() if home_request.ZoneRequestPriority4 else " - "
+    PR5 = home_request.get_ZoneRequestPriority5_display() if home_request.ZoneRequestPriority5 else " - "
+    PR6 = home_request.get_ZoneRequestPriority6_display() if home_request.ZoneRequestPriority6 else " - "
     dic = {
+            'Sex': self_call,
+            'Rank':"{}".format(home_request.Requester.get_Rank_display()),
             'FullName':home_request.FullName,
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
+            'ADDR':home_request.Address,
+            'GPC':home_request.GooglePlusCodes1,
             'UnitFN':home_request.Unit.FullName,
             'UnitSN':home_request.Unit.ShortName,
             'OfficePhone':home_request.Requester.OfficePhone,
             'MobilePhone':home_request.Requester.MobilePhone,
-            'AddSalary':"{:,}".format(home_request.AddSalary),
-            'Salary':"{:,}".format(home_request.Salary),
+            'Income': "{:,}".format(Income),
+            'Status':"{}".format(home_request.get_Status_display()),
+            'SpouseName': SpouseName,
+            'Z1':Z1,
+            'Z2':Z2,
+            'Z3':Z3,
+            'WifeRentalCost':WifeRentalCost,
+            'RentalCost' : RentalCost,
+            'Z4':IsNotBuyHome,
+            'Z5':IsNotOwnHome,
+            'Z6':IsNeverRTAFHome,
+            'Z7':IsNotRTAFHome,
+            'Z8':ImportanceDuty,
+            'Z9':IsMoveFromOtherUnit,
+            'ZA':IsHomelessEvict,
+            'ZB':IsHomelessDisaster,
+            'ZC':IsHomeNeed,
+            'ZD':IsFlatNeed,
+            'ZE':IsShopHouseNeed,
+            'ZF':HouseRegistration,
+            'ZG':MarriageRegistration,
+            'ZH':SpouseApproved,
+            'ZI':DivorceRegistration,
+            'ZJ':SpouseDeathRegistration,
+            'ZK':ZK,
+            'ZX':ContinueHouse,
+            'ZY':OtherTrouble,
+            'PR1': PR1,
+            'PR2': PR2,
+            'PR3': PR3,
+            'PR4': PR4,
+            'PR5': PR5,
+            'PR6': PR6,
+            'Residence' : str(NumResidence),
+            'Month': Month,
+            'Year':Year
             }
     # print(dic)
-
+    
     for para in document.paragraphs:
+        print('para = ',para)
         for key, value in dic.items():
             if key in para.text:
                 inline = para.runs
+                # print('inline = ',inline)
                 # Loop added to work with runs (strings with same style)
                 for i in range(len(inline)):
                     if key in inline[i].text:
-                        text = inline[i].text.replace(key, value)
+                        if value: # ถ้ามีการกรอกข้อมูล
+                            Value = ArabicToThai(value) if key != 'GPC' else value
+                        else: # ถ้าไม่มีการกรอกข้อมูล
+                            Value = ""
+                        text = inline[i].text.replace(key, Value)
                         inline[i].text = text
 
     # Prepare document for download        
@@ -519,7 +655,66 @@ def TestDocument(request,home_request_id):
     response['Content-Length'] = length
     return response
 
+def ConsentForm(request):
+    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/letter_of_consent.docx')
+    docx_title= f"consentform.docx"
+    
 
+    document = Document(testdoc)
+
+    spname = request.POST.get("if_spouse_name","")
+    address = request.POST.get("if_address","")
+
+    spouse = "ภรรยา" if request.user.Sex == "ชาย" else "สามี"
+    selfcall = "สามี" if request.user.Sex == "ชาย" else "ภรรยา"
+
+
+    day = str(date.today().day)
+    month = full_month_text[date.today().month]
+    year =  str((date.today().year + 543))
+
+    dic = {
+            'spouse': spouse,            
+            'selfcall': selfcall,            
+            'spname': spname,            
+            'address': address,            
+            'username':request.user.FullName,
+            'day' : day,
+            'month' : month,
+            'year' : year,
+            }
+
+    for para in document.paragraphs:
+        print('para = ',para)
+        for key, value in dic.items():
+            if key in para.text:
+                inline = para.runs
+                # print('inline = ',inline)
+                # Loop added to work with runs (strings with same style)
+                for i in range(len(inline)):
+                    if key in inline[i].text:
+                        if value: # ถ้ามีการกรอกข้อมูล
+                            Value = ArabicToThai(value) if key != 'GPC' else value
+                        else: # ถ้าไม่มีการกรอกข้อมูล
+                            Value = ""
+                        text = inline[i].text.replace(key, Value)
+                        inline[i].text = text
+
+
+    f = BytesIO()
+    document.save(f)
+    length = f.tell()
+    f.seek(0)
+    response = HttpResponse(
+        f.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    # print('docx_title = ',docx_title)
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(docx_title)
+    response['Content-Length'] = length
+    return response
+
+ 
 def TestExcel(request,unit_id):
     # testdoc = static('documents/test_doc.docx')
     testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/unit_report.xlsx')

@@ -49,13 +49,13 @@
                     </a>
             </td>
             <td> 
-                {% if object.RequesterSended %} 
-                    <a href = "{% url 'HomeRequest:doc' object.id %}" >
-                    <i class="fas fa-file-word icon-size"></i></a>
-                {% else %} 
-                    <a href = "#" >
-                    <i class="fas fa-file-word icon-size text-muted"></i></a>
-                {% endif %}            
+                <a href = "{% url 'HomeRequest:doc' object.id %}" >
+                    {% if object.RequesterSended %} 
+                        <i class="fas fa-file-word icon-size"></i>
+                    {% else %}                     
+                        <i class="fas fa-file-word icon-size text-muted"></i>
+                    {% endif %}            
+                </a>
             </td>
             <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
             <td>{{ object.FullName }}</td>
@@ -103,8 +103,12 @@
             <td class = "text-danger" id = "comment{{object.id}}">
             {% if object.cancel_request %}
                 รออนุมัติการยกเลิกคำขอ
+            {% elif object.ProcessStep == 'RS' %}
+                ** คำขอจะสมบูรณ์เมื่อส่งเอกสารทางธุรการ  
+                <a href = "#" data-bs-toggle="modal" data-bs-target="#e-admin_modal"><i class="fa fa-question-circle text-primary"></i></a>
             {% elif not object.RequesterSended %}
                 *** ยังไม่ได้ส่งเอกสาร ***
+                <a href="{% url 'HomeRequest:update' object.id %}"  class="btn btn-warning">แก้ไขคำขอ</a>
             {% elif object.still_active %}            
                 <a href="#"  onclick= "confirm_cancel({{object.id}});" class="btn btn-danger">แจ้งยกเลิกคำขอ</a>
             {% endif %}
