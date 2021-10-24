@@ -177,19 +177,19 @@ DEFAULT_LOGGING = {
             'level': 'DEBUG',
             'formatter': 'verbose',
             'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+            'filename': 'logs/debug.log',
         },     
         'WarningFile': {
             'level': 'WARNING',
             'formatter': 'simple',
             'class': 'logging.FileHandler',
-            'filename': 'Warning.log',
+            'filename': 'logs/Warning.log',
         },     
         'LoginFile': {
             'level': 'DEBUG',
             'formatter': 'simple',
             'class': 'logging.FileHandler',
-            'filename': 'log/login.log',
+            'filename': 'logs/login.log',
         },     
     },
     'loggers': {

@@ -23,7 +23,7 @@ class HomeRequest(models.Model):
         verbose_name_plural = "HomeRequest : คำร้องขอมีบ้านพัก"
 
     Requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Requester')
-    year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='Requester')
+    year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='YearRound')
 
     # ข้อมูลพื้นฐานส่วนตัว ณ ช่วงเวลาที่ขอ
     Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True, blank = True)

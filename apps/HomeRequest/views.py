@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -40,14 +41,13 @@ from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessSte
 from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm
+from apps.UserData.models import User
 from apps.Payment.models import FinanceData
 from .serializers import HomeRequestSerializer
 logger = logging.getLogger('MainLog')
 
 def get_current_year():
-    CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                              | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+    CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
     CurrentYear = CurrentYearRound[0].Year
     # print('CurrentYear = ',CurrentYear)
     return CurrentYear
@@ -169,9 +169,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object = form.save(commit=False)
         # กำหนดค่าเริ่มต้นให้ form    
         self.object.Requester = self.request.user
-        CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                                  | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                                  | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+        CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
 
         self.object.year_round = CurrentYearRound[0]
         self.object.Unit = self.request.user.CurrentUnit
@@ -474,6 +472,27 @@ def update_process_step(request, home_request_id, process_step):
         return JsonResponse({"success": True})
 
 
+@csrf_exempt
+def homerequest_detail(request, username):
+    try:
+        user = User.objects.get(username = username)     
+        CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
+        year_round = CurrentYearRound[0] 
+        homerequest = HomeRequest.objects.filter(year_round = year_round).filter(Requester = user)
+    except User.DoesNotExist:
+        dump = json.dumps({'status': 'username not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    print('homerequest',homerequest)
+    if not homerequest.exists():
+        dump = json.dumps({'status': 'hr not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    if request.method == 'GET':
+        serializer = HomeRequestSerializer(homerequest[0])
+        return JsonResponse(serializer.data)
+
+
 def ArabicToThai(number_string): 
     dic = { 
         '0':'๐', 
@@ -576,10 +595,16 @@ def TestDocument(request, home_request_id):
     PR4 = home_request.get_ZoneRequestPriority4_display() if home_request.ZoneRequestPriority4 else " - "
     PR5 = home_request.get_ZoneRequestPriority5_display() if home_request.ZoneRequestPriority5 else " - "
     PR6 = home_request.get_ZoneRequestPriority6_display() if home_request.ZoneRequestPriority6 else " - "
+    Rank = "{}".format(home_request.Requester.get_Rank_display())
+    if "ว่าที่" in Rank:
+        Rank = Rank[7:]
+    FullName = home_request.FullName
+    if "ว่าที่" in FullName:
+        FullName = FullName[7:]
     dic = {
             'Sex': self_call,
-            'Rank':"{}".format(home_request.Requester.get_Rank_display()),
-            'FullName':home_request.FullName,
+            'Rank': Rank,
+            'FullName':FullName,
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
             'ADDR':home_request.Address,

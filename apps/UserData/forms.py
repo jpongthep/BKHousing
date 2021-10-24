@@ -30,12 +30,6 @@ class MyAuthForm(AuthenticationForm):
     )
 
 
-class UserForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields =  ['Rank','first_name', 'last_name', 'email', 
-                  'PersonID', 'AFID', 'Position', 'CurrentUnit', 'OfficePhone',
-                  'MobilePhone', 'RTAFEMail' ]
                   
 class UserCurrentDataForm(forms.ModelForm):
     class Meta:

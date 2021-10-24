@@ -13,7 +13,8 @@ from .views import (ProcessFlow,
                     UnitList4PersonAdmin,
                     AFPersonListView,
                     update_process_step,
-                    cancel_request
+                    cancel_request,
+                    homerequest_detail
                     )
 
 from .views_modals import af_person_data_detailview
@@ -34,6 +35,7 @@ urlpatterns = [
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
     path('<unit_id>/mud', HomeRequestAdminListView.as_view(), name = 'modal_unit_data'),
     path('<unit_id>/fetch', UnitList4PersonAdmin.as_view(), name = 'unit_list_admin'),
+    path('cps/<str:username>/', homerequest_detail), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
