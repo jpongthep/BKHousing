@@ -15,6 +15,8 @@ class YearRound(models.Model):
     Step1 = models.DateField(verbose_name = 'ส่งคำร้อง')
     Step2 = models.DateField(verbose_name = 'นขต.ประเมิน')
     Step3 = models.DateField(verbose_name = 'กพ.ดำเนินการ')
+
+    load_HRIS = models.BooleanField(verbose_name = 'update HRIS เมื่อ login', default = True)
     # TroubleForm = models.ForeignKey('SetForm', null=True,  blank=True, on_delete = models.SET_NULL, verbose_name = 'ฟอร์มประเมิน')
     def __str__(self):
         return f'{self.Year}-{self.Round}'

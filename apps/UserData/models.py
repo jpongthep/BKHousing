@@ -32,7 +32,7 @@ class User(AbstractUser):
     PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
     BirthDay = models.DateField(verbose_name="วันเกิด", null = True, blank = True)    
     Rank = models.PositiveIntegerField(verbose_name="ยศ", choices = CHOICE_Rank, default = 0, null=True, blank=True)
-    Position  =  models.CharField(verbose_name="ตำแหน่ง", max_length=250, null = True, blank = True)
+    Position  =  models.CharField(verbose_name="ตำแหน่ง (ย่อ)", max_length=250, null = True, blank = True)
 
     OfficePhone = models.CharField(verbose_name="เบอร์ที่ทำงาน", max_length = 20, null=True, blank=True)
     MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True, blank=True)

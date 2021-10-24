@@ -37,6 +37,7 @@ class HomeRequest(models.Model):
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
     GooglePlusCodes1 = models.CharField(max_length = 60, null=True, blank=True, verbose_name="Google Plus Codes 1")
+    distance = models.IntegerField(verbose_name="ระยะทางถึงที่ทำงาน (กม.)", null=True, blank=True, default = 0)
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน

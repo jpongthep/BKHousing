@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import logging.config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,3 +157,52 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+DEFAULT_LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname}-{asctime} : {module} [{message}]',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}-{asctime} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'DebugFile': {
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },     
+        'WarningFile': {
+            'level': 'WARNING',
+            'formatter': 'simple',
+            'class': 'logging.FileHandler',
+            'filename': 'Warning.log',
+        },     
+        'LoginFile': {
+            'level': 'DEBUG',
+            'formatter': 'simple',
+            'class': 'logging.FileHandler',
+            'filename': 'log/login.log',
+        },     
+    },
+    'loggers': {
+        'MainLog': {
+            'handlers': ['DebugFile', 'WarningFile'],
+            'level': 'DEBUG',
+        },      
+        'LoginLog': {
+            'handlers': ['LoginFile'],
+            'level': 'DEBUG',
+        },      
+    }
+}
+
+
+logging.config.dictConfig(DEFAULT_LOGGING)

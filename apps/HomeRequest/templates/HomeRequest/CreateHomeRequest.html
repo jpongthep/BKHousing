@@ -14,24 +14,7 @@
 <script>
     var home_zone_full_options_html;
     var priority_selected = [];
-    var all_choices = ['1','2','3','6T','6S','7S','BS']
-
-    function isEmptyOrSpaces(str){
-        return str === null || str.match(/^ *$/) !== null;
-    }
-
-    function checkID(id) {
-
-        if (id.length != 13) return false;
-
-        for (i = 0, sum = 0; i < 12; i++)
-            sum += parseFloat(id.charAt(i)) * (13 - i);
-
-        if ((11 - sum % 11) % 10 != parseFloat(id.charAt(12)))
-            return false;
-
-        return true;
-    }
+    var all_choices = ['1','2','3','6T','6S','7S','BS'];
 
     function addzone(v1, v2)
     {
@@ -45,7 +28,6 @@
             else              
                 result.push(0);  
         }
-            
         return result;
     }
 
@@ -54,6 +36,239 @@
         return re.test(String(email).toLowerCase());
     }
 
+    function isEmptyOrSpaces(str){
+        return str === null || str.match(/^ *$/) !== null;
+    }
+
+    function checkID(id) {
+        if (id.length != 13) return false;
+
+        for (i = 0, sum = 0; i < 12; i++)
+            sum += parseFloat(id.charAt(i)) * (13 - i);
+
+        if ((11 - sum % 11) % 10 != parseFloat(id.charAt(12)))
+            return false;
+
+        return true;
+    }
+
+    function check_personid_element(element)
+    {
+        data_ok = true;
+        console.log("check_personid_element ",element);
+        if(! checkID($(element).val())){
+            $(element).css("box-shadow","0 0 10px #e80c4d");
+            $( `label[for='${element}']` ).html("<span class = 'text-danger'>รหัสบัตร ปชช.ไม่ถูกต้อง</span>");                
+            data_ok = false;
+        }
+        else
+        {
+            $( `label[for='${element}']` ).html("รหัสบัตร ปชช.");                
+            $(element).css("box-shadow","");
+        }
+      
+        return data_ok;
+    }
+
+    function check_email_element(element_list)
+    {
+        data_ok = true;
+        element_list.forEach(function (item, index) {
+            if(! validateEmail($(item).val())){
+                $(item).css("box-shadow","0 0 10px #e80c4d");
+                data_ok = false;
+            }
+            else
+                $(item).css("box-shadow","");
+        });
+        return data_ok;
+    }
+
+    function check_empty_element(element_list)
+    {
+        data_ok = true;
+        element_list.forEach(function (item, index) {
+            if(isEmptyOrSpaces($(item).val())){
+                $(item).css("box-shadow","0 0 10px #e80c4d");
+                data_ok = false;
+            }
+            else
+                $(item).css("box-shadow","");
+        });
+        return data_ok;
+    }
+
+    function form_validate(submit_action)
+    {
+        var error_element = [];
+    
+        var data_completed = true;            
+
+        // ข้อมูลที่ต้องกรอกให้ครบก่อนบันทึก
+        data_completed &&= check_empty_element(["#id_hr-Position", "#id_userdata-OfficePhone", "#id_userdata-MobilePhone"]);
+        if (!data_completed)
+            error_element.push("basic_data");
+
+        if(!data_completed){
+            document.getElementById("basic_data").scrollIntoView();
+            if(submit_action === 'save')
+                return false;
+        }
+        else if(submit_action === 'save')            
+            return confirm("บันทึกเพื่อส่งภายหลัง");                 
+        
+        // ข้อมูลที่ต้องกรอกให้ครบก่อนส่ง
+
+        cee = check_email_element(["#id_userdata-RTAFEMail", "#id_userdata-email"]);
+        if (!cee)
+        {
+            error_element.push("basic_data");
+            data_completed = false;
+        }
+
+        let married = ["2", "7"];
+
+        // ถ้าสถานะคือสมรส จะต้องมีข้อมูลคู่สมรส    
+        if(married.includes($("#id_hr-Status").val()))
+        {
+            cee = check_empty_element(["#id_hr-SpouseName","#id_hr-SpousePID"]);            
+            cpe = check_personid_element("#id_hr-SpousePID")
+            if(!cee || !cpe)
+            {
+                error_element.push("basic_data");
+                data_completed = false;
+            }
+
+            {# ถ้ามีข้อมูลไฟล์ของใบรับรองจากคู่สมรสอยู่แล้ว ก็จะไม่ตรวจสอบ #}
+            {% if not form.SpouseApproved.value %} 
+            if( $('#id_hr-SpouseApproved').get(0).files.length === 0){
+                // ถ้ายังไม่มีการ upload มาก่อน ก็ต้อง upload
+                $("#id_hr-SpouseApproved").css("box-shadow","0 0 10px #e80c4d");                                        
+                error_element.push("Evidence");
+                data_completed = false;
+            }
+            {% endif %}
+        }
+
+        if($("[name = 'hr-RentPermission']:checked").val() == '3')
+            {
+                cee = check_empty_element(["#id_hr-RentalCost"]);
+                if(!cee)
+                {
+                    error_element.push("addressData");
+                    data_completed = false;
+                }               
+            } 
+        
+        {# ถ้ามีข้อมูลไฟล์สำเนาทะเบียนบ้าน ก็จะไม่ตรวจสอบ #}
+        {% if not  form.HouseRegistration.value %}
+        if( $('#id_hr-HouseRegistration').get(0).files.length === 0){
+            $("#id_hr-HouseRegistration").css("box-shadow","0 0 10px #e80c4d");                          
+            error_element.push("Evidence");
+            data_completed = false;            
+        } 
+        {% endif %}
+
+        cee = check_empty_element(["#id_hr-Address","#id_hr-GooglePlusCodes1","#id_hr-TravelDescription","#id_hr-distance"]);
+        if(!cee)
+        {
+            error_element.push("addressData");
+            data_completed = false;
+        }
+        
+        TravelDescription = $("#id_hr-TravelDescription").val();
+        if(TravelDescription.length < 20){
+            $("#id_hr-TravelDescription").val("กรุณาบรรยายให้ละเอียด : " + TravelDescription);
+            $("#id_hr-TravelDescription").css("box-shadow","0 0 10px #e80c4d");
+            error_element.push("addressData");
+            data_completed = false;
+        }
+
+        is_home_need = $('#id_hr-IsHomeNeed').is(":checked");
+        is_flat_need = $('#id_hr-IsFlatNeed').is(":checked");
+        is_shop_need = $('#id_hr-IsShopHouseNeed').is(":checked");
+
+        if(!(is_home_need || is_flat_need || is_shop_need))
+        {
+            $("#house_type").css("box-shadow","0 0 10px #e80c4d");
+            error_element.push("HomeZone");
+            data_completed = false;
+        }
+        else
+        {            
+            $("#house_type").css("box-shadow","");         
+        }
+
+
+        ZoneSelect = $("select[data-priority=1]").val();
+        //console.log('Zone Select = ',ZoneSelect == '')
+        if(ZoneSelect == '')
+        {            
+            $("select[data-priority=1]").css("box-shadow","0 0 10px #e80c4d");
+            error_element.push("HomeZone");
+            data_completed = false;
+        }
+        else
+        {            
+            $("select[data-priority=1]").css("box-shadow","");
+        }
+
+        // ตรวจการกรอกเลขบัตรประชาชน
+        $('[id ^=id_CoResident][id $=PersonID]').each(function(i, element) {
+            // console.log(element)
+            elementid = "#" + element.id;
+            // console.log('elementid = ',elementid);
+            element_value =  $(elementid).val();
+            // console.log('element_value.length = ',element_value.length);
+            if(element_value.length > 0)
+            {
+                // console.log('element_value = ',element_value);
+                // console.log('elementid = ',elementid);
+                // console.log('data_completed = ',data_completed);
+                error_element.push("CoResidenceData");
+                cpe = check_personid_element(elementid);
+                data_completed &&= cpe;
+            }
+        });
+        
+
+        // ตรวจการกรอกวันเกิด
+        $('[id ^=id_CoResident][id $=BirthDay]').each(function(i, element) {
+            // console.log(element)
+            elementid = "#" + element.id;
+            // console.log('elementid = ',elementid);
+            element_value =  $(elementid).val();
+            // console.log('element_value.length = ',element_value.length);
+            if(element_value.length > 6)
+            {
+                birthday = new Date(element_value);
+                console.log('birthday = ', birthday);
+                var ageDifMs = Date.now() - birthday;
+                var ageDate = new Date(ageDifMs); // miliseconds from epoch
+                // return Math.abs(ageDate.getUTCFullYear() - 1970);          
+                $(elementid).css("box-shadow","");      
+            }
+            else
+            {
+                if (! $(elementid).is($("[id ^=id_CoResident][id $=BirthDay]:last")) ) 
+                {
+                    $(elementid).css("box-shadow","0 0 10px #e80c4d");
+                    error_element.push("CoResidenceData");
+                    data_completed = false;
+                }
+            }
+        });
+
+
+        if(!data_completed){
+            unique_error_element = [...new Set(error_element)];
+            console.log("unique_error_element = ",unique_error_element)
+            first_error_zone = unique_error_element[0];
+            document.getElementById(first_error_zone).scrollIntoView();
+            return false;
+        }
+        return confirm("เมื่อส่งข้อมูลจะไม่สามารถแก้ไขได้อีก และจะต้อง download รายงานและส่งทางธุรการด้วย");
+    }
 
     $(document).ready(function(){
 
@@ -61,12 +276,11 @@
         var remain_options_html = [];
         var home_zone_option = [];
         var home_zone_full_options_html = []
+        var form_save_or_send = "save";
         var rank = {{ request.user.Rank }};
         var user_status = {{ request.user.current_status }};
         var select_option = ['1','2','3','6T','6S','7S','BS'];        
         $('#id_hr-IsFlatNeed').prop('checked', true);
-
-        
 
         function setZoneSelectOption()
         {
@@ -77,15 +291,6 @@
             var is_shop_need = $('#id_hr-IsShopHouseNeed').is(":checked");
 
             user_status = $("#id_hr-Status").val();
-
-            // console.log('rank = ',rank);
-            // console.log('user_status = ',user_status);
-            // console.log('user_sex = ',user_sex);
-            // console.log('is_home_need = ',is_home_need);
-            // console.log('is_flat_need = ',is_flat_need);
-            // console.log('is_shop_need = ',is_shop_need);
-
-            // console.log('rank = ',rank)
             
             select_option = [0,0,0,0,0,0,0];
             if(rank <= 30302) // น.อ.พิเศษขึ้นไป
@@ -187,12 +392,9 @@
                     remain_options_html.push(home_zone_full_options_html[i+1]);                    
                 }
             }
-            // console.log('select_option = ',select_option);
-            console.log('remain_options = ', remain_options);
-            console.log('remain_options_html = ',remain_options_html);
             home_zone_option = remain_options;
             
-            console.log("initial combo 1 = ", remain_options_html)
+            // console.log("initial combo 1 = ", remain_options_html)
             $("select[data-priority=1]").html(remain_options_html);
 
             for(i = 2; i <= 6; i++)
@@ -200,7 +402,6 @@
                 if($(`select[data-priority='${i}']`).val() == '')
                     $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
             }
-
         }
 
         $("select[data-priority=1] option").each(function(){
@@ -211,9 +412,6 @@
             else
                 optiontext = `<option value="${optionValue}">${optionText}</option>`;
             home_zone_full_options_html.push(optiontext);
-            // console.log("select[data-priority=1] option");
-            // console.log("home_zone_full_options_html", home_zone_full_options_html);
-            
         });
 
         for(i = 2; i <= 6; i++)
@@ -250,164 +448,6 @@
             
         }
 
-        $('button[name="send"]').click(function(e) {
-            var data_completed = true;
-            married = ["2", "7"];
-
-            first_error_id = "";
-                   
-            if( married.includes($("#id_hr-Status").val()))
-            {                
-                if(isEmptyOrSpaces($("#id_hr-SpouseName").val()) || isEmptyOrSpaces($("#id_hr-SpousePID").val()))
-                {
-                    $("#id_hr-SpouseName").css("box-shadow","0 0 10px #e80c4d");
-                    $("#id_hr-SpousePID").css("box-shadow","0 0 10px #e80c4d"); 
-                    if(first_error_id == "") first_error_id = "id_hr-SpouseName";
-                    data_completed = false;
-                }
-
-                if(! isEmptyOrSpaces($("#id_hr-SpousePID").val()))
-                {
-                    if(!checkID($("#id_hr-SpousePID").val()))
-                    {
-                        $("#id_hr-SpousePID").css("box-shadow","0 0 10px #e80c4d");
-                        $( "label[for='id_hr-SpousePID']" ).html("<span class = 'text-danger'>รหัสบัตร ปชช.ไม่ถูกต้อง</span>");
-                        if(first_error_id == "") first_error_id = "id_hr-SpousePID";
-                        data_completed = false;
-                    }
-                }                
-            }
-
-            if(isEmptyOrSpaces($("#id_userdata-OfficePhone").val())){
-                $("#id_userdata-OfficePhone").css("box-shadow","0 0 10px #e80c4d");             
-                if(first_error_id == "") first_error_id = "id_userdata-OfficePhone";
-                data_completed = false;
-            }
-            else{
-                $("#id_userdata-OfficePhone").css("box-shadow","");
-            }
-            
-            if(isEmptyOrSpaces($("#id_userdata-MobilePhone").val())){
-                $("#id_userdata-MobilePhone").css("box-shadow","0 0 10px #e80c4d");  
-                if(first_error_id == "") first_error_id = "id_userdata-MobilePhone";           
-                data_completed = false;
-            }else{ 
-                $("#id_userdata-MobilePhone").css("box-shadow","");
-            }
-
-            if($("[name = 'hr-RentPermission']:checked").val() == '3')
-            {                               
-                if(isEmptyOrSpaces($("#id_hr-RentalCost").val()) ){
-                    $("#id_hr-RentalCost").css("box-shadow","0 0 10px #e80c4d");      
-                    if(first_error_id == "") first_error_id = "id_hr-RentalCost";          
-                    data_completed = false;
-                }
-            }
-
-            if(! validateEmail($("#id_userdata-RTAFEMail").val())){
-                $("#id_userdata-RTAFEMail").css("box-shadow","0 0 10px #e80c4d");
-                data_completed = false;
-                if(first_error_id == "") first_error_id = "id_userdata-RTAFEMail";   
-                console.log("id_userdata-RTAFEMail -> error ");
-            }
-            else{ 
-                $("#id_userdata-RTAFEMail").css("box-shadow","");
-                console.log("id_userdata-RTAFEMail -> pass ");
-            }
-
-            if(! validateEmail($("#id_userdata-email").val())){
-                $("#id_userdata-email").css("box-shadow","0 0 10px #e80c4d");             
-                data_completed = false;
-                if(first_error_id == "") first_error_id = "id_userdata-email";   
-                console.log("id_userdata-email -> error ");
-            }
-            else {
-                $("#id_userdata-email").css("box-shadow","");
-                console.log("id_userdata-email -> error ");
-            }
-
-            if(isEmptyOrSpaces($("#id_hr-GooglePlusCodes1").val()) ){
-                $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");             
-                if(first_error_id == "") first_error_id = "id_userdata-GooglePlusCodes1";   
-                data_completed = false;
-            }else $("#id_hr-GooglePlusCodes1").css("box-shadow","");
-
-            TravelDescription = $("#id_hr-TravelDescription").val();
-            if(TravelDescription.length < 20){
-                $("#id_hr-TravelDescription").val("กรุณาบรรยายให้ละเอียด : " + TravelDescription);
-                $("#id_hr-TravelDescription").css("box-shadow","0 0 10px #e80c4d");             
-                if(first_error_id == "") first_error_id = "id_userdata-TravelDescription";
-                data_completed = false;
-            }else $("#id_hr-TravelDescription").css("box-shadow","");
-
-            $('[id ^=id_CoResident][id $=PersonID]').each(function(i, obj) {
-
-                name = $(this).attr("id");
-                if($(this).val().length == 13)
-                {
-                    if(!checkID($(this).val()))
-                    {
-                        $(this).css("box-shadow","0 0 10px #e80c4d");
-                        $( `label[for='${name}']` ).html("<span class = 'text-danger'>รหัสบัตร ปชช.ไม่ถูกต้อง</span>");
-                        if(first_error_id == "") first_error_id = $(this).attr("id");   
-                        data_completed = false;
-                    }else
-                    {
-                        $(this).css("box-shadow","");                        
-                    }
-                }
-            });
-
-            // console.log($("#id_hr-IsNotBuyHome").val());
-
-            if(!data_completed){
-                alert("ข้อมูลแบบฟอร์มยังไม่สมบูรณ์ กรุณากรอกข้อมูลในช่องสีแดงให้ครบก่อนส่ง หรือบันทึกร่าง")
-                document.getElementById(first_error_id).scrollIntoView();
-                e.preventDefault();
-                return false;
-            }
-                        
-            
-            var c = confirm("เมื่อส่งข้อมูลแล้วจะไม่สามารถแก้ไขข้อมูลในระบบได้ ยืนยันการบันทึกและส่งข้อมูล");
-            if (c)
-                return true;
-            else
-            {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        $('button[name="save"]').click(function(e) {
-            
-            var data_completed = true;
-            if(isEmptyOrSpaces($("#id_userdata-OfficePhone").val())){
-                $("#id_userdata-OfficePhone").css("box-shadow","0 0 10px #e80c4d");             
-                data_completed = false;
-            }
-            
-            if(isEmptyOrSpaces($("#id_userdata-MobilePhone").val())){
-                $("#id_userdata-MobilePhone").css("box-shadow","0 0 10px #e80c4d");             
-                data_completed = false;
-            }
-
-            if(!data_completed){
-                alert("กรุณากรอกเบอร์โทรศัพท์ก่อนบันทึกร่าง")
-                document.getElementById("id_userdata-OfficePhone").scrollIntoView();
-                e.preventDefault();
-                return false;
-            }
-            var c = confirm("บันทึกเพื่อส่งภายหลัง");
-            if (c)
-                return true;
-            else
-            {
-                e.preventDefault();
-                return false;
-            }
-            
-        });
-
         $('#add_more').click(function(event) {
             event.preventDefault();
             cloneMore('.CoResident:last', 'service');
@@ -426,11 +466,10 @@
                 $('#if_spouse_name').val(spouse_name);
                 address = $("#id_hr-Address").attr("value");
                 address = address.replace("   "," ")
-                console.log('address = ',address)
+                // console.log('address = ',address)
                 $('#if_address').val(address);
                 $('#invisible_form').submit();
-            }
-            
+            }            
         }); 
 
         $("#id_hr-Status").change(function() {           
@@ -460,8 +499,8 @@
                 this.value = '';
                 return ;
             }
-            if(this.files[0].size > 1048576){
-                alert("ไฟล์ใหญ่เกินไป ขนาดไฟล์ต้องไม่เกิน 1 MB");
+            if(this.files[0].size > 2098576){
+                alert("ไฟล์ใหญ่เกินไป ขนาดไฟล์ต้องไม่เกิน 2 MB");
                 this.value = "";
             };    
         });
@@ -469,7 +508,7 @@
         $('[data-priority]').change(function(){
             changed_item = $(this).data('priority');
             selected_value = $(`select[data-priority='${changed_item}']`).val();
-            console.log('changed_item = ',changed_item);
+            // console.log('changed_item = ',changed_item);
             // ปรับขนาด array ตัวที่เลือกไว้แล้วให้ถูกต้อง
             priority_selected.length = changed_item - 1;
 
@@ -488,10 +527,10 @@
             // ดูตัวเลือกที่เหลือใหม่
             remain_options = select_option.filter(n => !priority_selected.includes(n));
             
-            console.log('select_option = ',select_option);
-            console.log('priority_selected = ',priority_selected);
-            console.log('remain_options = ',remain_options);
-            console.log('-remain_options_html = ', remain_options_html);
+            // console.log('select_option = ',select_option);
+            // console.log('priority_selected = ',priority_selected);
+            // console.log('remain_options = ',remain_options);
+            // console.log('-remain_options_html = ', remain_options_html);
             
 
             // ใส่  Option ที่เหลือให้ Select ตัวถัดไป
@@ -528,34 +567,43 @@
         });
 
         // ตรวจสอบการกรอกเลขบัตร ปชช.คู่สมรส แล้วไปเช็คกับข้อมูลค่าเช่าบ้าน
-        $("#id_hr-SpousePID").on("input", function() {
-            var spouse_id = $(this).val();
-            // console.log("keypress ",spouse_id)
-            if(spouse_id.length == 13) {
-                if(checkID(spouse_id))
-                {
-                    urltext = "{% url 'Payment:GetRent'  99999 %}";
-                    new_urltext = urltext.replace("99999",spouse_id)
-                    console.log(new_urltext);
+        $("#id_hr-SpousePID, [id ^=id_CoResident][id $=PersonID]").on("input", function() {
+            
+            var person_id = $(this).val();
+            var element_id = $(this).attr("id");
 
-                    fetch(new_urltext)
-                        .then(response => response.json())
-                        .then(data => {                            
-                            if(data.money > 0)
-                            {
-                                $("#id_hr-have_rent_spouse").prop('checked', true);
-                                $("#id_hr-RentalCostSpouse").val(data.money);
-                                alert("ตรวจสอบพบข้อมูลการเบิก คชบ. ของคู่สมรส");
-                            }
-                        });
+            // console.log("keypress ",element_id)
+            // console.log("keypress ",person_id)
+            if(person_id.length > 10) {
+                if(checkID(person_id))
+                {
+                    $(`label[for=${element_id}]` ).html("เลขบัตร ปชช. <i class='fa fa-check text-success'></i>");
+                    $("#"+element_id).css("box-shadow","");
+                    // ตรวจสอบข้อมูลการเบิก คชบ.
+                    if(element_id == "id_hr-SpousePID")
+                    {
+                        urltext = "{% url 'Payment:GetRent'  99999 %}";
+                        new_urltext = urltext.replace("99999",person_id)
+                        // console.log(new_urltext);
+
+                        fetch(new_urltext)
+                            .then(response => response.json())
+                            .then(data => {                            
+                                if(data.money > 0)
+                                {
+                                    $("#id_hr-have_rent_spouse").prop('checked', true);
+                                    $("#id_hr-RentalCostSpouse").val(data.money);
+                                    alert("ตรวจสอบพบข้อมูลการเบิก คชบ. ของคู่สมรส");
+                                }
+                            });
+                    }
                 }else
                 {
-                    $( "label[for='id_hr-SpousePID']" ).html("เลขประชาชนคู่สมรส <span class = 'text-danger'>(ไม่ถูกต้อง)</span>");
+                    $( `label[for=${element_id}]` ).html("เลขบัตร ปชช. <span class = 'text-danger'>(ไม่ถูกต้อง)</span>");
                 }
 
             }
         });
-
 
         function cloneMore(selector, type) {
             var newElement = $ (selector).clone(true);
@@ -587,7 +635,7 @@
             $('#id_CoResident-TOTAL_FORMS').val(total);
             $(selector).after(newElement);
         }
-
+        
         setMarriedComponent();
 
         IsNeverRTAFHome = ! $('#id_hr-IsNeverRTAFHome').is(":checked");
@@ -607,7 +655,7 @@
         var allow_family_home = false;
         {% if form.Status.value|stringformat:"i" not in "2,7" %}
             allow_family_home = true;
-            $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสภานภาพ 'สมรส')");
+            $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสถานภาพ 'สมรส')");
         {% endif %}
 
         $("#id_hr-IsShopHouseNeed").attr("disabled", allow_family_home);
@@ -623,6 +671,8 @@
 <style>
     select[disabled]{ color:#aaa;  }
 
+    .icon-size {font-size: 20px;}
+
     .cr-row:hover {
         background-color: rgb(192,224,192);        
     }
@@ -635,14 +685,17 @@
     <input id="if_spouse_name" name="if_spouse_name" type="hidden">
     <input id="if_address" name="if_address" type="hidden">
 </form>
-
-<form method = "POST" id = "hr_form" enctype="multipart/form-data" >
+    <!-- 
+    <form method = "POST" id = "hr_form" onsubmit="return false;"  enctype="multipart/form-data" >
+      -->
+    <form method = "POST" id = "hr_form" enctype="multipart/form-data" >
+        
     {% csrf_token %}  
     <div class="card shadow">
         <div class="card-header bg-info">
             <h5>ข้อมูลพื้นฐาน</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body" id = "basic_data">
             <div class="row">
                 <div class="col-md-3">
                     {{ form.FullName |as_crispy_field  }}
@@ -699,24 +752,26 @@
         <div class="card-header bg-secondary text-white">
             <h5>ข้อมูลที่พักอาศัยและการเบิกค่าเช่าบ้าน</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body" id = "addressData">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     {{ form.Address |as_crispy_field }}
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes1" class="form-label">
-                            Google Plus Codes 1 คืออะไร <i class="fas fa-arrow-right"></i>
-                            <img src = "{% static 'images/button_help.png' %}" width = 25 height = 25 
-                                 class = "help_google_code_plus" 
-                                 data-bs-toggle="modal" data-bs-target="#google_help_modal">
+                            Google Plus Codes 1 
+                            <a href = "https://thestandard.co/google-maps-launched-plus-codes/" target = "_blank">คืออะไร</a>, 
+                            <a href="https://plus.codes/map/" target="_blank">หาพิกัด</a>
                         </label>
                         {% comment %} <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1"> {% endcomment %}
                         {{ form.GooglePlusCodes1 | as_crispy_field }}
                     </div>
                     <input id="zipcode1" type="hidden">
                 </div>                
+                <div class="col-md-2">
+                    {{ form.distance |as_crispy_field }}
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -783,11 +838,11 @@
         </div>      
     </div>
 
-    <div class="card shadow  mt-3">
+    <div class="card shadow  mt-3" id = "HomeZone">
         <div class="card-header bg-info pb-0">
             <h5>ข้อมูลการเรียงลำดับความต้องการ  <a href = "#" data-bs-toggle="modal" data-bs-target="#home_zone_modal"><i class="fa fa-question-circle text-success"></i></a></h5>
         </div>
-        <div class="card-body">
+        <div class="card-body"  id = "house_type" >
             <div class="row">
                 <div class="col-md-3">
                     {{ form.IsHomeNeed |as_crispy_field  }}
@@ -821,9 +876,9 @@
             </div>
         </div>      
     </div>
-    <div class="card shadow mt-3">
+    <div class="card shadow mt-3" id = "Evidence">
         <div class="card-header bg-primary text-white">
-            <h5>เอกสารประกอบคำร้อง (pdf file ขนาดไม่เกิน 1 MB เท่านั้น)</h5>
+            <h5>เอกสารประกอบคำร้อง (pdf file ขนาดไม่เกิน 2 MB เท่านั้น) <a href = "#" data-bs-toggle="modal" data-bs-target="#evidence_modal"><i class="fa fa-question-circle text-warning"></i></a></h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -854,7 +909,7 @@
         </div>      
     </div>
 
-    <div class="card mt-3 shadow">
+    <div class="card mt-3 shadow" id = "CoResidenceData">
         <div class="card-header  bg-success text-white">
             <h5>ผู้พักอาศัยร่วม (ที่จะมาพักด้วยกัน)</h5>
         </div>
@@ -899,9 +954,9 @@
         </div>
     </div>
 
-    <div class = "mt-3">
-        <button type="submit" name="save" class="btn btn-warning">บันทึกร่าง</button>        
-        <button type="submit" name="send" class="btn btn-primary">บันทึกและส่งรายงาน</button>        
+    <div class = "mt-3">    
+        <input class="btn btn-warning" type="submit" name = "save" onclick="return form_validate('save');" value = "บันทึกร่าง">
+        <input class="btn btn-primary" type="submit" name = "send" onclick="return form_validate('send');" value = "บันทึกและส่งรายงาน">
     </div>
   
   </form>
@@ -927,6 +982,21 @@
     <div class="modal-content">
       <div class="modal-body text-center">      
         <img src = "{% static 'images/homezone.gif'%}" class = "img-fluid" border = 1>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="evidence_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">      
+        <img src = "{% static 'images/evidence.png'%}" class = "img-fluid" border = 1>
+        <p>กรณีสมรส ต้อง download หนังสือยินยอมให้คู่สมรสเซ็นต์ส่งพร้อมรายงานทาง e-admin ธุรการ ด้วย</p>
+        <p>กรณีรายงานแต่งงานให้ กพ.ทอ.แล้ว ไม่ต้อง upload ทะเบียนสมรส แต่ถ้ายังไม่รายงาน ให้รายงานกับ กพ.ทอ.และ Upload ทะเบียนสมรสด้วย</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

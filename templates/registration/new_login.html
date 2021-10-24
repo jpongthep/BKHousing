@@ -11,9 +11,9 @@
         <link type="text/css" rel="stylesheet" href="{% static '/assets/login_style.css' %}"/>
     </head>
     <body class="">
-
+        {% include "DisplayMessage.html" %}
         <div class="body_login">
-            <div id="background-wrapper" style="background-image: url('{% static '/images/home_lake_bg.jpg' %}');"></div>
+            <div id="background-wrapper" style="background-image: url('{% static '/images/hexa_bg2.jpg' %}');"></div>
                 <div class="card border-0 mx-auto mt-5 bg-100  o_database_list">
                     <div class="card-body">
                         <div class="text-center pb-3 border-bottom mb-4">
@@ -33,7 +33,7 @@
                             
                             <div class="clearfix oe_login_buttons text-center mb-1 pt-3">
                                 <div class="mb-3">
-                                    {% include "DisplayMessage.html" %}
+                                    
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block">Log in</button>            
                                 <div class="o_login_auth"></div>

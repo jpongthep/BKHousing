@@ -34,7 +34,7 @@ class HomeRequestForm(forms.ModelForm):
                 'Rank' ,'FullName', 'Position', 'Unit',
                 'Salary', 'AddSalary',
                 'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
-                'Address','GooglePlusCodes1',
+                'Address','GooglePlusCodes1','distance',
                 'TravelDescription',
                 'RentPermission','have_rent', 'have_rent_spouse', 'RentalCost', 'RentalCostSpouse', 'rent_comment',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
@@ -47,7 +47,9 @@ class HomeRequestForm(forms.ModelForm):
         widgets = {
             'FullName': forms.TextInput(attrs = {'placeholder': 'น.อ.ทัพฟ้าไทย ใส่ใจการงาน'}),
             'Position': forms.TextInput(
-                attrs={'placeholder': 'หัวหน้ากองสนับสนุนการบิน สำนักจัดการการบิน กรมการบินทหารอากาศ'}),
+                attrs={'placeholder': 'หก.กอษ.กกศ.สนผ.กบ.ทอ.'}),
+                        
+            'GooglePlusCodes1': forms.TextInput(attrs={'placeholder': 'WJFC+9P Bangkok, Thailand'}),
                         
             'TravelDescription': forms.Textarea(
                 attrs={
@@ -117,9 +119,11 @@ class HomeRequestForm(forms.ModelForm):
 
         if not data:
             return data
+        
+        print('clean_HouseRegistration : data = ',data )
 
         # ถ้าไม่ได้แก้ไขไฟล์เข้ารหัสเดิม ก็ไม่ต้องทำอะไร
-        if data.name[-8:] == ".enc.pdf":
+        if ".enc" in data.name and data.name[-4:] == ".pdf":
             return data
 
         file_data = data.read()
@@ -156,7 +160,7 @@ CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                                         'placeholder': 'Select a date',
                                                         'type': 'date'
                                                         }),
-                                            'PersonID': forms.TextInput(                                                    
+                                            'PersonID': forms.TextInput(            
                                                     attrs={
                                                         'placeholder': 'เลขประจำตัวประชาชน',
                                                         }),

@@ -1,5 +1,5 @@
 {% extends '_minbase.html' %}
-
+{% load static %}
 {% block header %}
 <h5>อ่านกันสักนิด จะไม่ผิดกติกา ลดเวลาแก้ไข</h5>
 {% endblock %}
@@ -94,11 +94,12 @@
               <li><b>ส่งคำขอได้ตลอดทั้งปี</b></li>
               <li><b>มี กปค.สปพ.กพ.ทอ.เป็นผู้ดูแล</b></li>              
             </p>
+            
             <p class = "my-0 p-1 bg-info">
               <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
               <li><b>ดำรงตำแหน่งอยู่ส่วนกลาง</b></li>
               <li><b>ไม่เบิกค่าเช่าซื้อ</b></li>
-              <li><b>ยึดข้อมูลตาม HRIS</b></li>
+              <li><b>ยึดข้อมูลตาม HRIS</b> สิทธิการขอบ้านพักอาศัย ทอ.เป็นไปตามระเบียบ ทอ.ว่าด้วยการพักอาศัย ทอ. พ.ศ.๒๕๖๐ และเป็นไปตามข้อมูลในระบบ HR กรณีข้อมูลส่วนบุคคลของท่านไม่ถูกต้องกรุณาแจ้ง นกพ.หน่วย เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป</li>
             </p>
       </div>
       <div class="modal-footer text-end">
@@ -110,12 +111,25 @@
 
 <div class="modal fade" id="ZoneAndTypeModal" tabindex="-1" aria-labelledby="ZoneAndTypeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
+    <div class="modal-content"  style = "height: 60%;">
       <div class="modal-header">
-        <h5 class="modal-title" id="ZoneAndTypeModalLabel">เขตบ้านพัก ทอ.</h5>
+        <h5 class="modal-title" id="ZoneAndTypeModalLabel">ประเภทและเขตบ้านพักของ ทอ.</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">ประเภทบ้านพัก</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">เขตบ้านพัก</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">ประเภทและเขต</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           <p class = "my-0 p-1  bg-info">
               <b>บ้านพัก ทอ. ประเภทครอบครับ</b>
               <li><b>พ.</b> บ้านเดี่ยวนายพลอากาศ</li>
@@ -138,7 +152,8 @@
               <li><b>ฟส.(โสด ญ.)</b> แฟลตสัญญาบัตร (โสดหญิง)</li>
               <li><b>ฟป.(โสด ญ.)</b> แฟลตประทวน (โสดหญิง)</li>
             </p>
-
+          </div>
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
             <p class = "my-0 p-1 text-white bg-primary">
               <b>เขตบ้านพักฝั่งท่าดินแดง</b> 
               <li><b>เขต 1</b> (ติด รร.นนก - รร.ฤทธิยะ)</li> 
@@ -155,6 +170,12 @@
               <b>เขตบ้านพักบางซื่อ</b>              
               <li><b>เขต เขตบางซื่อ</b> (บางซื่อ)</li>
             </p>
+          </div>
+          <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <img src = "{% static 'images/homezone.gif'%}" class = "img-fluid" border = 1>
+          </div>
+        </div>
+
 
       </div>
       <div class="modal-footer text-end">

@@ -46,12 +46,11 @@ with open(data_file,"rt", encoding="unicode_escape") as f:
                     money = int(d)/100
 
         try:
-            mycursor.execute(f"""
-                                INSERT INTO armis.Payment_financedata (PersonID, date, code, money)
-                                    VALUES 
-                                ("{PersonID}", "{year}-{month}-1", {code},{money});""")
+            mycursor.execute("""INSERT INTO armis.Payment_financedata (PersonID, date, code, money)
+                                VALUES
+                                (%s, %s, %s, %s);""", [PersonID, f"{year}-{month}-1", code, money])
             armis_db.commit()
-            print(".",end="")
+            print(".",end="",flush=True)
         except Error as e:
             print("Error insert into table : ", e)
     print("")

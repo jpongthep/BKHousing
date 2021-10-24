@@ -1,19 +1,22 @@
+import requests as rq
 import json
 import re
 from datetime import datetime
+import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth.models import Group
 from django.conf import settings
-
-import requests as rq
+from django.db.models import Q
 
 from .models import User, Unit
 from apps.Home.models import HomeOwner
-from apps.Utility.Constants import RTAFUnitSection
+from apps.Configurations.models import YearRound
+from apps.Utility.Constants import YEARROUND_PROCESSSTEP
+
+logger = logging.getLogger('LoginLog')
 
 
 def checkRTAFPassdword(request, username, password):
@@ -203,7 +206,8 @@ def UpdateRTAFData(current_user,person_data):
 
 
     current_user.PersonID = return_data['national_id']
-    current_user.BirthDay = return_data['birthday']
+    if return_data['birthday'] != "-":
+        current_user.BirthDay = return_data['birthday']
 
     UserUnit = Unit.objects.filter(ShortName = return_data['unitname'])
     if not UserUnit.exists():                    
@@ -286,21 +290,27 @@ class SettingsBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
 
+        ActiveYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
+                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
+                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+        UseHRIS = ActiveYearRound[0].load_HRIS
         #กรณีใส่ @rtaf.mi.th มาด้วยก็เอาออกก่อน
         if re.search("@rtaf.mi.th$",username.lower()) : username =  username[0:-11]
-        username = username.lower()
+        username = username.lower()        
         try:
             user = User.objects.get(username=username)
             pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
-                UpdateRTAFData(user,pwd_valid)
+                if UseHRIS : UpdateRTAFData(user,pwd_valid)
                 print("login_mode = ",pwd_valid["login_mode"])
                 if pwd_valid["login_mode"] == "AD-Login":                    
                     user.set_password(password)
                     user.save()
                 # print('login user = ', user)
+                logger.info(f'{username} login success')
                 return user
             else:                
+                logger.warning(f'{username} login fail')
                 return None
 
         except User.DoesNotExist:
@@ -308,12 +318,19 @@ class SettingsBackend(ModelBackend):
             ReturnData = checkRTAFPassdword(request, username,password)
 
             if not ReturnData:
+                logger.info(f'{username} fail to login')
                 return None
 
-            auth_user = getUserByRTAFemail(username, ReturnData['token'])
-            auth_user.set_password(password)
-            auth_user.save()
-            return auth_user
+            if not UseHRIS : 
+                messages.error(request, "ติดต่อ HRIS ขัดข้อง (admin : 2-8641)")
+                logger.info(f'{username} first login but disable HRIS')
+                return None
+            else:
+                auth_user = getUserByRTAFemail(username, ReturnData['token'])
+                auth_user.set_password(password)
+                auth_user.save()
+                logger.info(f'{username} first login success')
+                return auth_user
 
     def get_user(self, user_id):
         try:

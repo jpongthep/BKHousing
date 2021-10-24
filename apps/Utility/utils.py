@@ -8,8 +8,8 @@ from cryptography.hazmat.backends import default_backend
 
 def encryp_file(file_data):
     
-    password = b"5JnuwzCE34gIp56QU"
-    salt = b'\x0cw\xe5\x88\x34x0e\xe3\x80\x17n\xfax\xf9'
+    password = b"5JnuwzCE6HoCzcMzoFPjfm02gIp56QU"
+    salt = b'\x0cw\xe5\x88\x0b?\x0e\x1f\x0e\xe3\x80\x17n\xfax\xf9'
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,

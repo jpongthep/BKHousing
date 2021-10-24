@@ -107,7 +107,7 @@
                 ** คำขอจะสมบูรณ์เมื่อส่งเอกสารทางธุรการ  
                 <a href = "#" data-bs-toggle="modal" data-bs-target="#e-admin_modal"><i class="fa fa-question-circle text-primary"></i></a>
             {% elif not object.RequesterSended %}
-                *** ยังไม่ได้ส่งเอกสาร ***
+                *** บันทึกร่าง ยังไม่ส่ง ***
                 <a href="{% url 'HomeRequest:update' object.id %}"  class="btn btn-warning">แก้ไขคำขอ</a>
             {% elif object.still_active %}            
                 <a href="#"  onclick= "confirm_cancel({{object.id}});" class="btn btn-danger">แจ้งยกเลิกคำขอ</a>

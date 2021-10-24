@@ -4,9 +4,8 @@
 
     {% if widget.value %}
         {% if widget.value.url|file_ext == "pdf" %}            
-                <img src = {% static 'images/lock_file.png'%} title = "{{widget.value}}" width = 25>
-        {% else %}
-            <span class = "text-danger">{{ widget.value  }}</span>
+                 {% comment %} <img src = {% static 'images/pdf_icon.png'%} title = "{{widget.value}}" width = 25>{% endcomment %}
+                 <br><u>ไฟล์ปัจจุบัน</u> : {{ widget.value|file_name }} [เข้ารหัส]
         {% endif %}
     {% endif %}
     <input  type="file" 

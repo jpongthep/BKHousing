@@ -3,6 +3,7 @@ import os
 from datetime import date, timedelta
 import json
 from io import StringIO, BytesIO
+import logging
 #django Module
 from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
@@ -41,7 +42,7 @@ from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm
 from apps.Payment.models import FinanceData
 from .serializers import HomeRequestSerializer
-
+logger = logging.getLogger('MainLog')
 
 def get_current_year():
     CurrentYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
@@ -139,6 +140,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         initial_value = {
                             'OfficePhone' : request.user.OfficePhone,
                             'MobilePhone' : request.user.MobilePhone,
+                            'RTAFEMail': request.user.username + '@rtaf.mi.th',
                         }        
         user_current_data_form =  UserCurrentDataForm(initial = initial_value, prefix='userdata')
         return self.render_to_response(
@@ -156,7 +158,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object = None
         form = self.form_class(request.POST, request.FILES, prefix='hr')
 
-        user_current_data_form = UserCurrentDataForm(self.request.POST, prefix='userdata')
+        user_current_data_form = UserCurrentDataForm(self.request.POST,instance = request.user, prefix='userdata')
         co_resident_formset = CoResidentFormSet(self.request.POST)
         if form.is_valid() and co_resident_formset.is_valid():
             return self.form_valid(form, user_current_data_form, co_resident_formset)
@@ -175,7 +177,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object.Unit = self.request.user.CurrentUnit
         self.object.save()
         
-        # user_current_data_form.save()
+        user_current_data_form.save()
 
         co_resident = co_resident_formset.save(commit=False)
         for cr in co_resident:
@@ -228,6 +230,7 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
                                                 queryset = home_request.CoResident.order_by("Relation"))
 
         # print("UpdateHomeRequestView:get")
+        
 
         return self.render_to_response(
                   self.get_context_data(form = HomeRequestForm(instance=self.object, prefix='hr'),
@@ -581,6 +584,7 @@ def TestDocument(request, home_request_id):
             'Position':home_request.Position,
             'ADDR':home_request.Address,
             'GPC':home_request.GooglePlusCodes1,
+            'Distance': str(home_request.distance),
             'UnitFN':home_request.Unit.FullName,
             'UnitSN':home_request.Unit.ShortName,
             'OfficePhone':home_request.Requester.OfficePhone,

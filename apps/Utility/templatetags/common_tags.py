@@ -1,3 +1,5 @@
+import os 
+
 from django import template
 from django.contrib.auth.models import Group 
 
@@ -35,6 +37,12 @@ def in_group(user, groups_name):
 def file_ext(filename):
     '''Returns the given key from a dictionary.'''
     return filename[-3:].lower()
+
+@register.filter(name='file_name')
+def file_name(filename):
+    '''Returns the given key from a dictionary.'''
+    name = os.path.basename(str(filename))
+    return name
 
 @register.filter(name='dict_key')
 def dict_key(d, k):

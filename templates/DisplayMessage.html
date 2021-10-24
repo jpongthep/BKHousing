@@ -15,25 +15,27 @@
 {% endif %}
 
 {% if form.errors or co_resident_formset.errors %}
-<div class="alert alert-error">
-  <h4>เกิดข้อผิดพลาด</h4>
-  <ul>
-    {% if form.errors  %}
-      {% for field in form %}
-        {% if field.errors %}
-          {% for error in field.errors %}
-            <li><a href="#{{ field.id_for_label }}" class="error"><strong>{{ field.label }}:</strong> {{ error|escape }}</a></li>
-          {% endfor %}
+<div class="card-content">   
+  <div class="alert alert-error">
+    <h5>เกิดข้อผิดพลาด</h5>
+    <ul>
+      {% if form.errors  %}
+        {% for field in form %}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <li><a href="#{{ field.id_for_label }}" class="error"><strong>{{ field.label }}:</strong> {{ error|escape }}</a></li>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+        {% if form.non_field_errors %}
+          {{ form.non_field_errors }}
         {% endif %}
-      {% endfor %}
-      {% if form.non_field_errors %}
-        {{ form.non_field_errors }}
       {% endif %}
-    {% endif %}
 
-    {% if co_resident_formset.errors %}
-            <li><a href="#co_residence" class="error"><strong>{{ field.label }}:</strong> ข้อมูลผู้อาศัยร่วมผิดพลาด</a></li>
-    {% endif %}
-  </ul>
+      {% if co_resident_formset.errors %}
+              <li><a href="#co_residence" class="error"><strong>{{ field.label }}:</strong> ข้อมูลผู้อาศัยร่วมผิดพลาด</a></li>
+      {% endif %}
+    </ul>
+  </div>
 </div>
 {% endif %}
