@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.urls import reverse
@@ -83,6 +85,13 @@ class CoResident(models.Model):
     salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
     is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
     education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
+
+    def age(self):
+        today = date.today()
+        if  today.year - self.birth_day.year == 0:
+            return 1
+        else:
+            return today.year - self.birth_day.year
 
     def __str__(self):
         return self.full_name

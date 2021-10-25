@@ -125,15 +125,28 @@
 
       <div class="collapse navbar-collapse" id="navbarsExample05">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item" style= "vertical-align:text-bottom;">
           {% if request.resolver_match.url_name != "af_person"  %}
-            {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
-              <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
-                คำขอบ้านพัก 
-              </a>
-            {% endif %}
+            <li class="nav-item" style= "vertical-align:text-bottom;">
+                {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
+                  <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
+                    คำขอบ้านพัก 
+                  </a>
+                {% endif %}
+            </li>          
           {% endif %}
-          </li>          
+          {% if request.resolver_match.url_name != "detail_by_user"  %}
+            <li class="nav-item" style= "vertical-align:text-bottom;">
+              {% if request.user|has_group:"RTAF_HOME_USER" %}
+                <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
+                  ข้อมูลบ้านพัก 
+                </a>
+              {% elif request.user|has_group:"RTAF_HOME_SPOUSE"%}
+                <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'spouse' %}">
+                  ข้อมูลบ้านพัก 
+                </a>
+              {% endif %}
+            </li>          
+          {% endif %}
           {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
