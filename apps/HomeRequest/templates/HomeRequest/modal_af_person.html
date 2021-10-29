@@ -3,57 +3,231 @@
   <div class="modal-dialog  modal-xl">
     <div class="modal-content">
       <div class="modal-header bg-light">
-        <h5 class="modal-title">คำขอบ้านพัก {{ object.FullName }} วงรอบ {{ object.year_round }}</h5>
+        <h5 class="modal-title">คำขอบ้านพัก {{ object.FullName }} ปี {{ object.year_round.Year|add:543 }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-         <div class="container-fluid">
-            <div class="row">              
-              <div class="col-md-4"><strong>ตำแหน่ง :</strong> {{ object.Position }}</div>
-              <div class="col-md-4"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
-              <div class="col-md-4"><strong>รายได้ :</strong> {{ object.Salary }} + {{ object.AddSalary }}</div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">ตำแหน่ง : {{ object.Position }}</div>
+            <div class="col-md-4">สังกัด : {{ object.Unit }}</div>
+            <div class="col-md-4">โทร : {{ object.Requester.OfficePhone }},{{object.Requester.MobilePhone }}</div>
+            <div class="col-md-4">รายได้ : {{ object.Salary }} + {{ object.AddSalary }}</div>
+          </div>
+          <div class="row mt-2">
+            <div class="col-4">สถานภาพ : {{ object.get_Status_display }}</div>
+            {% if object.Status|stringformat:"i" in "2,7" %}
+            <div class="col-4">ชื่อคู่สมรส : {{ object.SpousePID }}</div>
+            {% endif %}
+          </div>
+          <hr>
+          <div class="row mt-2">
+            <div class="col-10"><strong>ข้อมูลที่พักอาศัยและการเบิกค่าเช่าบ้าน </strong></div>
+            <div class="col-2 text-end"><button onclick="showdetail('more','myBtn')" class="btn btn-info  btn-sm"
+                id="myBtn">ข้อมูลเพิ่มเติม</button> </div>
+          </div>
+          <span id="more" class="moreDetail">
+            <div class="row mt-2">
+              <div class="col-md-12">ที่อยู่ปัจจุบัน : {{ object.Address }}</div>
+              <div class="col-md-12">GooglePlusCodes : {{ object.GooglePlusCodes1 }}</div>
             </div>
-            <div class="row mt-2">              
-              <div class="col-md-6"><strong>ที่อยู่ตามทะเบียนบ้าน :</strong> {{ object.Address }}</div>
-              <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
-              <div class="col-md-3"><strong>โทร : </strong> {{ object.Requester.OfficePhone }}, {{ object.Requester.MobilePhone }}</div>              
-            </div>
-        {% if object.CoResident.all %}
-            <div class="row mt-5 fw-bold">
-              <div class="col-md-2">ชื่อ</div>
-                <div class="col-2">ความสัมพันธ์</div>
-                <div class="col-2">PersonID</div>
-                <div class="col-2">วันเกิด</div>
-                <div class="col-2">อาชีพ</div>
-                <div class="col-1">รายได้</div>
-                <div class="col-1">การศึกษา</div>
+
+            <div class="row mt-2">
+              <div class="col-md-12">สิทธิ์เบิกค่าเช่าบ้าน : {{ object.get_RentPermission_display }}
               </div>
-              <div class="row">
-            
+              {% if object.Status|stringformat:"i" in "1,2" %}
+              <div class="col-3">มีข้อมูลเบิก (6 เดือน) :> {{ object.have_rent }}</div>
+              <div class="col-3">คู่สมรสเบิก (6 เดือน) : {{ object.have_rent_spouse }}</div>
+              <div class="col-3">ค่าเช่าบ้าน : {{ object.RentalCost }}</div>
+              <div class="col-3">เช่าบ้านคู่สมรส : {{ object.RentalCostSpouse }}</div>
+              {% endif %}
+              <div class="col-md-4">ไม่มีกรรมสิทธิ์บ้านรัศมี 20 กม. :  {{ object.IsNotOwnHome }}</div>
+              <div class="col-md-4">คู่สมรสไม่เป็นเจ้าของบ้านพัก ทอ. : {{ object.IsNotRTAFHome }}</div>
+              <div class="col-md-4">ข้อมูลเพิ่มเติมเกี่ยวกับการเบิก คชบ. : {{ object.rent_comment }}
+              </div>
+            </div>
+          </span>
+          <hr>
+          <div class="row mt-2">
+            <div class="col-10"><strong>ข้อมูลเกี่ยวกับความจำเป็นและความเดือดร้อน </strong></div>
+            <div class="col-2 text-end"><button onclick="showdetail('neccessarySection','neccessaryButton')"
+                class="btn btn-info  btn-sm" id="neccessaryButton">ข้อมูลเพิ่มเติม</button></div>
+          </div>
+          <span id="neccessarySection" class="moreDetail">
+            <div class="row mt-2">
+              <div class="col-4">
+                {% if object.IsHomelessDisaster %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                เป็นผู้ไร้บ้านจากอุบัติภัยธรรมชาติ
+              </div>
+              <div class="col-4">
+                {% if object.IsHomelessEvict %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                เป็นผู้ไร้บ้านจากการโดนไล่ที่
+              </div>
+              <div class="col-4">
+                {% if object.IsMoveFromOtherUnit %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                เป็นผู้โยกย้ายจากภายนอกพื้นที่
+              </div>
+              <div class="col-4">
+                {% if object.ImportanceDuty %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                เป็นผู้ปฏิบัติหน้าที่สำคัญ
+              </div>
+              <div class="col-5">
+                {% if object.OtherTrouble %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ
+              </div>
+            </div>
+          </span>
+          <hr>
+          <div class="row mt-2">
+            <div class="col-10"><strong>ข้อมูลบุคคลภายในบ้าน</strong></div>
+            <div class="col-2 text-end"><button onclick="showdetail('personSection','detailButton')"
+              class="btn btn-info  btn-sm" id="detailButton">ข้อมูลเพิ่มเติม</button></div>
+          </div>
+          <span id="personSection" class="moreDetail">
+            <div class="row mt-2">
+              <div class="col-2">ชื่อ-นามสกุล </div>
+              <div class="col-2">PersonID </div>
+              <div class="col-2">อายุ</div>
+              <div class="col-1">อาชีพ </div>
+              <div class="col-1">รายได้ </div>
+              <div class="col-2">การศึกษา </div>
+              <div class="col-2">ความสัมพันธ์ </div>
+            </div>
+            <div class="row">
               {% for cr in object.CoResident.all %}
-                <div class="col-md-2">{{ cr.FullName }}</div>
-                <div class="col-2">
-                    {{ cr.get_Relation_display }}
-                </div>
-                <div class="col-2">
-                    {{ cr.PersonID }}
-                </div>
-                <div class="col-2">
-                    {{ cr.BirthDay|thaidate:"d M y"  }}
-                </div>
-                <div class="col-2">
-                    {{ cr.Occupation }}
-                </div>
-                <div class="col-1">
-                    {{ cr.Salary }}
-                </div>
-                <div class="col-1">
-                    {{ cr.get_Education_display }}
-                </div>
+              <div class="col-2">{{ cr.FullName }} ({{ cr.get_Relation_display }})</div>
+              <div class="col-2">
+                {{ cr.PersonID }}
+              </div>
+              <div class="col-2">
+                {{ cr.Age }}
+              </div>
+              <div class="col-1">
+                {{ cr.Occupation }}
+              </div>
+              <div class="col-1">
+                {{ cr.Salary }}
+              </div>
+              <div class="col-2">
+                {{ cr.get_Education_display }}
+              </div>
+              <div class="col-2">
+                {{ cr.get_Relation_display }}
+              </div>
               {% endfor %}
             </div>
-          </div>
-          {% endif %}
+          </span>
+          <hr>
+          <div class="row mt-2">
+            <div class="col-10"><strong>ความประสงค์ขอบ้านพักอาศัย </strong></div>
+            <div class="col-2 text-end"><button onclick="showdetail('needSection','needButton')"
+              class="btn btn-info  btn-sm" id="needButton">ข้อมูลเพิ่มเติม</button></div>
+            </div>
+          <span id="needSection" class="moreDetail">
+            <div class="row mt-2">
+              <div class="col-4">
+                {% if object.IsHomeNeed %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                ต้องการบ้านพัก
+              </div>
+              <div class="col-4">
+                {% if object.IsFlatNeed %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                ต้องการแฟลต
+              </div>
+              <div class="col-4">
+                {% if object.IsShopHouseNeed %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                ต้องการห้องแถว
+              </div>
+              <div class="col-4">ลำดับ ๑: {{ object.ZoneRequestPriority1 }}</div>
+              <div class="col-4">ลำดับ ๒: {{ object.ZoneRequestPriority2 }}</div>
+              <div class="col-4">ลำดับ ๓: {{ object.ZoneRequestPriority3 }}</div>
+              <div class="col-4">ลำดับ ๔: {{ object.ZoneRequestPriority4 }}</div>
+              <div class="col-4">ลำดับ ๕: {{ object.ZoneRequestPriority5 }}</div>
+              <div class="col-4">ลำดับ ๖: {{ object.ZoneRequestPriority6 }}</div>
+            </div>
+          </span>
+          <hr>
+          <div class="row mt-2">
+            <div class="col-10"><strong>เอกสารประกอบคำร้อง (ส่งในระบบ)</strong></div>
+            <div class="col-2 text-end"><button onclick="showdetail('documentsection','documentButton')"
+              class="btn btn-info  btn-sm" id="documentButton">ข้อมูลเพิ่มเติม</button></div>
+              </div>
+          <span id="documentsection" class="moreDetail">
+            <div class="row mt-2">
+              <div class="col-4">
+                {% if object.HouseRegistration %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                สำเนาทะเบียนบ้าน
+              </div>
+              <div class="col-4">
+                {% if object.MarriageRegistration %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                ทะเบียนสมรส
+              </div>
+              <div class="col-4">
+                {% if object.SpouseApproved %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                หนังสือรับรองของคู่สมรส (ถ้ามี)
+              </div>
+              <div class="col-4">
+                {% if object.ImportanceDuty %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                ทะเบียนหย่า (ถ้ามี)
+              </div>
+              <div class="col-5">
+                {% if object.SpouseDeathRegistration %}
+                <i class="far fa-check-square"> </i>
+                {% else %}
+                <i class="far fa-square"> </i>
+                {% endif %}
+                มรณบัตรคู่สมรส (ถ้ามี)
+              </div>
+            </div>
+        </div>
+        </span>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>

@@ -41,8 +41,8 @@ class HomeOwnerUserDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         home_owner = context["object"][0].id
-        rent_payments = RentPayment.objects.filter(home_owner = home_owner)
-        water_payments = WaterPayment.objects.filter(home_owner = home_owner)
+        rent_payments = RentPayment.objects.filter(home_owner = home_owner).order_by("-date")
+        water_payments = WaterPayment.objects.filter(home_owner = home_owner).order_by("-date")
         context['rent_payments'] = rent_payments
         context['water_payments'] = water_payments
 

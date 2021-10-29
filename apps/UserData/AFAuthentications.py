@@ -29,27 +29,31 @@ def checkRTAFPassdword(request, username, password):
     } 
     # data = {
     #     'user' : "pongthep",
-    #     'pass' : "********"
+    #     'pass' : "Pong!@#2020"
     # } 
 
     
     try:
         r = rq.post(url = URL, data = data, verify=False)
     except:
-        messages.error(request, "ไม่สามารถติดต่อกับ LDAP Server ทอ.ได้ ")
+        messages.error(request, "login LDAP ขัดข้อง กรุณาตรวจสอบกับ link ทดสอบการ login")
         return False
 
     return_STR_JSON = r.text 
     returnData = json.loads(return_STR_JSON)
 
     # print(type(pastebin_url))
+    if 'result' not in returnData:
+        messages.error(request, "login LDAP ขัดข้อง กรุณาตรวจสอบกับ link ทดสอบการ login")
+        return False
+
     if returnData['result'] == "Process-Complete":
         return returnData
     else:
         messages.error(request, "username หรือ รหัสผ่านไม่ถูกต้อง ")
         return False
 
-def getUserByRTAFemail(email, token):
+def getUserByRTAFemail(request, email, token):
     URL = "https://otp.rtaf.mi.th/api/gateway/rtaf/hris_api_1/RTAFHousePerson"
     data = {
         "token" : token,
@@ -59,9 +63,15 @@ def getUserByRTAFemail(email, token):
 
     return_data = json.loads(r.text)
 
+    # print(type(pastebin_url))
+    if 'result' not in return_data:
+        messages.error(request, "การติดต่อ HRIS ขัดข้อง")
+        return False
+
     # ไม่พบข้อมูล
-    if return_data['data'] == 'ไม่มีข้อมูล':
+    if return_data['result'] != "Process-Complete":
         return None
+
     return_data = return_data['data'][0]
 
     search_unit = Unit.objects.filter(ShortName = return_data['UNITNAME'])
@@ -142,7 +152,7 @@ def getUserByRTAFemail(email, token):
 
     return user
 
-def getPersonID(person_data):
+def getPersonID(request, person_data):
 
     URL = "https://otp.rtaf.mi.th/api/gateway/covid19/rtaf/personal/idcard/by/name"
 
@@ -161,7 +171,15 @@ def getPersonID(person_data):
     r = rq.post(url = URL, data = data, verify=False) 
 
     return_data = json.loads(r.text)
-    # print('return_data = ',return_data)
+    # print(type(pastebin_url))
+    if 'result' not in return_data:
+        messages.error(request, "การติดต่อ HRIS ขัดข้อง")
+        return None
+
+    # ไม่พบข้อมูล
+    if return_data['result'] != "Process-Complete":
+        return None
+
     if 'data' not in return_data: 
         return None
     if  not return_data['data']: 
@@ -172,7 +190,7 @@ def getPersonID(person_data):
     return return_data['national_id']
 
 
-def UpdateRTAFData(current_user,person_data):
+def UpdateRTAFData(request, current_user,person_data):
     URL = "https://otp.rtaf.mi.th/api/gateway/covid19/rtaf/personal/idcard/by/name"
 
     full_name = person_data['user_name']
@@ -188,14 +206,23 @@ def UpdateRTAFData(current_user,person_data):
     } 
     # data = {
     #     "token" : person_data['token'],
-    #     "fname" : "จุฑามาศ",
-    #     "lname": "เกียรติสูงส่ง"
+    #     "fname" : "กนกพร",
+    #     "lname": "วันหนุน"
     # } 
 
     r = rq.post(url = URL, data = data, verify=False) 
 
+
     return_data = json.loads(r.text)
     # print('return_data = ',return_data)
+    if 'result' not in return_data:
+        messages.error(request, "การติดต่อ HRIS ขัดข้อง")
+        return None
+
+    # ไม่พบข้อมูล
+    if return_data['result'] != "Process-Complete":
+        return None
+
     if 'data' not in return_data: 
         return
     if  not return_data['data']: 
@@ -230,14 +257,24 @@ def UpdateRTAFData(current_user,person_data):
     r = rq.post(url = URL, data = data, verify=False) 
 
     return_data = json.loads(r.text)
+    
+    if 'result' not in return_data:
+        messages.error(request, "การติดต่อ HRIS ขัดข้อง")
+        return None
+
+    # ไม่พบข้อมูล
+    if return_data['result'] != "Process-Complete":
+        messages.error(request, "ไม่พบข้อมูลจาก HRIS")
+        return None
+
     if 'data' not in return_data: 
         return
     if  not return_data['data']: 
         return
 
+    print('return_data = ',return_data)
     return_data = return_data['data'][0]
-    
-    # print('return_data = ',return_data)
+    print('return_data = ',return_data)
     current_user.first_name = return_data['FIRSTNAME']
     current_user.last_name = return_data['LASTNAME']   
     current_user.AFID = return_data['ID']
@@ -301,7 +338,7 @@ class SettingsBackend(ModelBackend):
             user = User.objects.get(username=username)
             pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
-                if UseHRIS : UpdateRTAFData(user,pwd_valid)
+                if UseHRIS : UpdateRTAFData(request, user,pwd_valid)
                 print("login_mode = ",pwd_valid["login_mode"])
                 if pwd_valid["login_mode"] == "AD-Login":                    
                     user.set_password(password)
@@ -326,7 +363,7 @@ class SettingsBackend(ModelBackend):
                 logger.info(f'{username} first login but disable HRIS')
                 return None
             else:
-                auth_user = getUserByRTAFemail(username, ReturnData['token'])
+                auth_user = getUserByRTAFemail(request, username, ReturnData['token'])
                 auth_user.set_password(password)
                 auth_user.save()
                 logger.info(f'{username} first login success')

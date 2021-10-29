@@ -43,6 +43,8 @@
     function checkID(id) {
         if (id.length != 13) return false;
 
+        if(isNaN(parseFloat(id)))             return false;
+
         for (i = 0, sum = 0; i < 12; i++)
             sum += parseFloat(id.charAt(i)) * (13 - i);
 
@@ -693,7 +695,7 @@
     {% csrf_token %}  
     <div class="card shadow">
         <div class="card-header bg-info">
-            <h5>ข้อมูลพื้นฐาน</h5>
+            <h5>1. ข้อมูลพื้นฐาน</h5>
         </div>
         <div class="card-body" id = "basic_data">
             <div class="row">
@@ -750,7 +752,7 @@
 
     <div class="card shadow mt-3">
         <div class="card-header bg-secondary text-white">
-            <h5>ข้อมูลที่พักอาศัยและการเบิกค่าเช่าบ้าน</h5>
+            <h5>2. ข้อมูลที่พักอาศัยและการเบิกค่าเช่าบ้าน</h5>
         </div>
         <div class="card-body" id = "addressData">
             <div class="row">
@@ -799,7 +801,7 @@
 
     <div class="card shadow mt-3">
         <div class="card-header bg-warning">
-            <h5>ข้อมูลความจำเป็นและความเดือดร้อน (เลือกได้มากกว่า 1 ข้อ)</h5>
+            <h5>3. ข้อมูลความจำเป็นและความเดือดร้อน (เลือกได้มากกว่า 1 ข้อ)</h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -840,7 +842,7 @@
 
     <div class="card shadow  mt-3" id = "HomeZone">
         <div class="card-header bg-info pb-0">
-            <h5>ข้อมูลการเรียงลำดับความต้องการ  <a href = "#" data-bs-toggle="modal" data-bs-target="#home_zone_modal"><i class="fa fa-question-circle text-success"></i></a></h5>
+            <h5>4. ข้อมูลการเรียงลำดับความต้องการ  <a href = "#" data-bs-toggle="modal" data-bs-target="#home_zone_modal"><i class="fa fa-question-circle text-success"></i></a></h5>
         </div>
         <div class="card-body"  id = "house_type" >
             <div class="row">
@@ -878,7 +880,7 @@
     </div>
     <div class="card shadow mt-3" id = "Evidence">
         <div class="card-header bg-primary text-white">
-            <h5>เอกสารประกอบคำร้อง (pdf file ขนาดไม่เกิน 2 MB เท่านั้น) <a href = "#" data-bs-toggle="modal" data-bs-target="#evidence_modal"><i class="fa fa-question-circle text-warning"></i></a></h5>
+            <h5>5. เอกสารประกอบคำร้อง (pdf file ขนาดไม่เกิน 2 MB เท่านั้น) <a href = "#" data-bs-toggle="modal" data-bs-target="#evidence_modal"><i class="fa fa-question-circle text-warning"></i></a></h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -887,7 +889,7 @@
                     {{ form.HouseRegistration }}
                 </div> 
                 <div class="col-md-3 SpouseEvidence">                    
-                    หนังสือรับรองของคู่สมรส (ถ้ามี) 
+                    หนังสือรับรองของคู่สมรส 
                     <img  id = "consent_form" src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" width = 25>
                     {{ form.SpouseApproved }}
                 </div>
@@ -911,7 +913,7 @@
 
     <div class="card mt-3 shadow" id = "CoResidenceData">
         <div class="card-header  bg-success text-white">
-            <h5>ผู้พักอาศัยร่วม (ที่จะมาพักด้วยกัน)</h5>
+            <h5>6. ผู้พักอาศัยร่วม (ที่จะมาพักด้วยกัน)</h5>
         </div>
         <div class="card-body p-0">
         {{ co_resident_formset.management_form }}

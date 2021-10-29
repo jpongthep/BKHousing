@@ -53,6 +53,20 @@
         return false;
     }
      
+    function showdetail(textid, buttonid) {
+        
+        var moreText = document.getElementById(textid);
+        var btnText = document.getElementById(buttonid);
+            if(moreText.style.display == "inline")
+            {
+                btnText.innerHTML = "ข้อมูลเพิ่มเติม";
+                moreText.style.display = "none";
+            }
+            else{
+                btnText.innerHTML = "ปิดข้อมูลเพิ่มเติม";
+                moreText.style.display = "inline";
+            }
+        }     
     </script>
 {% endblock %}
 
@@ -70,10 +84,10 @@
         text-align: center;
     }
 
-        :root {
-            --prm-color: #0381ff;
-            --prm-gray: #b1b1b1;
-        }
+    :root {
+        --prm-color: #0381ff;
+        --prm-gray: #b1b1b1;
+    }
 
     td a {
         font-size:smaller;
@@ -141,7 +155,10 @@
         background-color: var(--prm-gray);
 
     }
-}
+
+    .moreDetail{
+        display: none;       
+    }
   </style>
 {% endblock %}
 
