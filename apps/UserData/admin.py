@@ -1,5 +1,13 @@
+from functools import reduce
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from operator import or_
+from django.db.models import Q
+
+from django_admin_listfilter_dropdown.filters import (
+    DropdownFilter, ChoiceDropdownFilter, RelatedDropdownFilter
+)
 
 from .models import User, Unit
 
@@ -55,9 +63,15 @@ class UserAdmin(BaseUserAdmin):
                     )
                 }
             ),)        
-    list_filter = ('groups__name','CurrentUnit__is_Bangkok','CurrentUnit', 'Rank')
+    list_filter = (
+                    'groups__name',
+                    'CurrentUnit__is_Bangkok',
+                    ('CurrentUnit', RelatedDropdownFilter), 
+                    ('Rank', ChoiceDropdownFilter)
+                )
     search_fields = ('first_name', 'last_name', 'CurrentUnit__ShortName','username','PersonID')
 
+    #  ('owner__CurrentUnit', RelatedDropdownFilter),
     # filter_horizontal = ('groups', 'user_permissions',)
     save_as = True
 
@@ -67,6 +81,15 @@ class UserAdmin(BaseUserAdmin):
             fieldsets = self.limited_fieldsets
         
         return fieldsets
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(UserAdmin, self).get_search_results(
+                                               request, queryset, search_term)
+        search_words = search_term.split()
+        if search_words:
+            q_objects = [Q(**{field + '__icontains': word}) for field in self.search_fields for word in search_words]
+            queryset &= self.model.objects.filter(reduce(or_, q_objects))
+        return queryset, use_distinct
 
 
 

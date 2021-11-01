@@ -16,7 +16,7 @@ class MyAuthForm(AuthenticationForm):
             attrs = { 'autofocus': True,
                     'class' : 'form-control',
                     'id' : 'floatingInput',
-                    'placeholder' : 'RTAF email',
+                    'placeholder' : 'email ทอ. ไม่ต้องมี @rtaf',
                     'size' : 20}))
     password = forms.CharField(
         label=_("Password"),

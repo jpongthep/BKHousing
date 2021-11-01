@@ -1,18 +1,18 @@
-<div class = "col-sm-3">
+<div class = "mt-2 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12">
     <div class = "card text-center shadow rounded-top">
-        <div class = "card-header bg-{{color}} text-white">
+        <div class = "card-header {{bgcolor}} {{text_color}}">
             <div class = "row align-items-center">
                 <div class = "col">
-                    <i class="fa {{awesome}} fa-4x"></i>
+                    <i class="fa {{awesome}} fa-2x"></i>
                 </div>
                 <div class = "col">
-                    <h3 class = "display-5">{{number}}</h3>
-                    <h5>{{text}}</h5>
+                    <h3 class = "display-6">{{number}}</h3>
+                    <h6>{{text}}</h6>
                 </div>
             </div>
         </div>
         <div class="card-footer">
-            <h6 class = "text-{{color}}">แสดงข้อมูล <i class="fa fa-arrow-alt-circle-right"></i></h6>
+            <h6 class = "text-{{color}}" onclick = "{{click}}" style ="cursor: pointer;">แสดงข้อมูล <i class="fa fa-arrow-alt-circle-right"></i></h6>
         </div>
     </div>
 </div>

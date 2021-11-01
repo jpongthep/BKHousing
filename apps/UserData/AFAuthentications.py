@@ -272,9 +272,9 @@ def UpdateRTAFData(request, current_user,person_data):
     if  not return_data['data']: 
         return
 
-    print('return_data = ',return_data)
+    # print('return_data = ',return_data)
     return_data = return_data['data'][0]
-    print('return_data = ',return_data)
+    # print('return_data = ',return_data)
     current_user.first_name = return_data['FIRSTNAME']
     current_user.last_name = return_data['LASTNAME']   
     current_user.AFID = return_data['ID']
@@ -339,7 +339,7 @@ class SettingsBackend(ModelBackend):
             pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
                 if UseHRIS : UpdateRTAFData(request, user,pwd_valid)
-                print("login_mode = ",pwd_valid["login_mode"])
+                # print("login_mode = ",pwd_valid["login_mode"])
                 if pwd_valid["login_mode"] == "AD-Login":                    
                     user.set_password(password)
                     user.save()

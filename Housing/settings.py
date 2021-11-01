@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5", 
     'thaidate',
     'rest_framework',
+    'django_admin_listfilter_dropdown',
     # My Owner APP
     'apps.UserData',
     'apps.Home',

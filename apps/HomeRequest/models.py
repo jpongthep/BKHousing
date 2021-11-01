@@ -49,7 +49,7 @@ class HomeRequest(models.Model):
     rent_comment = models.TextField(verbose_name = "ข้อมูลเพิ่มเติมเกี่ยวกับการเบิก คชบ.", null=True, blank=True)
 
     # คู่สมรส
-    Status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
+    Status = models.IntegerField(verbose_name="สถานภาพ (ยึดตามข้อมูล กพ.ทอ.)", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="เลขประชาชนคู่สมรส")
     SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ. (ถ้าเป็น)")

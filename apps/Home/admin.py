@@ -1,6 +1,10 @@
 from django.contrib import admin
 from django.db.models import Case, When, Count, Sum, Min, Max, IntegerField
 
+from django_admin_listfilter_dropdown.filters import (
+    DropdownFilter, ChoiceDropdownFilter, RelatedDropdownFilter
+)
+
 from  apps.Payment.models import WaterPayment, RentPayment
 from .models import HomeData, HomeOwner, CoResident, HomeOwnerSummary
 
@@ -86,11 +90,19 @@ class RentPaymentInline(admin.TabularInline):
 
 @admin.register(HomeOwner)
 class HomeOwnerAdmin(admin.ModelAdmin):
-    list_display = ['is_stay','owner_unit','owner','home','lastest_command']
+    list_display = ['is_stay','owner_unit','owner','home','lastest_command', 'leave_command']
+    list_editable  = ['is_stay','leave_command']
     list_display_links = ['owner']
     ordering = ('-is_stay','owner__Rank',)
     raw_id_fields = ('owner','home')
-    list_filter = ('is_stay','home__zone','home__type','owner__CurrentUnit')
+    list_filter = (
+                    'is_stay',
+                    'home__zone',
+                    ('home__type',ChoiceDropdownFilter), 
+                    ('owner__CurrentUnit', RelatedDropdownFilter),
+                    ('enter_command',RelatedDropdownFilter),
+                    ('leave_command',RelatedDropdownFilter)
+                  )
     search_fields = ['owner__first_name','owner__last_name','home__number','enter_command__year']
     inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]
 

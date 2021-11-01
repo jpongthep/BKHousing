@@ -22,6 +22,28 @@
         fetch_show_modal(new_urltext);
     }
 
+    function show_processstep(process_step)
+    {
+        var all_process_step = ['RP','RS','UP','US','PP','PA','GH']
+        all_process_step.forEach(function (item, index) {
+            table_rows = document.getElementsByClassName(item);
+            for (var i = 0; i < table_rows.length; i++) {
+                if(process_step == 'ALL')
+                {
+                    table_rows.item(i).style.display = 'table-row';
+                    document.getElementById("btn_show_all").style.display = 'none';
+                }
+                else if(item != process_step)
+                {
+                    document.getElementById("btn_show_all").style.display = 'inline';
+                    table_rows.item(i).style.display = 'none';
+                }
+                else
+                    table_rows.item(i).style.display = 'table-row';
+            }
+        });
+    }
+
 </script>
 {% endblock %}
 
@@ -56,16 +78,14 @@
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block CardRow %}
-{% comment %} 
     <div class = "row">
-        {% include "project/card.html" with color="secondary" awesome="fa-pen" number="12" text="เริ่มกรอก"%}  
-        {% include "project/card.html" with color="warning" awesome="fa-list" number="04" text="ส่งหน่วย"%}
-        {% include "project/card.html" with color="info" awesome="fa-circle-notch fa-spin" number="08" text="ดำเนินการ"%}
-        {% include "project/card.html" with color="success" awesome="fa-check" number="4" text="รอจัดสรร"%}
-        {% include "project/card.html" with color="primary" awesome="fa-home" number="12" text="รับจัดสรร"%}  
-        {% include "project/card.html" with color="danger" awesome="fa-home" number="12" text="รับจัดสรร"%}  
+        {% include "project/card.html" with bgcolor="bg-light" text_color="text-dark" awesome="fa-pen" number=hr.Num_RP text="เริ่มกรอก" click="show_processstep('RP');" %}  
+        {% include "project/card.html" with bgcolor="bg-danger" text_color="text-white" awesome="fa-list" number=hr.Num_RS text="ส่งหน่วย" click="show_processstep('RS');"%}
+        {% include "project/card.html" with bgcolor="bg-warning" text_color="text-white" awesome="fa-cog fa-spin" number=hr.Num_UP text="นขต.รับ" click="show_processstep('UP');"%}
+        {% include "project/card.html" with bgcolor="bg-success" text_color="text-white" awesome="fa-check" number=hr.Num_US text="นขต.ส่ง" click="show_processstep('US');"%}
+        {% include "project/card.html" with bgcolor="bg-secondary" text_color="text-white" awesome="fa-paperclip" number=hr.Num_PPPA text="กพ.รับเรื่อง" click="show_processstep('PP');"%}
+        {% include "project/card.html" with bgcolor="bg-primary" text_color="text-white" awesome="fa-home" number=hr.Num_GH text="รับจัดสรร" click="show_processstep('GH');"%}
     </div> 
-{% endcomment %}
 {% endblock %}
 
 {% block content%}
@@ -76,9 +96,12 @@
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row mb-2">
-                    <div class="col-sm-10"></div>
-                    <div class="col-sm-2">
-                        <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success"><i class="fa fa-file-excel"></i> export</a>
+                    <div class="col-sm-8">
+                        <a id = "btn_show_all" href = '#' onclick = "show_processstep('ALL');" type="button" class="btn btn-info" style="display: none"><i class="fa fa-list-ol"></i> แสดงทั้งหมด</a>
+                    </div>
+                    <div class="col-sm-4 text-end">
+                        <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success"><i class="fa fa-file-excel"></i> excel</a>
+                        <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
                 </div>
             </div>
@@ -88,14 +111,15 @@
                     <col width="40">
                     <col width="40">
                     <col width="120">
-                    <col width="350">
+                    <col width="330">
                     <col width="120">
-                    <col width="60">
+                    <col width="90">
                     <col width="80">
                     <col width="60">
                     <col width="40">
                     <col width="40">
                     <col width="40">
+                    <col width="200">
                 <thead>
                     <tr>
                         <th>#</th>

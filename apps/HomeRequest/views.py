@@ -112,7 +112,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                                           ).filter(money__gt = 0
                                           ).order_by("money")
             
-        print('homerent_data',homerent_data)
+        # print('homerent_data',homerent_data)
         if(homerent_data.exists()):
             initial_value['RentPermission'] = HomeRentPermission.used
             initial_value['have_rent'] = True
@@ -336,8 +336,52 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
                     queryset = HomeRequest.objects.filter(Unit_id = unit_id)
         
         queryset = queryset.filter(year_round__Year = get_current_year())
-        queryset = queryset.order_by("-year_round__Year")
+        queryset = queryset.order_by("-year_round__Year","ProcessStep","Requester__Rank")
         return queryset 
+    
+    def get_context_data(self, **kwargs):
+        context = super(HomeRequestUnitListView, self).get_context_data(**kwargs)
+
+        queryset = HomeRequest.objects.filter(year_round__Year = get_current_year())
+
+        if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
+                queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
+        
+        if 'unit_id' in self.kwargs:
+            unit_id = self.kwargs['unit_id']
+            if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
+                    queryset = HomeRequest.objects.filter(Unit_id = unit_id)
+
+        Num_RP = Count('id', filter = Q(ProcessStep = 'RP'))
+        Num_RS = Count('id', filter = Q(ProcessStep = 'RS'))
+        Num_UP = Count('id', filter = Q(ProcessStep = 'UP'))
+        Num_US = Count('id', filter = Q(ProcessStep = 'US'))
+        Num_PPPA = Count('id', filter = Q(ProcessStep__in = ['PP','PA']))
+        Num_GH = Count('id', filter = Q(ProcessStep = 'GH'))
+
+        queryset = queryset.exclude(
+                                    Q(ProcessStep = HomeRequestProcessStep.REQUESTER_CANCEL) 
+                                ).values('Unit'
+                                ).annotate(
+                                    Num_RP = Num_RP,
+                                    Num_RS = Num_RS,
+                                    Num_UP = Num_UP,
+                                    Num_US = Num_US,
+                                    Num_PPPA = Num_PPPA,
+                                    Num_GH = Num_GH
+                                ).values(
+                                    'Num_RP',
+                                    'Num_RS',
+                                    'Num_UP',
+                                    'Num_US',
+                                    'Num_PPPA',
+                                    'Num_GH'
+                                )
+        # print('queryset = ',queryset)
+        # print('queryset = ',queryset.query)
+
+        context['hr'] = queryset[0]
+        return context
     
 
 class HomeRequestAdminListView(HomeRequestUnitListView):
@@ -355,6 +399,7 @@ class HomeRequestAdminListView(HomeRequestUnitListView):
         queryset = queryset.filter(year_round__Year = get_current_year())
         queryset = queryset.order_by("-year_round__Year")
         return queryset
+
 
 class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
     allow_groups = ['PERSON_ADMIN']
@@ -483,7 +528,7 @@ def homerequest_detail(request, username):
         dump = json.dumps({'status': 'username not found'})            
         return HttpResponse(dump, content_type='application/json')
 
-    print('homerequest',homerequest)
+    # print('homerequest',homerequest)
     if not homerequest.exists():
         dump = json.dumps({'status': 'hr not found'})            
         return HttpResponse(dump, content_type='application/json')
@@ -562,8 +607,8 @@ def TestDocument(request, home_request_id):
         IsNotRTAFHome = "X" if home_request.IsNotRTAFHome else "  "
         SpouseName = "{}".format(SpouseName)
     else:
-        IsNotRTAFHome = "-"
-        ZK = "-"
+        IsNotRTAFHome = "--"
+        ZK = "--"
         SpouseName = " - "
 
     IsNotBuyHome = "X" if home_request.IsNotBuyHome else "  "
@@ -654,7 +699,59 @@ def TestDocument(request, home_request_id):
     # print(dic)
     
     for para in document.paragraphs:
-        print('para = ',para)
+        # print('para = ',para)
+        for key, value in dic.items():
+            if key in para.text:
+                inline = para.runs
+                # print('inline = ',inline)
+                # Loop added to work with runs (strings with same style)
+                for i in range(len(inline)):
+                    if key in inline[i].text:
+                        if value: # ถ้ามีการกรอกข้อมูล
+                            Value = ArabicToThai(value) if key != 'GPC' else value
+                        else: # ถ้าไม่มีการกรอกข้อมูล
+                            Value = ""
+                        text = inline[i].text.replace(key, Value)
+                        inline[i].text = text
+
+    # Prepare document for download        
+    # -----------------------------
+    f = BytesIO()
+    document.save(f)
+    length = f.tell()
+    f.seek(0)
+    response = HttpResponse(
+        f.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+    # print('docx_title = ',docx_title)
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(docx_title)
+    response['Content-Length'] = length
+    return response
+
+def UnitReportDocument(request, Unit_id):
+    # testdoc = static('documents/test_doc.docx')
+    home_request = HomeRequest.objects.filter(Unit_id = Unit_id)
+
+    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_unit.docx')
+    docx_title= f"Unit-{Unit_id}.docx"
+
+    document = Document(testdoc)
+
+    Month = month_text[date.today().month]
+    Year =  str((date.today().year + 543) % 100)
+
+    dic = {
+            'UnitSN': request.user.CurrentUnit.ShortName,
+            'OfficePhone':request.user.OfficePhone,
+            'Num_US' : "5",
+            'Month': Month,
+            'Year':Year
+            }
+    # print(dic)
+    
+    for para in document.paragraphs:
+        # print('para = ',para)
         for key, value in dic.items():
             if key in para.text:
                 inline = para.runs
@@ -688,7 +785,6 @@ def ConsentForm(request):
     testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/letter_of_consent.docx')
     docx_title= f"consentform.docx"
     
-
     document = Document(testdoc)
 
     spname = request.POST.get("if_spouse_name","")
@@ -696,7 +792,6 @@ def ConsentForm(request):
 
     spouse = "ภรรยา" if request.user.Sex == "ชาย" else "สามี"
     selfcall = "สามี" if request.user.Sex == "ชาย" else "ภรรยา"
-
 
     day = str(date.today().day)
     month = full_month_text[date.today().month]
@@ -714,7 +809,7 @@ def ConsentForm(request):
             }
 
     for para in document.paragraphs:
-        print('para = ',para)
+        # print('para = ',para)
         for key, value in dic.items():
             if key in para.text:
                 inline = para.runs
@@ -759,17 +854,20 @@ def TestExcel(request,unit_id):
     
     xls_unit = Unit.objects.get(id = unit_id)
 
-    queryset = HomeRequest.objects.filter(Unit = xls_unit)
-    
-    queryset = queryset.filter(year_round__Year = get_current_year())
-    queryset = queryset.order_by("-year_round__Year")
+    queryset = HomeRequest.objects.filter(Unit = xls_unit
+                                 ).filter(ProcessStep = 'US'
+                                 ).filter(year_round__Year = get_current_year()
+                                 ).order_by("Requester__Rank")
     first_row = 6
     for i, data in enumerate(queryset):
+        Salary = data.Salary if data.Salary else 0
+        AddSalary = data.AddSalary if data.AddSalary else 0
+        Income = "{:,}".format(Salary + AddSalary)
         sheet[f"A{first_row+i}"] = i+1
         sheet[f"B{first_row+i}"] = data.FullName
         sheet[f"C{first_row+i}"] = data.get_Status_display()
-        sheet[f"D{first_row+i}"] = data.Salary + data.AddSalary
-        sheet[f"R{first_row+i}"] = data.Requester.MobilePhone
+        sheet[f"D{first_row+i}"] = ArabicToThai(Income)
+        sheet[f"R{first_row+i}"] = ArabicToThai(data.Requester.MobilePhone)
 
     f = BytesIO()
     

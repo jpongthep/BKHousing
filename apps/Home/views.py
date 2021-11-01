@@ -1,11 +1,17 @@
+import json
+
 from django.shortcuts import render
 from django.views.generic import DetailView
 from django.http import Http404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import HomeData, HomeOwner
 from apps.UserData.models import User
 from apps.Payment.models import WaterPayment, RentPayment
+from .serializers import HomeOwnerSerializer
 
 
 class HomeDetailView(DetailView):
@@ -51,3 +57,22 @@ class HomeOwnerUserDetailView(LoginRequiredMixin, DetailView):
 class HomeOwnerDetailView(DetailView):
     model = HomeOwner
     template_name = "Home/hm_own_detail.html"
+
+
+@csrf_exempt
+def homeowner_api(request, username):
+    try:
+        user = User.objects.get(username = username)             
+        homeowner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
+    except User.DoesNotExist:
+        dump = json.dumps({'status': 'username not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    # print('homerequest',homerequest)
+    if not homeowner.exists():
+        dump = json.dumps({'status': 'ho not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    if request.method == 'GET':
+        serializer = HomeOwnerSerializer(homeowner[0])
+        return JsonResponse(serializer.data)

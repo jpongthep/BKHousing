@@ -14,7 +14,8 @@ from .views import (ProcessFlow,
                     AFPersonListView,
                     update_process_step,
                     cancel_request,
-                    homerequest_detail
+                    homerequest_detail,
+                    UnitReportDocument
                     )
 
 from .views_modals import af_person_data_detailview
@@ -47,4 +48,5 @@ urlpatterns = [
     path('<unit_id>/xls', TestExcel, name = 'xls'),
     path('cf', ConsentForm, name = 'ConsentForm'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),
+    path('<Unit_id>/doc_unit', UnitReportDocument, name = 'doc_unit'),
 ] 
