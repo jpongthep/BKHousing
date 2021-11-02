@@ -128,7 +128,7 @@
             data_completed = false;
         }
 
-        let married = ["2", "7"];
+        let married = ["2","7"];
 
         // ถ้าสถานะคือสมรส จะต้องมีข้อมูลคู่สมรส    
         if(married.includes($("#id_hr-Status").val()))
@@ -295,6 +295,10 @@
             user_status = $("#id_hr-Status").val();
             
             select_option = [0,0,0,0,0,0,0];
+            family_right = ["2","3","4","7"];
+            // console.log('user_status = ',user_status)
+            // console.log('typeof(user_status) = ',typeof(user_status))
+            // console.log('family_right.includes(user_status) = ', family_right.includes(user_status))
             if(rank <= 30302) // น.อ.พิเศษขึ้นไป
             {
                 // console.log('select_option = ',select_option)
@@ -342,7 +346,7 @@
                 }
                 // console.log('โสด - select_option = ', select_option)
             }
-            else if(user_status == 2 || user_status == 7) // กรณีสถานภาพสมรส
+            else if(family_right.includes(user_status)) // กรณีสถานภาพสมรส หย่าร้าง ม่าย
             {
                 if(rank <= 30500 || (rank > 31400 && rank < 31600)) // ชั้นสัญญาบัตร
                 {   
@@ -444,7 +448,8 @@
             $("#div_id_hr-IsNotRTAFHome").toggle(married);
 
             $("#HomeRentSpouse").toggle(married);
-            $(".SpouseEvidence").toggle(married || widow_divote);
+            $(".SpouseEvidence").toggle(married);
+            $(".widow_divote").toggle(widow_divote);
 
             $("#id_hr-IsShopHouseNeed").prop('disabled', ! (married || widow_divote));
             
@@ -897,13 +902,12 @@
                     {{ form.MarriageRegistration.label }}
                     {{ form.MarriageRegistration }}
                 </div>
-                <div class="col-md-3 SpouseEvidence">
+                <div class="col-md-3 SpouseEvidence widow_divote">
                     {{ form.DivorceRegistration.label }}
                     {{ form.DivorceRegistration }}
                 </div>                
-            </div>
-            <div class="row">
-                <div class="col-md-3 SpouseEvidence">
+
+                <div class="col-md-3 SpouseEvidence widow_divote">
                     {{ form.SpouseDeathRegistration.label }}
                     {{ form.SpouseDeathRegistration }}
                 </div>                

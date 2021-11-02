@@ -345,12 +345,12 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
         queryset = HomeRequest.objects.filter(year_round__Year = get_current_year())
 
         if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
-                queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
+                queryset = queryset.filter(Unit = self.request.user.CurrentUnit)                
         
         if 'unit_id' in self.kwargs:
             unit_id = self.kwargs['unit_id']
             if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
-                    queryset = HomeRequest.objects.filter(Unit_id = unit_id)
+                    queryset = queryset.filter(Unit_id = unit_id)
 
         Num_RP = Count('id', filter = Q(ProcessStep = 'RP'))
         Num_RS = Count('id', filter = Q(ProcessStep = 'RS'))
