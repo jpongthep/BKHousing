@@ -5,9 +5,19 @@
         <td>{{ forloop.counter }}</td>
         <td>
             {% if object.get_ProcessStep_display != 'RequesterProcess'%}
-                <a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a>
+                {% if object.ProcessStep == 'RS'%}
+                    <a href = "#"><i class="fa fa-lock text-danger icon-size shadow" ></i></a>
+                {% elif  object.ProcessStep == 'UP'%}
+                    <a href = "#"><i class="fa fa-lock text-warning icon-size shadow" ></i></a>                
+                {% elif  object.ProcessStep == 'US'%}
+                    <a href = "#"><i class="fa fa-lock text-success icon-size shadow" ></i></a>
+                {% elif  object.ProcessStep in 'PP,PA' %}
+                    <a href = "#"><i class="fa fa-lock text-secondary icon-size shadow" ></i></a>
+                {% else %}
+                    <a href = "#"><i class="fa fa-lock text-primary icon-size shadow" ></i></a>
+                {% endif %}
             {% else %}
-                <i class="fa fa-edit text-primary icon-size"></i></i>
+                <i class="fa fa-edit text-primary icon-size shadow"></i></i>
             {% endif %}
         </td>
         <td><a href = "#" onclick = "modal_hr_detail({{ object.id }})"><i class="fa fa-eye text-info icon-size" ></i></a></td>
@@ -73,15 +83,15 @@
     </tr>      
 
 {% else %}
-                    <tr class = "text-muted">
+                    <tr class = "{{ object.ProcessStep }} text-muted">
                         <td>{{ forloop.counter }}</td>
                         <td><i class="fa fa-times text-danger icon-size" ></i></td>
-                        <td><a href = "#"><i class="fa fa-eye  icon-size" ></i></a></td>
-                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td><a href = "#"  onclick = "modal_hr_detail({{ object.id }})"><i class="fa fa-eye  icon-size text-secondary" ></i></a></td>
+                        <td><a href = "{% url 'HomeRequest:doc' 1 %}"><i class="fas fa-file-word icon-size  text-secondary"></i></a></td>
                         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
                         <td>{{ object.FullName }}</td>                        
                         <td>{{ object.Unit }}</td>
-                        <td>{{ object.Requester.MobilePhone }}</td>
+                        <td>{{ object.Requester.OfficePhone }}</td>
                         <td>
                             <i class="fa fa-times text-danger icon-size" ></i>
                         </td>

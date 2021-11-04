@@ -48,7 +48,7 @@
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row mb-2">
-                    <div class="col-sm-10"><h4>ปีงบประมาณ 2564</h4> </div>
+                    <div class="col-sm-10"><h4>ปีงบประมาณ 2565</h4> </div>
                     <div class="col-sm-2"></div>
                 </div>
             </div>
@@ -134,63 +134,59 @@
                         <th>#</th>
                         <th colspan = "3">เอกสาร</th>
                         <th>ยศ ชื่อ นามสกุล</th>
-                        <th>มือถือ</th>
+                        <th>เบอร์โทร</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
-                        <th colspan = 2>กพ.ทอ.</th>
+                        <th>กพ.ทอ.</th>
                         <th>อนุมัติ</th>
                         <th>หมายเหตุ</th>                        
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(hm,i) in unit_data.HomeRequest">                        
+                    <tr v-for="(hm,i) in unit_data.HomeRequest">
                         <td>[[ i + 1 ]]</td>
-                        <td><a href = "#"><i class="fa fa-lock text-dark icon-size" ></i></a></td>
-                        <td><a href = "#" onclick = "test_modal()"><i class="fa fa-eye text-info icon-size" ></i></a></td>
-                        <td><a href = "url 'HomeRequest:doc' object.id"><i class="fas fa-file-word icon-size"></i></a></td>
+                        <td>
+                            <i class="fa fa-lock icon-size" v-bind:class="ProcessStepClass(hm.ProcessStep)" ></i>
+                        </td>
+                        <td><a href = "#" @click = "test_modal()"><i class="fa fa-eye text-info icon-size" ></i></a></td>
+                        <td><a href = "#" @click = "show_doc(hm.id);"><i class="fas fa-file-word icon-size"></i></a></td>
                         <td>[[ hm.FullName ]]</td>
                         <td>[[ hm.MobilePhone ]]</td>
                         <td>
                             <div v-if="hm.RequesterDateSend">
                                 <a href = "#" :title = "hm.RequesterDateSend"><i class="fa fa-check text-success icon-size" ></i></a>
                             </div>
-                            <div v-else-if="hm.ProcessStep === 'RP' ">
+                            <div v-else-if="hm.ProcessStep === 'RequesterProcess' ">
                                 <small>ร่าง</small>
                             </div>
                         </td>
                         <td>
                             <a v-if="hm.UnitApprover" href = "#" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
-                            <a v-else-if="hm.ProcessStep === 'UP'" href = "#" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">                                
+                            <a v-else-if="hm.ProcessStep === 'UnitProcess'" href = "#" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">                                
                                 <small>รับเรื่อง</small>
                             </a>                             
                             &nbsp;
                             <span v-if="hm.IsUnitEval" class="text-primary font-weight-bold" >
                                 [[ hm.UnitTroubleScore ]]
                             </span>	  
-                            <i v-else-if="hm.ProcessStep === 'UP' && !hm.IsUnitEval" class="far fa-tasks text-danger icon-size"></i>
+                            <i v-else-if="hm.ProcessStep === 'UnitProcess' && !hm.IsUnitEval" class="far fa-tasks text-danger icon-size"></i>
                         </td>
                         <td>
-                            <div v-if="hm.ProcessStep === 'US'  && ! hm.PersonApprover ">
+                            <div v-if="hm.ProcessStep === 'UnitSended'  && ! hm.PersonApprover ">
                                 <button class="btn btn-outline-primary btn-sm" @click="ConfirmPersonRecieved(i, hm.id)"><small>รับเรื่อง</small></button>                                
                             </div>  
-                            <div v-else-if="hm.ProcessStep === 'PP' ">
-                                <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
-                                    <small>รับเรื่อง</small>
-                                </span>
-                            </div>
                             <div v-else-if="hm.PersonApprover">                                
                                 <a href = "#" :title = "[hm.PersonApproverName, hm.PersonApproverPhone, hm.PersonDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
                             </div>
                             
 
-                        </td>
-                        <td>
+               
                             <div v-if="hm.IsPersonEval">
                                 [[ hm.PersonTroubleScore ]]
                             </div>
-                            <div v-else-if="hm.ProcessStep === 'PP' ">
+                            <div v-else-if="hm.ProcessStep === 'PersonProcess' ">
                                 <a href = "#" @click="evaluate(hm.id)" class="fa-stack" style="vertical-align: top;" >
-                                    <i class="far fa-tasks text-danger icon-size"></i>
+                                    <i class="far fa-tasks text-warning icon-size"></i>
                                     <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
                                 </a>
                             </div>
@@ -199,11 +195,11 @@
                             
                         </td>
                         <td>
-                            {% if object.ProcessStep == 'US' %}
-                                    <a href = "url 'HomeRequest:update_process_step' object.id 'PP'" class="btn btn-outline-primary btn-sm">รับเรื่อง</a>
-                            {% elif object.ProcessStep == 'PP' %}
-                                    <a href = "url 'HomeRequest:update_process_step' object.id 'PA'" class="btn btn-outline-success btn-sm">ส่งจัดสรร</a>
-                            {% endif %}
+                            <div v-if="hm.ProcessStep === 'PersonProcess' ">
+                                <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
+                                    <small>รอประเมิน</small>
+                                </span>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -222,11 +218,12 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirm_modalLabel">กพ.ทอ.ยืนยันการรับเรื่องขอบ้านพัก</h5>
+                <h5 class="modal-title" id="confirm_modalLabel">ยืนยันรับเรื่อง</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">                
-                [[ confirm_text ]]
+                รับเรื่องคำขอบ้านพักของ "[[ confirm_text ]]" <br><br>
+                ** จะมีการบันทึกข้อมูลผู้รับเรื่องลงระบบ
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -300,7 +297,7 @@
             ConfirmPersonRecieved(index, hr_id){
                 this.current_index = index;
                 this.current_hr_id = hr_id;
-                this.confirm_text = this.unit_data.HomeRequest[index]["FullName"];
+                this.confirm_text = this.unit_data.HomeRequest[index]["FullName"];                
                 this.confirm_modal.show();
             },
             PersonRecieved(){
@@ -316,11 +313,28 @@
                         if(data["success"])
                         {
                             this.confirm_modal.hide();
-                            this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'PP';
+                            this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'PersonProcess';
                         }
                         else
                             alert("เกิดข้อผิดพลาด ไม่สามารถรับเรื่องได้");
                     });
+            },
+            ProcessStepClass(hm_process_step)
+            {
+                // console.log(hm_process_step);
+                var icon_style = 'text-secondary';
+                switch(hm_process_step)
+                {
+                    case 'UnitSended' : icon_style = 'text-danger'; break;
+                    case 'PersonProcess' : icon_style = 'text-warning'; break;
+                }
+                return icon_style;
+            },
+            show_doc(hm_id)
+            {
+                urltext = "{% url 'HomeRequest:doc' '99999' %}";
+                docURL = urltext.replace("99999",hm_id)                
+                window.open(docURL ,'_blank');
             },
             show_xls(unit_id)
             {
@@ -332,7 +346,8 @@
             {
                 alert('ประเมิน ' + hm_id);
             }
-        }
+        },
+        
     }
 
     Vue.createApp(MainAPP).mount('#MainAPP')

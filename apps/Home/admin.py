@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
 from django.db.models import Case, When, Count, Sum, Min, Max, IntegerField
 
 from django_admin_listfilter_dropdown.filters import (
@@ -50,14 +51,35 @@ class CoResidentInline(admin.TabularInline):
     model = CoResident
     extra = 3
 
-    
+
+class BuildingFilter(SimpleListFilter):
+    title = "อาคาร"  # a label for our filter
+    parameter_name = "building_number"  # you can put anything here
+
+    def lookups(self, request, model_admin):
+        return [(i,i) for i in range(1,11)]
+
+    def queryset(self, request, queryset):
+        if self.value() is None:
+            return queryset
+        if queryset.model is HomeData:
+            return queryset.filter(building_number=self.value())
+        if queryset.model is HomeOwner:
+            return queryset.filter(home__building_number=self.value())
+
+
 @admin.register(HomeData)
 class HomeDataAdmin(admin.ModelAdmin):
-    list_filter = ('type', 'zone','status')
-    search_fields = ['building_number','number']
+    list_filter = (
+                    ('type',ChoiceDropdownFilter), 
+                    ('zone',ChoiceDropdownFilter),
+                    BuildingFilter,
+                    ('status',ChoiceDropdownFilter),
+                    )
+    search_fields = ['type', 'building_number','number']
     list_per_page = 30
-    # list_display = ['year_round', 'FullName', 'Unit']
-    # list_display_links = ['FullName']
+    list_display = ['__str__', 'building_number','room_number', 'status']
+    list_display_links = ['__str__']
     # save_as = True
 
 
@@ -78,7 +100,7 @@ class RentPaymentInline(admin.TabularInline):
     model = RentPayment
     exclude = ('PersonID', 'comment',)
     ordering = ['-date',]
-    max_num=0
+    max_num = 0
 
     # def has_edit_permission(self, request, obj):
     #   return False
@@ -97,11 +119,12 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     raw_id_fields = ('owner','home')
     list_filter = (
                     'is_stay',
-                    'home__zone',
-                    ('home__type',ChoiceDropdownFilter), 
-                    ('owner__CurrentUnit', RelatedDropdownFilter),
                     ('enter_command',RelatedDropdownFilter),
-                    ('leave_command',RelatedDropdownFilter)
+                    ('leave_command',RelatedDropdownFilter),
+                    ('home__type',ChoiceDropdownFilter), 
+                    ('home__zone',ChoiceDropdownFilter),
+                    BuildingFilter,
+                    ('owner__CurrentUnit', RelatedDropdownFilter),
                   )
     search_fields = ['owner__first_name','owner__last_name','home__number','enter_command__year']
     inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]

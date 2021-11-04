@@ -5,7 +5,7 @@ from .models import HomeRequest
 
 class HomeRequestSerializer(serializers.ModelSerializer):
     UnitName = serializers.CharField(source='Requester.CurrentUnit.ShortName',read_only=False,allow_null=True,default=None)
-    # MobilePhone = serializers.CharField(source='Requester.MobilePhone')
+    MobilePhone = serializers.CharField(source='Requester.OfficePhone',read_only=False,allow_null=True,default=None)
     ProcessStep = serializers.SerializerMethodField(source = 'get_ProcessStep_display') 
     UnitRecieverName = serializers.CharField(source='UnitReciever.FullName',read_only=False,allow_null=True,default=None)
     UnitRecieverPhone = serializers.CharField(source='UnitReciever.OfficePhone',read_only=False,allow_null=True,default=None)
@@ -29,7 +29,7 @@ class HomeRequestSerializer(serializers.ModelSerializer):
                     "id", 
                     "FullName", 
                     "UnitName", 
-                    # "MobilePhone", 
+                    "MobilePhone", 
                     "Position",
                     "ProcessStep",
                     "RequesterDateSend",

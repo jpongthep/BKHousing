@@ -5,78 +5,79 @@
 {% endblock %}
 {% block style %}
 <style>
-    body {
+  body {
     background-image: linear-gradient(180deg, #eee, #fff 100px, #fff);
-    }
+  }
 
-    .container {
+  .container {
     max-width: 960px;
-    }
+  }
 
-    .pricing-header {
+  .pricing-header {
     max-width: 700px;
-    }
+  }
 
-    .fix-height{
-        display:block;
-        width:100%;
-        height:130px;
-        overflow:auto;
-    }
+  .fix-height {
+    display: block;
+    width: 100%;
+    height: 130px;
+    overflow: auto;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
-    </div>
-    <div class="row row-cols-1 row-cols-md-3 mb-3">
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
-          <div class="card-header py-3 text-center">
-            <h4 class="my-0 fw-normal">ข้อควรรู้เกี่ยวกับการขอบ้านพัก ทอ.</h4>
-          </div>
-          <div class="card-body fix-height">            
-            <p class = "my-0 p-1">
-              <li>จะต้องส่งคำขอบ้านพักเมื่อไร ขั้นตอนการพิจารณาอย่างไร</li> 
-              <li>คุณสมบัติของผู้ขอบ้านพักอาศัย</li>
-            </p>      
-          </div>
-          <div class="card-footer text-end">
-                <button class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#ProcessStepModal">รายละเอียด</button>
-          </div>  
+</div>
+<div class="row row-cols-1 row-cols-md-3 mb-3">
+  <div class="col">
+    <div class="card mb-4 rounded-3 shadow-sm border-secondary">
+      <div class="card-header py-3 text-center">
+        <h4 class="my-0 fw-normal">ข้อควรรู้เกี่ยวกับการขอบ้านพัก ทอ.</h4>
+      </div>
+      <div class="card-body fix-height">
+        <p class="my-0 p-1">
+          <li>จะต้องส่งคำขอบ้านพักเมื่อไร ขั้นตอนการพิจารณาอย่างไร</li>
+          <li>คุณสมบัติของผู้ขอบ้านพักอาศัย</li>
+        </p>
+      </div>
+      <div class="card-footer text-end">
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ProcessStepModal">รายละเอียด</button>
+      </div>
 
-        </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card mb-4 rounded-3 shadow-sm border-secondary">
+      <div class="card-header py-3 text-center">
+        <h4 class="my-0 fw-normal">ประเภทและเขตบ้านพักของ ทอ.</h4>
       </div>
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
-          <div class="card-header py-3 text-center">
-            <h4 class="my-0 fw-normal">ประเภทและเขตบ้านพักของ ทอ.</h4>
-          </div>
-          <div class="card-body fix-height">
-              <li>บ้านพักอาศัย ทอ. มีกี่แบบ  พ., ร., ฟส., ฟป., ป. และใครสามารถขอพักในบ้านแบบใดได้บ้าง</li>
-              <li>เขตที่ตั้งของบ้านพัก เขต 1, เขต 2, เขต 3, สีกัน ดอนเมือง ฯ</li>
-          </div>
-          <div class="card-footer text-end">
-                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ZoneAndTypeModal">รายละเอียด</button>
-          </div>
-        </div>
+      <div class="card-body fix-height">
+        <li>บ้านพักอาศัย ทอ. มีกี่แบบ พ., ร., ฟส., ฟป., ป. และใครสามารถขอพักในบ้านแบบใดได้บ้าง</li>
+        <li>เขตที่ตั้งของบ้านพัก เขต 1, เขต 2, เขต 3, สีกัน ดอนเมือง ฯ</li>
       </div>
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-secondary">
-          <div class="card-header py-3 text-center">
-            <h4 class="my-0 fw-normal">คณก.บ้านพักอาศัย ทอ.</h4>
-          </div>
-          <div class="card-body fix-height">
-            <p>
-              หน่วยงานต่าง ๆ ที่เป็นผู้ดูแล/บริหารจัดการบ้านพักอาศัย ทอ. 
-            </p>
-          </div>
-          <div class="card-footer text-end">
-                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#CommiteeModal">รายละเอียด</button>
-          </div>  
-        </div>
+      <div class="card-footer text-end">
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#ZoneAndTypeModal">รายละเอียด</button>
       </div>
     </div>
+  </div>
+  <div class="col">
+    <div class="card mb-4 rounded-3 shadow-sm border-secondary">
+      <div class="card-header py-3 text-center">
+        <h4 class="my-0 fw-normal">คณก.บ้านพักอาศัย ทอ.</h4>
+      </div>
+      <div class="card-body fix-height">
+        <p>
+          <li> คำสั่ง </li>
+          <li> หน่วยงานต่าง ๆ ที่เป็นผู้ดูแล/บริหารจัดการบ้านพักอาศัย ทอ. </li>
+        </p>
+      </div>
+      <div class="card-footer text-end">
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#CommiteeModal">รายละเอียด</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="ProcessStepModal" tabindex="-1" aria-labelledby="ProcessStepModalLabel" aria-hidden="true">
@@ -87,20 +88,22 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-          <p class = "my-0 p-1  bg-info">
-              <b>รูปแบบการดำเนินการเกี่ยวกับการขอ/จัดสรรบ้านพัก</b>
-              <li><b>ขอครั้งเดียวพิจารณา 1 ปี งป.</b></li>
-              <li><b>ออกคำสั่งบ้านพักปีละหลายครั้ง</b></li>
-              <li><b>ส่งคำขอได้ตลอดทั้งปี</b></li>
-              <li><b>มี กปค.สปพ.กพ.ทอ.เป็นผู้ดูแล</b></li>              
-            </p>
-            
-            <p class = "my-0 p-1 bg-info">
-              <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
-              <li><b>ดำรงตำแหน่งอยู่ส่วนกลาง</b></li>
-              <li><b>ไม่เบิกค่าเช่าซื้อ</b></li>
-              <li><b>ยึดข้อมูลตาม HRIS</b> สิทธิการขอบ้านพักอาศัย ทอ.เป็นไปตามระเบียบ ทอ.ว่าด้วยการพักอาศัย ทอ. พ.ศ.๒๕๖๐ และเป็นไปตามข้อมูลในระบบ HR กรณีข้อมูลส่วนบุคคลของท่านไม่ถูกต้องกรุณาแจ้ง นกพ.หน่วย เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป</li>
-            </p>
+        <p class="my-0 p-1  bg- info">
+          <b>รูปแบบการดำเนินการเกี่ยวกับการขอ/จัดสรรบ้านพัก</b>
+          <li><b>ขอครั้งเดียวพิจารณา 1 ปี งป.</b></li>
+          <li><b>ออกคำสั่งบ้านพักปีละหลายครั้ง</b></li>
+          <li><b>ส่งคำขอได้ตลอดทั้งปี</b></li>
+          <li><b>มี กปค.สปพ.กพ.ทอ.เป็นผู้ดูแล</b></li>
+        </p>
+
+        <p class="my-0 p-1 bg-info">
+          <b>คุณสมบัติผู้มีสิทธิ์ขอบ้านพักอาศัย ทอ.</b>
+          <li><b>ดำรงตำแหน่งอยู่ส่วนกลาง</b></li>
+          <li><b>ไม่เบิกค่าเช่าซื้อ</b></li>
+          <li><b>ยึดข้อมูลตาม HRIS</b> สิทธิการขอบ้านพักอาศัย ทอ.เป็นไปตามระเบียบ ทอ.ว่าด้วยการพักอาศัย ทอ. พ.ศ.๒๕๖๐
+            และเป็นไปตามข้อมูลในระบบ HR กรณีข้อมูลส่วนบุคคลของท่านไม่ถูกต้องกรุณาแจ้ง นกพ.หน่วย
+            เพื่อดำเนินการในส่วนที่เกี่ยวข้องต่อไป</li>
+        </p>
       </div>
       <div class="modal-footer text-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -111,68 +114,71 @@
 
 <div class="modal fade" id="ZoneAndTypeModal" tabindex="-1" aria-labelledby="ZoneAndTypeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content"  style = "height: 60%;">
+    <div class="modal-content" style="height: 60%;">
       <div class="modal-header">
         <h5 class="modal-title" id="ZoneAndTypeModalLabel">ประเภทและเขตบ้านพักของ ทอ.</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-pills" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">ประเภทบ้านพัก</button>
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+              role="tab" aria-controls="home" aria-selected="true">ประเภทบ้านพัก</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">เขตบ้านพัก</button>
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+              role="tab" aria-controls="profile" aria-selected="false">เขตบ้านพัก</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">ประเภทและเขต</button>
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+              role="tab" aria-controls="contact" aria-selected="false">ประเภทและเขต</button>
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <p class = "my-0 p-1  bg-info">
+            <p class="my-0 p-1 bg-info">
               <b>บ้านพัก ทอ. ประเภทครอบครัว</b>
               <li><b>พ.</b> บ้านเดี่ยวนายพลอากาศ</li>
               <li><b>น.บ้านเดี่ยว</b> บ้านเดี่ยว น.อ.พิเศษ</li>
-              <li><b>น.5 หลัง</b>  เรือนแถว น.อ.พิเศษ</li>
+              <li><b>น.5 หลัง</b> เรือนแถว น.อ.พิเศษ</li>
               <li><b>ร.</b> เรือนแถวสัญญาบัตร</li>
               <li><b>ฟส.</b> แฟลตสัญญาบัตร</li>
               <li><b>ฟป.</b> แฟลตประทวน</li>
               <li><b>ป.</b> เรือนแถวประทวน</li>
             </p>
 
-            <p class = "my-0 p-1 bg-info">
+            <p class="my-0 p-1 bg-info">
               <b>บ้านพัก ทอ. ประเภทโสดชาย</b>
               <li><b>ฟส.(โสด)</b> แฟลตสัญญาบัตร (โสด)</li>
               <li><b>ฟป.(โสด)</b> แฟลตประทวน (โสด)</li>
             </p>
 
-            <p class = "my-0 p-1 bg-info">
+            <p class="my-0 p-1 bg-info">
               <b>บ้านพัก ทอ. ประเภทโสดหญิง</b>
               <li><b>ฟส.(โสด ญ.)</b> แฟลตสัญญาบัตร (โสดหญิง)</li>
               <li><b>ฟป.(โสด ญ.)</b> แฟลตประทวน (โสดหญิง)</li>
             </p>
           </div>
           <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            <p class = "my-0 p-1 text-white bg-primary">
-              <b>เขตบ้านพักฝั่งท่าดินแดง</b> 
-              <li><b>เขต 1</b> (ติด รร.นนก - รร.ฤทธิยะ)</li> 
+            <p class="my-0 p-1 text-white bg-primary">
+              <b>เขตบ้านพักฝั่งท่าดินแดง</b>
+              <li><b>เขต 1</b> (ติด รร.นนก - รร.ฤทธิยะ)</li>
               <li><b>เขต 2</b> (บริเวณร้านค้า ทอ.เดิม - รร.อนุบาลฤทธิยะ)</li>
               <li><b>เขต 3</b> (รร.อนุบาลฤทธิยะ - ปั๊ม ปตท.สะพานใหม่)</li>
               <li><b>เขต 7</b> (ลาดเป็ด)</li>
             </p>
-            <p class = "my-0 p-1 text-white bg-primary">
+            <p class="my-0 p-1 text-white bg-primary">
               <b>เขตบ้านพักฝั่งดอนเมือง</b>
               <li><b>เขต 6 สีกัน</b> (ก่อนถึง รพ.สีกัน หลังสถานีตำรวจดอนเมือง)</li>
               <li><b>เขต 6 รถไฟ</b> (สถานีรถไฟดอนเมือง)</li>
             </p>
-            <p class = "my-0 p-1 text-white bg-primary">
-              <b>เขตบ้านพักบางซื่อ</b>              
+            <p class="my-0 p-1 text-white bg-primary">
+              <b>เขตบ้านพักบางซื่อ</b>
               <li><b>เขต เขตบางซื่อ</b> (บางซื่อ)</li>
             </p>
           </div>
           <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            <img src = "{% static 'images/homezone.gif'%}" class = "img-fluid" border = 1>
+            <img src="{% static 'images/homezone.gif'%}" class="img-fluid" border=1>
           </div>
         </div>
 
@@ -189,25 +195,101 @@
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="CommiteeModalLabel">ข้อมูล คณก.บ้านพัก</h5>
+        <h5 class="modal-title" id="CommiteeModalLabel">คำสั่งกองทัพอากาศ(เฉพาะ) เรื่อง แต่งตั้ง คณก.บ้านพักอาศัย ทอ.
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-          <p class = "my-0 p-1">
-             
-              <p>
-พุทธศตวรรษกิฟท์ฮาโลวีน แฟรี่ ออกแบบ โบรชัวร์สตูดิโอโอเคแมกกาซีนดีลเลอร์ บาบูนเอ็นจีโอโอเพ่นเซ็นเซอร์ คอร์ปอเรชั่นอาร์พีจีปัจเจกชน วิว รีไทร์สจ๊วตไพลินท็อปบูต หลวงตายูวีซีเรียสป๋อหลอซิม โซลาร์บร็อคโคลีแคมเปญตี๋ แฟนตาซีโหลยโท่ยพีเรียด เอาท์พรีเมียร์บ๊อกซ์ซาบะซูเอี๋ย สเตชั่นออร์แกน โปรโมททอมออร์แกนทอร์นาโด แหววแพนด้าสปาตัวตน แล็บอัลบัมอาร์พีจีเอสเพรสโซ
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#command" type="button"
+              role="tab" aria-controls="command" aria-selected="true">คำสั่ง</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#duty" type="button"
+              role="tab" aria-controls="duty" aria-selected="false">คณก.บ้านพักอาศัย</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#order" type="button"
+              role="tab" aria-controls="order" aria-selected="false">หน้าที่</button>
+          </li>
 
-</p>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="command" role="tabpanel" aria-labelledby="home-tab">
+            <i class="far fa-file-pdf text-danger"></i> <a href="{% static 'files/command71-60.pdf' %}"
+              target="blank">คําสั่งกองทัพอากาศ (เฉพาะ) ที่ ๗๑/๖๐</a><br>
+            <i class="far fa-file-pdf text-danger"></i> <a href="{% static 'files/command104-61.pdf' %}"
+              target="blank">คําสั่งกองทัพอากาศ (เฉพาะ) ที่ ๑๐๔/๖๑</a><br>
+            <i class="far fa-file-pdf text-danger"></i> <a href="{% static 'files/command22-62.pdf' %}"
+              target="blank">คําสั่งกองทัพอากาศ (เฉพาะ) ที่ ๒๒/๖๒</a><br>
+            <i class="far fa-file-pdf text-danger"></i> <a href="{% static 'files/command3-63.pdf' %}"
+              target="blank">คําสั่งกองทัพอากาศ (เฉพาะ) ที่ ๓/๖๓</a>
 
-<p>
-ศากยบุตรบิลไลท์เดโม เทอร์โบสังโฆคันถธุระปัจเจกชน วีเจ โฟล์ควัคค์วาไรตี้เทวาโพลารอยด์ เยอบีร่าเทรลเลอร์ไทม์ชาร์ป ซัพพลายบลูเบอร์รีลิมิตบูมตุ๊กตุ๊ก วอเตอร์รีทัชโจ๋จูนบริกร บูติคซันตาคลอสไชน่าก๋ากั่นนางแบบ ลีเมอร์ป๊อกไอติม กู๋วิทย์ราเมนแบ็กโฮเอาต์ พันธกิจโพลล์อุรังคธาตุ คอมเมนท์เทรนด์ชาร์ป แบล็คสตูดิโอซันตาคลอส เช็งเม้งมาม่าอุปการคุณ คอร์ปอเรชั่นโปรโมเตอร์อุปทาน จูนเอสเปรสโซเอนทรานซ์
-
-</p>
-              
-            </p>
-
-
+          </div>
+          <div class="tab-pane fade" id="duty" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade show active" id="Person" role="tabpanel" aria-labelledby="Detail-Person-tab">
+                <div class="row mt-2">
+                  <div class="col-6"><strong>ตำแหน่ง</strong></div>
+                  <div class="col-6"><strong>หน้าที่</strong></div>
+                  <div class="col-6">๑. รอง ผบ.ทอ.</div>
+                  <div class="col-6">เป็นประธานกรรมการ</div>
+                  <div class="col-6">๒. ผช.ผบ.ทอ.(สายงานยุทธบริการ)</div>
+                  <div class="col-6">เป็นรองประธานกรรมการ</div>
+                  <div class="col-6">๓. รอง เสธ.ทอ.(สายงานกําลังพล)</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๔. รอง เสธ.ทอ.(กบ.)</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๕. จก.กพ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๖. จก.กบ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๗. จก.กร.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๘. ปช.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๙. จก.สบ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๐. จก.กง.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๑. จก.จร.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๒. ผอ.สธน.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๓. จก.ชย.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๔. จก.สก.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๕. ผบ.ดม.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๑๖. ผอ.สปพ.กพ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการและเลขานุการ</div>
+                  <div class="col-6">๑๗. ผอ.สปพ.กพ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการและ ผช.เลขานุการ</div>
+                  <div class="col-6">๑๘. ผอ.กปค.สปพ.กพ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการและ ผช.เลขานุการ</div>
+                  <div class="col-6">๑๙. ผอ.กรปภ.สน.ผบ.ดม.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                  <div class="col-6">๒๐. หน.ผสก.กปค.สปพ.กพ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการและ ผช.เลขานุการ</div>
+                  <div class="col-6">๒๑. จก.ชอ.ทอ.</div>
+                  <div class="col-6">เป็นกรรมการ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="order" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-content" id="pills-tabContent">
+              <div class="tab-pane fade show active" id="duty" role="tabpanel" aria-labelledby="Detail-Person-tab">
+                <img src="{% static 'images/order.png'%}" class="img-fluid" border=1>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+            <img src="{% static 'images/homezone.gif'%}" class="img-fluid" border=1>
+          </div>
+        </div>
       </div>
       <div class="modal-footer text-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -407,7 +407,7 @@ class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
     def get(self, request, *args, **kwargs):        
         unit_id = kwargs["unit_id"] if kwargs.get("unit_id", None) is not None else 41
 
-        queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("Rank")
+        queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("-ProcessStep","-PersonTroubleScore")
         queryset = queryset.filter(year_round__Year = get_current_year())
         serializer = HomeRequestSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -515,6 +515,8 @@ def update_process_step(request, home_request_id, process_step):
     elif process_step in [ HomeRequestProcessStep.PERSON_PROCESS, 
                            HomeRequestProcessStep.PERSON_ACCEPTED]:
         return JsonResponse({"success": True})
+    elif process_step == HomeRequestProcessStep.REQUESTER_CANCEL:
+        return HttpResponseRedirect("/hr/list")
 
 
 @csrf_exempt
