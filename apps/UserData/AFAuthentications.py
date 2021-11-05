@@ -29,8 +29,8 @@ def checkRTAFPassdword(request, username, password):
         'pass' : password
     } 
     # data = {
-    #     'user' : "pongthep",
-    #     'pass' : "Pong!@#2020"
+    #     'user' : "pong",
+    #     'pass' : ""
     # } 
 
     
