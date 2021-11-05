@@ -672,7 +672,7 @@
         $("#id_hr-IsHomeNeed").attr("disabled", allow_home_need);
 
         var allow_family_home = false;
-        {% if form.Status.value|stringformat:"i" not in "2,7" %}
+        {% if form.Status.value|stringformat:"i" not in "2,3,4,7" %}
             allow_family_home = true;
             $("label[for='id_hr-IsShopHouseNeed']").text("ต้องการห้องแถว (เฉพาะผู้รายงานสถานภาพ 'สมรส')");
         {% endif %}
