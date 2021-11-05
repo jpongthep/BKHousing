@@ -56,11 +56,14 @@ def get_current_year():
 class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = '/login' 
     allow_groups = []
+    navigate_units = ['กพ.ทอ.','ยศ.ทอ.', 'ขส.ทอ.', 'ศซว.ทอ.', 'รร.นนก.']
 
     def test_func(self):
-        for ag in self.allow_groups:
-            if self.request.user.groups.filter(name=ag).exists():
-                return True
+        if self.request.user.CurrentUnit.ShortName in self.navigate_units:
+            for ag in self.allow_groups:
+                if self.request.user.groups.filter(name=ag).exists():
+                    return True
+
         return False
 
     def has_home_request(self):

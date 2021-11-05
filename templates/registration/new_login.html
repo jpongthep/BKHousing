@@ -9,6 +9,23 @@
         <link rel="icon" href="{% static 'images/armis.png' %}">
         <link href="{% static 'my_script/logo.css' %}" rel="stylesheet">
         <link type="text/css" rel="stylesheet" href="{% static '/assets/login_style.css' %}"/>
+        <script>
+            function check_username()
+            {
+                var format = /[ `!#$@%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+                //            ^                                       ^  
+                username = document.getElementById("username").value;
+                has_special_char = format.test(username);
+                // console.log("username = ", username," has_special_char = ",has_special_char);
+
+                if(has_special_char)
+                {
+                    alert("username ต้องมีเฉพาะตัวอักษรหรือตัวเลขเท่านั้น");
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </head>
     <body class="">
         {% include "DisplayMessage.html" %}
@@ -22,7 +39,7 @@
                             <h5 class = "description-brand">ระบบสารสนเทศเพื่อการจัดการ<br>บ้านพักอาศัย ทอ.</h5>
                         </div>
                     
-                        <form class="oe_login_form" method="post">
+                        <form class="oe_login_form" method="post" onsubmit = "return check_username();">
                             {% csrf_token %}                            
                             <div class="form-group field-login">
                                 {{ form.username }}

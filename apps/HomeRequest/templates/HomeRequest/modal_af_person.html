@@ -55,7 +55,7 @@
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="housedetail" role="tabpanel" aria-labelledby="housedetail-tab">
+          <div class="tab-pane fade show active border border-bottom-0 border-top-0 px-3" id="housedetail" role="tabpanel" aria-labelledby="housedetail-tab">
             <div class="row mt-2">
               <div class="col-md-12">ที่อยู่ปัจจุบัน : {{ object.Address }} ({{ object.GooglePlusCodes1 }})</div>
               <div class="">บรรยายการเดินทางแต่ละวัน : {{ object.TravelDescription }}</div>
@@ -133,8 +133,7 @@
                     เป็นผู้ปฏิบัติหน้าที่สำคัญ
                   </div>
                   <div class="pt-2">
-                    <strong> ข้อมูลบ้านหลังเดิม และสาเหตุการออก/ถูกไล่ออกจากบ้านพัก (ถ้าเคย) : </strong>{{
-                    object.RTAFHomeLeaveReason }}
+                    <strong> ข้อมูลบ้านหลังเดิม และสาเหตุการออก/ถูกไล่ออกจากบ้านพัก (ถ้าเคย) : </strong>{{ object.RTAFHomeLeaveReason }}
                   </div>
                   <div class="pt-2">
                     <strong> เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ : </strong>{{ object.OtherTrouble }}

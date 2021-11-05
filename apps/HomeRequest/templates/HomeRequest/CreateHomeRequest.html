@@ -172,6 +172,18 @@
         {% endif %}
 
         cee = check_empty_element(["#id_hr-Address","#id_hr-GooglePlusCodes1","#id_hr-TravelDescription","#id_hr-distance"]);
+        GooglePlusCodes = $("#id_hr-GooglePlusCodes1").val();
+        console.log(GooglePlusCodes);
+        console.log(GooglePlusCodes.length);
+        if(GooglePlusCodes.length < 10)
+        {
+            $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");
+            $("#forGooglePlusCodes1").html("Google Plus Codes <span class = 'text-danger'>ต้องใส่ข้อมูลจังหวัดด้วย</span>");                        
+        }
+        else{
+            $("##id_hr-GooglePlusCodes1").css("box-shadow","");
+            $("#forGooglePlusCodes1").html("Google Plus Codes");                        
+        }
         if(!cee)
         {
             error_element.push("addressData");
@@ -766,11 +778,11 @@
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <label for="id_hr-GooglePlusCodes1" class="form-label">
-                            Google Plus Codes 1 
+                        <label for="id_hr-GooglePlusCodes1" class="form-label" id = "forGooglePlusCodes1">
+                            Google Plus Codes
+                        </label>
                             <a href = "https://thestandard.co/google-maps-launched-plus-codes/" target = "_blank">คืออะไร</a>, 
                             <a href="https://plus.codes/map/" target="_blank">หาพิกัด</a>
-                        </label>
                         {% comment %} <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1"> {% endcomment %}
                         {{ form.GooglePlusCodes1 | as_crispy_field }}
                     </div>

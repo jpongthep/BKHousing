@@ -70,9 +70,13 @@ def homeowner_api(request, username):
 
     # print('homerequest',homerequest)
     if not homeowner.exists():
-        dump = json.dumps({'status': 'ho not found'})            
+        dump = json.dumps({'status': 'home not found'})            
         return HttpResponse(dump, content_type='application/json')
 
-    if request.method == 'GET':
-        serializer = HomeOwnerSerializer(homeowner[0])
-        return JsonResponse(serializer.data)
+    if request.method == 'POST':
+        if request.POST.get("key", "123"):
+            serializer = HomeOwnerSerializer(homeowner[0])
+            return JsonResponse(serializer.data)
+
+    dump = json.dumps({'status': 'only post method'})            
+    return HttpResponse(dump, content_type='application/json')

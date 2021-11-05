@@ -15,7 +15,7 @@ class MyAuthForm(AuthenticationForm):
         widget=forms.TextInput(
             attrs = { 'autofocus': True,
                     'class' : 'form-control',
-                    'id' : 'floatingInput',
+                    'id' : 'username',
                     'placeholder' : 'email ทอ. ไม่ต้องมี @rtaf',
                     'size' : 20}))
     password = forms.CharField(
@@ -25,7 +25,7 @@ class MyAuthForm(AuthenticationForm):
             attrs={'autocomplete': 'current-password',
                     'class' : 'form-control',
                     'placeholder' : 'password',
-                    'id' : 'floatingPassword'                                    
+                    'id' : 'password'                                    
                     })
     )
 

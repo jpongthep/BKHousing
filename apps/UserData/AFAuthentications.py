@@ -11,6 +11,7 @@ from django.contrib.auth.models import Group
 from django.conf import settings
 from django.db.models import Q
 
+
 from .models import User, Unit
 from apps.Home.models import HomeOwner
 from apps.Configurations.models import YearRound
@@ -50,7 +51,11 @@ def checkRTAFPassdword(request, username, password):
     if returnData['result'] == "Process-Complete":
         return returnData
     else:
-        messages.error(request, "username หรือ รหัสผ่านไม่ถูกต้อง ")
+        if len(returnData['error']) > 1:
+            count_error_text = returnData['error'][0] + "  " + returnData['error'][1]
+        else:
+            count_error_text = "username หรือ รหัสผ่านไม่ถูกต้อง " 
+        messages.error(request, count_error_text)
         return False
 
 def getUserByRTAFemail(request, email, token):
@@ -327,13 +332,19 @@ class SettingsBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None):
 
-        ActiveYearRound = YearRound.objects.filter(Q(CurrentStep = YEARROUND_PROCESSSTEP.REQUEST_SENDED) 
-                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.UNIT_PROCESS)
-                                         | Q(CurrentStep = YEARROUND_PROCESSSTEP.PERSON_PROCESS))
+        ActiveYearRound = YearRound.objects.filter(CurrentStep__in = ['RS', 'UP', 'PP'])
         UseHRIS = ActiveYearRound[0].load_HRIS
         #กรณีใส่ @rtaf.mi.th มาด้วยก็เอาออกก่อน
         if re.search("@rtaf.mi.th$",username.lower()) : username =  username[0:-11]
-        username = username.lower()        
+        username = username.lower()
+
+        special_characters = "!#$%^&*()-+?_=,<>/\\\"\'"        
+
+        # ถ้ามีการกรอกตัวอักษรพิเศษเข้ามากับ username ก็ reject ได้เลย
+        if any(c in special_characters for c in username):
+            print("special character")
+            return None
+        
         try:
             user = User.objects.get(username=username)
             pwd_valid = checkRTAFPassdword(request, username,password)
