@@ -1,20 +1,20 @@
 {% load thaidate %}
 
 {% if object.get_ProcessStep_display != 'RequesterCancel' %}
-    <tr class = "{{ object.ProcessStep }}">                        
+    <tr class = "{{ object.ProcessStep }} status{{ object.Status }} rank{{object.Requester.Rank}}">                        
         <td>{{ forloop.counter }}</td>
         <td>
             {% if object.get_ProcessStep_display != 'RequesterProcess'%}
                 {% if object.ProcessStep == 'RS'%}
-                    <a href = "#"><i class="fa fa-lock text-danger icon-size shadow" ></i></a>
+                    <i class="fa fa-lock text-danger icon-size shadow" ></i>
                 {% elif  object.ProcessStep == 'UP'%}
-                    <a href = "#"><i class="fa fa-lock text-warning icon-size shadow" ></i></a>                
+                    <i class="fa fa-lock text-warning icon-size shadow" ></i>
                 {% elif  object.ProcessStep == 'US'%}
-                    <a href = "#"><i class="fa fa-lock text-success icon-size shadow" ></i></a>
+                    <i class="fa fa-lock text-success icon-size shadow" ></i>
                 {% elif  object.ProcessStep in 'PP,PA' %}
-                    <a href = "#"><i class="fa fa-lock text-secondary icon-size shadow" ></i></a>
+                    <i class="fa fa-lock text-secondary icon-size shadow" ></i>
                 {% else %}
-                    <a href = "#"><i class="fa fa-lock text-primary icon-size shadow" ></i></a>
+                    <i class="fa fa-lock text-primary icon-size shadow" ></i>
                 {% endif %}
             {% else %}
                 <i class="fa fa-edit text-primary icon-size shadow"></i></i>
@@ -28,7 +28,7 @@
         </td>
         <td>{{ object.RequesterDateSend|thaidate:"d M y" }}</td>
         <td>{{ object.FullName }} </td>
-        <td>{{ object.Unit }}</td>
+        <td>{{ object.get_Status_display }}</td>
         <td>{{ object.Requester.OfficePhone }}</td>
         <td>
             {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}

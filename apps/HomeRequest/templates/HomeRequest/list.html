@@ -44,11 +44,19 @@
         });
     }
 
+    
+    function filter_data()
+    {
+        alert("sd");
+    }
+
 </script>
 {% endblock %}
 
 {% block style %}
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+  
   <style>
     .icon-size {font-size: 20px;}
     .check-size {font-size: 10px;}
@@ -66,7 +74,6 @@
         text-decoration: none;
         color:green;
     }
-
 
   </style>
 {% endblock %}
@@ -96,10 +103,46 @@
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row mb-2">
-                    <div class="col-sm-8">
+                <!--
+                    <div class="col-md-8">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" rank="general">
+                            <label class="form-check-label" for="inlineCheckbox1">น.5 + </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" rank="officer">
+                            <label class="form-check-label" for="inlineCheckbox2">สัญญาบัตร</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" rank="non-officer" >
+                            <label class="form-check-label" for="inlineCheckbox3">ประทวน</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="chk_filter" >
+                            <label class="form-check-label" for="inlineCheckbox1">โสด</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="chk_filter" >
+                            <label class="form-check-label" for="inlineCheckbox2">สมรส-อยู่ด้วยกัน</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="chk_filter" >
+                            <label class="form-check-label" for="inlineCheckbox2">สมรส-แยกกันอยู่</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="chk_filter" >
+                            <label class="form-check-label" for="inlineCheckbox3">หย่า/ม่าย</label>
+                        </div>
+                        
+                        <a class="btn btn-small btn-info text-white" href="#" onclick = "filter_data();">
+                            <i class="fas fa-filter icon-border"></i> กรอง
+                        </a>
+                    </div>
+                -->
+                    <div class="col-md-10">
                         <a id = "btn_show_all" href = '#' onclick = "show_processstep('ALL');" type="button" class="btn btn-info" style="display: none"><i class="fa fa-list-ol"></i> แสดงทั้งหมด</a>
                     </div>
-                    <div class="col-sm-4 text-end">
+                    <div class="col-sm-2 text-end">
                         <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success"><i class="fa fa-file-excel"></i> excel</a>
                         <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
@@ -127,14 +170,14 @@
 
                         <th>วันส่ง</th>
                         <th>ยศ ชื่อ นามสกุล</th>
-                        <th>สังกัด</th>
+                        <th>สถานภาพ</th>
                         <th>Mobile</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
-                        <th>ประเมิน</th>                        
+                        <th>ประเมิน</th>
                         <th>กพ.ทอ.</th>
                         <th>อนุมัติ</th>
-                        <th>หมายเหตุ</th>                        
+                        <th>หมายเหตุ</th>
                     </tr>
                 </thead>
                 <tbody>

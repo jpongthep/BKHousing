@@ -334,15 +334,16 @@ class SettingsBackend(ModelBackend):
 
         ActiveYearRound = YearRound.objects.filter(CurrentStep__in = ['RS', 'UP', 'PP'])
         UseHRIS = ActiveYearRound[0].load_HRIS
-        #กรณีใส่ @rtaf.mi.th มาด้วยก็เอาออกก่อน
-        if re.search("@rtaf.mi.th$",username.lower()) : username =  username[0:-11]
+        # กรณีใส่ @rtaf.mi.th มาด้วยก็เอาออกก่อน
+        # if re.search("@rtaf.mi.th$",username.lower()) : username =  username[0:-11]
         username = username.lower()
 
-        special_characters = "!#$%^&*()-+?_=,<>/\\\"\'"        
+        special_characters = "!#$%^&*()-+?=,<>/\\\"\'"        
 
         # ถ้ามีการกรอกตัวอักษรพิเศษเข้ามากับ username ก็ reject ได้เลย
         if any(c in special_characters for c in username):
-            print("special character")
+            # print("special character")
+            logger.info(f'{username} reject by special characters')
             return None
         
         try:
@@ -358,7 +359,7 @@ class SettingsBackend(ModelBackend):
                 logger.info(f'{username} login success')
                 return user
             else:                
-                logger.warning(f'{username} login fail')
+                logger.warning(f'{username} login OTP fail')
                 return None
 
         except User.DoesNotExist:
@@ -366,7 +367,7 @@ class SettingsBackend(ModelBackend):
             ReturnData = checkRTAFPassdword(request, username,password)
 
             if not ReturnData:
-                logger.info(f'{username} fail to login')
+                logger.info(f'{username} new user otp fail to login')
                 return None
 
             if not UseHRIS : 

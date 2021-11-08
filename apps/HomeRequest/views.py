@@ -56,7 +56,7 @@ def get_current_year():
 class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = '/login' 
     allow_groups = []
-    navigate_units = ['กพ.ทอ.','ยศ.ทอ.', 'ขส.ทอ.', 'ศซว.ทอ.', 'รร.นนก.']
+    navigate_units = ['กพ.ทอ.','ยศ.ทอ.', 'ทสส.ทอ.','ขส.ทอ.', 'ศซว.ทอ.', 'รร.นนก.']
 
     def test_func(self):
         if self.request.user.CurrentUnit.ShortName in self.navigate_units:
@@ -92,6 +92,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
         self.object = None
         # form_class = self.get_form_class()
         # form = self.get_form(form_class)
+        logger.info(f'{request.user.username} view HomeRequest Form')
         initial_value = {
                             'Rank': request.user.Rank,
                             'FullName': request.user.FullName,

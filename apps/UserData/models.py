@@ -1,4 +1,5 @@
 import re
+import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -46,8 +47,6 @@ class User(AbstractUser):
 
     # ที่อยู่ปัจจุบัน
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
-    SubDistinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="ตำบล")
-    Distinct = models.CharField(max_length = 50, null=True, blank=True, verbose_name="อำเภอ")    
     Province = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
      
      # การบรรจุครั้งแรก อาจนำไปใส่ไว่้ใน User เนื่องจากข้อมูลชุดนี้ไม่เปลี่ยนแปลงตลอดอายุราชการ
@@ -57,6 +56,7 @@ class User(AbstractUser):
     PlacementDate = models.DateField(verbose_name="เริ่มบรรจุเมื่อ", null = True, blank = True)
 
     retire_date = models.DateField(verbose_name="วันทีเกษียณ", null = True, blank = True)
+    hris_update = models.DateField(verbose_name="update กับ HRIS", null = False, default=datetime.date(2021,5,1))
 
     @property
     def Sex(self):
