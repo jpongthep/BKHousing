@@ -10,7 +10,7 @@ from .models import HomeData, HomeOwner
 class HomeSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField(source = 'get_type_display') 
     zone = serializers.SerializerMethodField(source = 'get_zone_display') 
-    status = serializers.SerializerMethodField(source = 'get_status_display') 
+    status  = serializers.SerializerMethodField(source = 'get_status_display') 
     
     def get_type(self,obj):
         return obj.get_type_display()
@@ -41,6 +41,10 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
     WaterPayment = WaterPaymentSerializer(many=True, read_only=True)
     RentPayment = RentPaymentSerializer(many=True, read_only=True)
     owner = UserSerializer()
+    status = serializers.SerializerMethodField('return_status')
+
+    def return_status(self, obj):
+        return "ok"
     class Meta:
         model = HomeOwner
         fields = [
@@ -59,7 +63,8 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
                     'water_meter',
                     'electric_meter',
                     'WaterPayment',
-                    'RentPayment'
+                    'RentPayment',
+                    'status'
                 ]
 
 

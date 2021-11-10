@@ -10,6 +10,7 @@ from django_admin_listfilter_dropdown.filters import (
 )
 
 from .models import User, Unit
+from apps.Home.admin import HomeOwnerInline
 
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
@@ -23,6 +24,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'CurrentUnit', 'FullName','MobilePhone', 'OfficePhone','last_login')
     list_display_links = ['FullName']
     ordering = ('-last_login','CurrentUnit','Rank',)
+    inlines = [HomeOwnerInline]
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', 
@@ -45,7 +47,7 @@ class UserAdmin(BaseUserAdmin):
             }
         ),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login', 'date_joined')}),)
+        ('Important dates', {'fields': ('last_login','hris_update', 'date_joined')}),)
 
     add_fieldsets = (
     (None, {

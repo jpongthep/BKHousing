@@ -16,12 +16,12 @@ from apps.UserData.models import User
 
 class CoResidentInline(admin.TabularInline):
     model = CoResident
-    extra = 3
+    extra = 1
 
 
 class HomeRequestAdmin(admin.ModelAdmin):
     search_fields = ['FullName','Unit__ShortName']
-    list_display = ['year_round', 'created', 'FullName', 'Unit','ProcessStep']
+    list_display = ['year_round', 'RequesterDateSend','modified','FullName', 'Unit','ProcessStep']
     list_filter = (
                     'year_round',
                     ('ProcessStep', ChoiceDropdownFilter),
@@ -30,7 +30,9 @@ class HomeRequestAdmin(admin.ModelAdmin):
     
     list_display_links = ['FullName']
     raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover')
+    ordering = ('-modified',)
     save_as = True
+
     actions = ['sendToStartProcess', 'sendToUnitSendProcess']
 
     inlines = [CoResidentInline,]

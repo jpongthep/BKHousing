@@ -54,10 +54,6 @@
         color:white;
       }
 
-      .nav-link {
-        color:white;
-      }
-
       .navbar-dark .navbar-nav a.nav-link:hover{
         background:rgba(5,5,5,1);
         color:white
@@ -120,87 +116,12 @@
  </head>
   <body>
     <main>
-    <div class="pos-f-t">
-      <div class="collapse" id="navbarToggleExternalContent">
-        <div class="bg-dark p-4">          
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            {% if request.resolver_match.url_name != "af_person"  %}
-              <li class="nav-item" style= "vertical-align:text-bottom;">
-                  {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
-                    <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
-                      คำขอบ้านพัก 
-                    </a>
-                  {% endif %}
-              </li>          
-            {% endif %}
-            {% if request.resolver_match.url_name != "detail_by_user"  %}
-              <li class="nav-item" style= "vertical-align:text-bottom;">
-                {% if request.user|has_group:"RTAF_HOME_USER" %}
-                  <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
-                    ข้อมูลบ้านพัก 
-                  </a>
-                {% elif request.user|has_group:"RTAF_HOME_SPOUSE"%}
-                  <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'spouse' %}">
-                    ข้อมูลบ้านพัก 
-                  </a>
-                {% endif %}
-              </li>          
-            {% endif %}
-            {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
-              <ul class="dropdown-menu" aria-labelledby="dropdown05">
-              {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
-                <li>
-                  <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
-                    <i class="fa fa-fw fa-users"></i> 
-                    รายการคำขอ {{ request.user.CurrentUnit.ShortName }}
-                  </a>
-                </li>
-              {% endif %}
-
-              {% if request.user|has_group:"PERSON_ADMIN" %}
-                <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> รายการคำขอ นขต.ทอ.</a></li>
-              {% endif %}
-              {% endif %}
-              </ul>
-            </li> 
-          </ul>
-          <ul class="navbar-nav ms-auto">        
-            {% if user.is_authenticated %}
-            <li class="nav-item float-right">
-              <a class="nav-link" href="{% url 'UserData:profile' request.user.id %}"><i class="fas fa-address-card"></i> ข้อมูลส่วนตัว</a>
-            </li>
-            {% endif %}
-                    
-            {% if request.user.is_staff %}
-            <li class="nav-item float-right">
-              <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-user-cog"></i> Admin</a>
-            </li>
-            {% endif %}
-
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt"></i> logout</a>
-            </li>
-            {% else %}
-              <a class="button-bg button-menu" href="{% url 'Home'%}">
-                เข้าสู่ระบบ
-              </a>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-      
-    </div>
-{% comment %} --------------------------- {% endcomment %}
-  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" aria-label="Fifth navbar example">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" aria-label="Fifth navbar example">
     <div class="container-fluid">      
       <a class="navbar-brand Logo-Brand" href="{% url 'Home' %}" >ARMIS</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
       <div class="collapse navbar-collapse" id="navbarsExample05">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">

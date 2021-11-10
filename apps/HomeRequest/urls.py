@@ -36,6 +36,7 @@ urlpatterns = [
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
     path('<unit_id>/mud', HomeRequestAdminListView.as_view(), name = 'modal_unit_data'),
     path('<unit_id>/fetch', UnitList4PersonAdmin.as_view(), name = 'unit_list_admin'),
+    # api สำหรับการตรวจสอบความก้าวหน้า ขั้นตอนขอบ้าน ทาง App มือถือ
     path('cps/<str:username>/', homerequest_detail), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     

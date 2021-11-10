@@ -50,6 +50,7 @@ class HomeRequestForm(forms.ModelForm):
                 attrs={'placeholder': 'หก.กอษ.กกศ.สนผ.กบ.ทอ.'}),
                         
             'GooglePlusCodes1': forms.TextInput(attrs={'placeholder': 'WJFC+9P Bangkok, Thailand'}),
+            'distance': forms.NumberInput(attrs={'min': 0}),
                         
             'TravelDescription': forms.Textarea(
                 attrs={

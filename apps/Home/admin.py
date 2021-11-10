@@ -110,6 +110,12 @@ class RentPaymentInline(admin.TabularInline):
     #     return False
 
 
+#สำหรับการอ้างอิงใน User model
+class HomeOwnerInline(admin.TabularInline):
+    model = HomeOwner
+    exclude = ('insurance_rate','rent_rate','water_meter_insurance','water_meter','electric_meter',)
+    extra = 0
+
 @admin.register(HomeOwner)
 class HomeOwnerAdmin(admin.ModelAdmin):
     list_display = ['is_stay','owner_unit','owner','home','lastest_command', 'leave_command']

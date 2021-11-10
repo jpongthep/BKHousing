@@ -128,7 +128,7 @@
                                 </div>
                                 <div class = "col">
                                     <h3 class = "display-6">
-                                        [[ num_report(index) ]]
+                                        [[ num_report[index-1] ]]
                                     </h3>
                                     <h6>[[ card_static[index-1].text ]]</h6>
                                 </div>
@@ -140,17 +140,56 @@
                     </div>
                 </div>
             </div>                   
-            <div class = "row mt-2">
-                <div>
-                    <button class = "btn btn-primary shadow" v-if="filter_data != 'all'" @click="filter_data = 'all'">แสดงทั้งหมด</button>
+            <div class = "row mt-4">
+                <div class="row mb-2">
+              
+                    <div class="col-md-8">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('น.5+');" >
+                            <label class="form-check-label">น.5 + </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สัญญาบัตร');" >
+                            <label class="form-check-label">สัญญาบัตร</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('ประทวน');" >
+                            <label class="form-check-label">ประทวน</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('โสด');" >
+                            <label class="form-check-label">โสด</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-อยู่ร่วมกัน');"  >
+                            <label class="form-check-label">สมรส-อยู่ร่วมกัน</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-แยกกันอยู่');"  >
+                            <label class="form-check-label">สมรส-แยกกันอยู่</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('หย่า/ม่าย');"  >
+                            <label class="form-check-label">หย่า/ม่าย</label>
+                        </div>
+                        
+                    </div>
+            
+                    <div class="col-md-2">
+                    
+                        <button class = "btn btn-primary shadow" v-if="filter_data != 'all'" @click="filter_data = 'all'">แสดงทั้งหมด</button>
+                    </div>
+
                 </div>
+
             </div>                   
-            <table class="table table-bordered table-hover table-striped caption-top unit-data-list mt-3" >
+            <table class="table table-bordered table-hover table-striped caption-top unit-data-list mt-2" >
                     <col width="40">
                     <col width="40">
                     <col width="40">
                     <col width="40">
                     <col width="250">
+                    <col width="80">
                     <col width="150">
                     <col width="60">
                     <col width="100">
@@ -162,6 +201,7 @@
                         <th>#</th>
                         <th colspan = "3">เอกสาร</th>
                         <th>ยศ ชื่อ นามสกุล</th>
+                        <th>สถานภาพ</th>
                         <th>เบอร์โทร</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
@@ -172,8 +212,8 @@
                 </thead>
                 <tbody>
                     <template v-for="(hm,i) in unit_data.HomeRequest" >
-                        <tr v-if="filter_data == 'all' || hm.ProcessStep == filter_data">
-                            <td>[[ i + 1 ]]</td>
+                        <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_rank_status.includes(hm.Status)">
+                            <td>[[ i + 1 ]] </td>
                             <td>
                                 <i v-if="hm.ProcessStep != 'RequesterProcess'" class="fa fa-lock icon-size" v-bind:class="ProcessStepClass(hm.ProcessStep)" ></i>
                                 <i v-else class="fa fa-edit icon-size text-primary" ></i>
@@ -181,6 +221,7 @@
                             <td><a href = "#" @click = "show_hr_detail(hm.id);"><i class="fa fa-eye text-info icon-size" ></i></a></td>
                             <td><a href = "#" @click = "show_doc(hm.id);"><i class="fas fa-file-word icon-size"></i></a></td>
                             <td>[[ hm.FullName ]]</td>
+                            <td>[[ hm.Status ]]</td>
                             <td>[[ hm.MobilePhone ]]</td>
                             <td>
                                 <div v-if="hm.RequesterDateSend">
@@ -276,8 +317,10 @@
                 confirm_modal : null,
                 confirm_text :"",
                 current_index: 0,
+                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน",4,5,6,7],
                 current_hr_id: 0,
                 filter_data : 'all',
+                num_report :[],
 
                 object_list : [
                     {% for object in object_list %}
@@ -356,9 +399,16 @@
                     .then(response => response.json())
                     .then(data => {
                         this.current_index = index;
-                        // console.log('##this.current_index ',this.current_index);
                         this.unit_data.HomeRequest = data;
+                        console.log('data ',data);
                         this.unit_data.short_name = data[0]["UnitName"];
+
+                        this.num_report[0] = this.object_list[index-1].num_RP ;
+                        this.num_report[1] = this.object_list[index-1].num_RS ;
+                        this.num_report[2] = this.object_list[index-1].num_UP ;
+                        this.num_report[3] = this.object_list[index-1].num_US ;
+                        this.num_report[4] = this.object_list[index-1].num_PP + this.object_list[index-1].num_PA ;
+                        this.num_report[5] =  this.object_list[index-1].num_GH ;
                         this.unit_data_list_modal.show();
                     });
 
@@ -409,7 +459,7 @@
                 return '';
                 
             },
-            num_report(step_report)
+            num_report_func(step_report)
             {   
                 ci = this.current_index - 1 < 0 ? 0 : this.current_index - 1 ;             
                 switch(step_report)
@@ -429,6 +479,35 @@
                             ];
                 console.log(ProcessStep[step_report-1]);
                 this.filter_data = ProcessStep[step_report-1];
+            },
+            toggle_display(status)
+            {
+                if(status == "หย่า/ม่าย")
+                {
+                    let index1 = this.show_rank_status.indexOf("หย่า");
+                    let index2 = this.show_rank_status.indexOf("ม่าย");
+                    if (index1 !== -1) 
+                    {
+                        this.show_rank_status.splice(index1,1);       
+                        this.show_rank_status.splice(index2,1);       
+                    }
+                    else             
+                    {
+                        this.show_rank_status.push("หย่า");                  
+                        this.show_rank_status.push("ม่าย");                  
+                    }
+                    return ;
+                }  
+
+                // กรณีอื่น ๆ 
+                let index = this.show_rank_status.indexOf(status);
+                // console.log(index);
+                // console.log(status);
+                // console.log(this.show_rank_status);
+                if (index !== -1) 
+                    this.show_rank_status.splice(index,1);       
+                else             
+                    this.show_rank_status.push(status);                  
             },
             show_doc(hm_id)
             {

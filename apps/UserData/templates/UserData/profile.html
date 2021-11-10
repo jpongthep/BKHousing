@@ -143,86 +143,113 @@
 					<div class="card">
 						<div class="d-flex flex-column align-items-center text-center">								
 							<div class="mt-3">
-								<h6>สถานะผู้ใช้ในระบบ ARMIS ของ {{ request.user.FullName }}</h6>
+								<h5>สถานะผู้ใช้ในระบบ ARMIS</h5>
 							</div>
 						</div>
+						<hr class="style">
 						<div class="card-body">							
-							<div class="row">
-								<div class="col-12">
+							<div class="row mt-0">
+								<div class="text-center ">
 									<b>ข้าราชการ ทอ.</b>
+									<br>									
 									{% if request.user|in_group:"RTAF_NO_HOME_USER" %}
-										<input class="form-check-input" type="checkbox" checked value="" id="defaultCheck1" disabled="disabled">
+										<i class="fas fa-check-circle text-primary"></i>
 									{% else %}
-										<input class="form-check-input" type="checkbox" value="" id="defaultCheck1" disabled="disabled">
+										<i class="far fa-circle"></i>
 									{% endif %}
-
 									<label class="form-check-label" for="defaultCheck1">
 										ไม่มีบ้านพัก
 									</label>
+
 									{% if request.user|in_group:"RTAF_HOME_USER" %}
-										<input class="form-check-input" type="checkbox" checked value="" id="defaultCheck2" disabled="disabled">
+										<i class="fas fa-check-circle text-primary"></i>
 									{% else %}
-										<input class="form-check-input" type="checkbox" value="" id="defaultCheck2" disabled="disabled">
+										<i class="far fa-circle"></i>
 									{% endif %}
 									<label class="form-check-label" for="defaultCheck2">
 										เจ้าของบ้านพัก
 									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-									<label class="form-check-label" for="defaultCheck2">
+									{% if request.user|in_group:"RTAF_HOME_SPOUSE" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
+									<label class="form-check-label mt-2" for="defaultCheck2">
 										คู่สมรสเจ้าของบ้าน
 									</label>
 								</div>
-							</div>							
+							</div>
+							<hr class="opacity">							
 							<div class="row mt-2">
-								<div class="col-12">
+								<div class="text-center">
 									<b>หน่วยเกี่ยวข้อง</b>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+									<br>
+									{% if request.user|in_group:"FINANCIAL_OFFICER" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
 									<label class="form-check-label" for="defaultCheck2">
 										กง.ทอ.
 									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+									{% if request.user|in_group:"CIVIL_OFFICER" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
 									<label class="form-check-label" for="defaultCheck2">
 										กองกระปา ชย.ทอ.
 									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+									{% if request.user|in_group:"MP_OFFICER" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
 									<label class="form-check-label" for="defaultCheck2">
 										กรปภ.สน.ผบ.ดม.
 									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-									<label class="form-check-label" for="defaultCheck2">
+									{% if request.user|in_group:"MP_OFFICER" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
+									<label class="form-check-label mt-2" for="defaultCheck2">
 										สห.ทอ.สน.ผบ.ดม.
-									</label>
-									
+									</label>									
 								</div>
-							</div>							
+							</div>	
+							<hr class="opacity">						
 							<div class="row mt-2">
-								<div class="col-12">
+								<div class="text-center">
 									<b>จนท.กำลังพล</b>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+									<br>
+									{% if request.user|in_group:"PERSON_UNIT_ADMIN" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
 									<label class="form-check-label" for="defaultCheck2">
 										กพ.นขต.ทอ.
 									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-									<label class="form-check-label" for="defaultCheck2">
+									{% if request.user|in_group:"PERSON_ADMIN" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
+									<label class="form-check-label mt-2" for="defaultCheck2">
 										กพ.ทอ.
 									</label>									
 								</div>
-							</div>							
+							</div>	
+							<hr class="opacity">						
 							<div class="row mt-2">
-								<div class="col-12">
-									<b>ผู้ดูแลระบบ</b>
+								<div class="text-center">
+									<p class="header">ผู้ดูแลระบบ </p>									
 									{% if request.user.is_superuser %}
-										<input class="form-check-input" type="checkbox" checked value="" id="defaultCheck2" disabled="disabled">
+										<i class="fas fa-check-circle text-primary"></i>
 									{% else %}
-										<input class="form-check-input" type="checkbox" value="" id="defaultCheck2" disabled="disabled">
-									{% endif %}
-									<label class="form-check-label" for="defaultCheck1">
-										Admin กพ.ทอ.
-									</label>
-									<input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-									<label class="form-check-label" for="defaultCheck1">
-										ศซว.ทอ.
-									</label>									
+										<i class="far fa-circle"></i>
+									{% endif %}								
 								</div>
 							</div>							
 						</div>

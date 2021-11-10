@@ -574,10 +574,10 @@ def TestDocument(request, home_request_id):
     home_request = HomeRequest.objects.get(id = home_request_id)
 
     if home_request.ProcessStep == 'RP':
-        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_draft.docx')
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_1_page_draft.docx')
         docx_title= f"Draft-{home_request.Requester.AFID}.docx"
     else:
-        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data.docx')
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_1_page.docx')
         docx_title= f"House-{home_request.Requester.AFID}.docx"
 
     document = Document(testdoc)
@@ -637,8 +637,11 @@ def TestDocument(request, home_request_id):
     SpouseApproved = "X" if home_request.SpouseApproved else "  "
     DivorceRegistration = "X" if home_request.DivorceRegistration else "  "
     SpouseDeathRegistration = "X" if home_request.SpouseDeathRegistration else "  "
-    Month = month_text[date.today().month]
-    Year =  str((date.today().year + 543) % 100)
+
+    the_day = home_request.RequesterDateSend if home_request.RequesterDateSend != None else home_request.modified
+    Day = the_day.day if the_day != None else the_day.day
+    Month = month_text[the_day.month] if the_day != None else month_text[the_day.day]
+    Year =  str((the_day.year + 543) % 100) if the_day != None else str((the_day.day + 543) % 100) 
 
     PR1 = home_request.get_ZoneRequestPriority1_display() if home_request.ZoneRequestPriority1 else " - "
     PR2 = home_request.get_ZoneRequestPriority2_display() if home_request.ZoneRequestPriority2 else " - "
@@ -668,6 +671,7 @@ def TestDocument(request, home_request_id):
             'Income': "{:,}".format(Income),
             'Status':"{}".format(home_request.get_Status_display()),
             'SpouseName': SpouseName,
+            'RequesterDateSend ': f"{Day} {Month}{Year}",
             'Z1':Z1,
             'Z2':Z2,
             'Z3':Z3,

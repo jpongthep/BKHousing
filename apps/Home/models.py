@@ -64,8 +64,8 @@ class HomeOwner(models.Model):
     water_meter = models.IntegerField(verbose_name="เลขมิเตอร์น้ำแรกเข้า", null = True, blank = True, default = 0)
     electric_meter = models.IntegerField(verbose_name="เลขมิเตอร์ไฟแรกเข้า", null = True, blank = True, default = 0)
 
-    def get_absolute_url(self):
-        return reverse('Home:owner_detail', kwargs={"pk": hmowner_id}) 
+    # def get_absolute_url(self):
+    #     return reverse('HomeData:owner_detail', kwargs={"pk": id}) 
 
     def __str__(self):
         if self.is_stay:

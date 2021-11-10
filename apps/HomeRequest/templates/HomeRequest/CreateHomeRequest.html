@@ -57,7 +57,7 @@
     function check_personid_element(element)
     {
         data_ok = true;
-        console.log("check_personid_element ",element);
+        // console.log("check_personid_element ",element);
         if(! checkID($(element).val())){
             $(element).css("box-shadow","0 0 10px #e80c4d");
             $( `label[for='${element}']` ).html("<span class = 'text-danger'>รหัสบัตร ปชช.ไม่ถูกต้อง</span>");                
@@ -173,17 +173,28 @@
 
         cee = check_empty_element(["#id_hr-Address","#id_hr-GooglePlusCodes1","#id_hr-TravelDescription","#id_hr-distance"]);
         GooglePlusCodes = $("#id_hr-GooglePlusCodes1").val();
-        console.log(GooglePlusCodes);
-        console.log(GooglePlusCodes.length);
+        GooglePlusCodes = GooglePlusCodes.replaceAll(/\s/g,'');
+        // console.log(GooglePlusCodes);
+        // console.log(GooglePlusCodes.length);
         if(GooglePlusCodes.length < 10)
         {
             $("#id_hr-GooglePlusCodes1").css("box-shadow","0 0 10px #e80c4d");
             $("#forGooglePlusCodes1").html("Google Plus Codes <span class = 'text-danger'>ต้องใส่ข้อมูลจังหวัดด้วย</span>");                        
+            cee = false;
         }
         else{
-            $("##id_hr-GooglePlusCodes1").css("box-shadow","");
+            $("#id_hr-GooglePlusCodes1").css("box-shadow","");
             $("#forGooglePlusCodes1").html("Google Plus Codes");                        
         }
+        if($("#id_hr-distance").val() == 0)
+        {
+            $("#id_hr-distance").css("box-shadow","0 0 10px #e80c4d");            
+            cee = false;
+        }
+        else{
+            $("##id_hr-distance").css("box-shadow","");            
+        }
+        
         if(!cee)
         {
             error_element.push("addressData");
@@ -215,7 +226,7 @@
 
 
         ZoneSelect = $("select[data-priority=1]").val();
-        //console.log('Zone Select = ',ZoneSelect == '')
+        // console.log('Zone Select = ',ZoneSelect == '')
         if(ZoneSelect == '')
         {            
             $("select[data-priority=1]").css("box-shadow","0 0 10px #e80c4d");
@@ -256,7 +267,7 @@
             if(element_value.length > 6)
             {
                 birthday = new Date(element_value);
-                console.log('birthday = ', birthday);
+                // console.log('birthday = ', birthday);
                 var ageDifMs = Date.now() - birthday;
                 var ageDate = new Date(ageDifMs); // miliseconds from epoch
                 // return Math.abs(ageDate.getUTCFullYear() - 1970);          
@@ -276,7 +287,7 @@
 
         if(!data_completed){
             unique_error_element = [...new Set(error_element)];
-            console.log("unique_error_element = ",unique_error_element)
+            // console.log("unique_error_element = ",unique_error_element)
             first_error_zone = unique_error_element[0];
             document.getElementById(first_error_zone).scrollIntoView();
             return false;
@@ -304,96 +315,100 @@
             var is_flat_need = $('#id_hr-IsFlatNeed').is(":checked");
             var is_shop_need = $('#id_hr-IsShopHouseNeed').is(":checked");
 
-            user_status = $("#id_hr-Status").val();
-            
             select_option = [0,0,0,0,0,0,0];
-            family_right = ["2","3","4","7"];
-            // console.log('user_status = ',user_status)
-            // console.log('typeof(user_status) = ',typeof(user_status))
-            // console.log('family_right.includes(user_status) = ', family_right.includes(user_status))
-            if(rank <= 30302) // น.อ.พิเศษขึ้นไป
+            // ถ้าเลือกสักช่องนึง
+            if(is_home_need || is_flat_need || is_shop_need)
             {
-                // console.log('select_option = ',select_option)
-
-                if(is_home_need)
-                    select_option = addzone(select_option, ['1','2','3',0,0,0,0]);
-                if(is_flat_need)
-                    select_option = addzone(select_option, ['1','2','3','6T','6S',0,'BS']);
-                if(is_shop_need)
-                    select_option = addzone(select_option, ['1','2','3','6T', 0, 0,'BS']);
-                // console.log('น.5 +  - select_option = ', select_option)
-            }
-            else if(user_status == 1) // กรณีสถานภาพเป็นโสด
-            {
-                // console.log('โสด - rank = ',rank);
-                // console.log('โสด - user_sex = ',user_sex);
+                user_status = $("#id_hr-Status").val();
                 
-                // ชั้นสัญญาบัตร โสด
-                if(rank <= 30500 || (rank > 31400 && rank < 31600)) 
+                family_right = ["2","3","4","7"];
+                // console.log('user_status = ',user_status)
+                // console.log('typeof(user_status) = ',typeof(user_status))
+                // console.log('family_right.includes(user_status) = ', family_right.includes(user_status))
+                if(rank <= 30302) // น.อ.พิเศษขึ้นไป
                 {
-                    // console.log('โสด - if rank');
-                    if(user_sex == "ชาย")
-                    {
-                        select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
-                        // console.log('โสด - if rank if sex ช.');
-                    }
-                    if(user_sex == "หญิง")
-                    {
-                        select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
-                        // console.log('โสด - if rank if sex ญ.');
-                    }
-                }
-                else // ชั้นประทวน โสด
-                {
-                    if(user_sex == "ชาย")
-                    {
-                        select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
-                        // console.log('โสด - if rank if sex ช.');
-                    }
-                    if(user_sex == "หญิง")
-                    {
-                        select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
-                        // console.log('โสด - if rank if sex ญ.');
-                    }
-                }
-                // console.log('โสด - select_option = ', select_option)
-            }
-            else if(family_right.includes(user_status)) // กรณีสถานภาพสมรส หย่าร้าง ม่าย
-            {
-                if(rank <= 30500 || (rank > 31400 && rank < 31600)) // ชั้นสัญญาบัตร
-                {   
-                    // console.log('สมรส - if rank')
-                    if(is_flat_need)
-                    {
-                        // console.log('สมรส - if rank if flat');
-                        select_option = addzone(select_option, ['1','2','3','6T' ,'6S', 0 ,'BS']);
-                    }
-                    if(is_shop_need)
-                    {
-                        // console.log('สมรส - if rank if shop');
-                        select_option = addzone(select_option, ['1','2','3',0, '6S', 0, 0 ]);
-                    }
-                }
-                // console.log('สมรส - select_option = ', select_option)
-                else{
-                    // console.log('สมรส - if rank')
-                    if(is_flat_need)
-                    {
-                        // console.log('สมรส - if rank if flat');
-                        select_option = addzone(select_option, ['1','2', 0, 0,'6S', 0 , 0]);
-                    }
-                    if(is_shop_need)
-                    {
-                        // console.log('สมรส - if rank if shop');
-                        select_option = addzone(select_option, [0 ,'2', 0, 0, '6S', 0, 0 ]);
-                    }                    
-                }
+                    // console.log('select_option = ',select_option)
 
-            }
-            if (user_unit == "อย.")
-            {
-                select_option = addzone(select_option, [0,0,0,0, 0, '7S', 0 ]);
-            }
+                    if(is_home_need)
+                        select_option = addzone(select_option, ['1','2','3',0,0,0,0]);
+                    if(is_flat_need)
+                        select_option = addzone(select_option, ['1','2','3','6T','6S',0,'BS']);
+                    if(is_shop_need)
+                        select_option = addzone(select_option, ['1','2','3','6T', 0, 0,'BS']);
+                    // console.log('น.5 +  - select_option = ', select_option)
+                }
+                else if(user_status == 1) // กรณีสถานภาพเป็นโสด
+                {
+                    // console.log('โสด - rank = ',rank);
+                    // console.log('โสด - user_sex = ',user_sex);
+                    
+                    // ชั้นสัญญาบัตร โสด
+                    if(rank <= 30500 || (rank > 31400 && rank < 31600)) 
+                    {
+                        // console.log('โสด - if rank');
+                        if(user_sex == "ชาย")
+                        {
+                            select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
+                            // console.log('โสด - if rank if sex ช.');
+                        }
+                        if(user_sex == "หญิง")
+                        {
+                            select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
+                            // console.log('โสด - if rank if sex ญ.');
+                        }
+                    }
+                    else // ชั้นประทวน โสด
+                    {
+                        if(user_sex == "ชาย")
+                        {
+                            select_option = addzone(select_option, ['1',0,'3',0,0,0,0]);
+                            // console.log('โสด - if rank if sex ช.');
+                        }
+                        if(user_sex == "หญิง")
+                        {
+                            select_option = addzone(select_option, [0,'2','3',0,0,0,0]);
+                            // console.log('โสด - if rank if sex ญ.');
+                        }
+                    }
+                    // console.log('โสด - select_option = ', select_option)
+                }
+                else if(family_right.includes(user_status)) // กรณีสถานภาพสมรส หย่าร้าง ม่าย
+                {
+                    if(rank <= 30500 || (rank > 31400 && rank < 31600)) // ชั้นสัญญาบัตร
+                    {   
+                        // console.log('สมรส - if rank')
+                        if(is_flat_need)
+                        {
+                            // console.log('สมรส - if rank if flat');
+                            select_option = addzone(select_option, ['1','2','3','6T' ,'6S', 0 ,'BS']);
+                        }
+                        if(is_shop_need)
+                        {
+                            // console.log('สมรส - if rank if shop');
+                            select_option = addzone(select_option, ['1','2','3',0, '6S', 0, 0 ]);
+                        }
+                    }
+                    // console.log('สมรส - select_option = ', select_option)
+                    else{
+                        // console.log('สมรส - if rank')
+                        if(is_flat_need)
+                        {
+                            // console.log('สมรส - if rank if flat');
+                            select_option = addzone(select_option, ['1','2', 0, 0,'6S', 0 , 0]);
+                        }
+                        if(is_shop_need)
+                        {
+                            // console.log('สมรส - if rank if shop');
+                            select_option = addzone(select_option, [0 ,'2', 0, 0, '6S', 0, 0 ]);
+                        }                    
+                    }
+
+                }
+                if (user_unit == "อย.")
+                {
+                    select_option = addzone(select_option, [0,0,0,0, 0, '7S', 0 ]);
+                }
+            }// จบกรณีเลือกต้องการบ้านประเภทใดประเภทหนึง
             // console.log('select_option = ',select_option);
             remain_options = [];
             remain_options_html = [];
@@ -405,7 +420,7 @@
                 if(select_option[i] != 0 )
                 {
                     // console.log("- typeof select_option[i]", typeof select_option[i]);
-                    //// console.log("- i = ",i,"select_option[i] = ",select_option[i]);
+                    // console.log("- i = ",i,"select_option[i] = ",select_option[i]);
                     remain_options.push(select_option[i]);
                     remain_options_html.push(home_zone_full_options_html[i+1]);                    
                 }
@@ -491,7 +506,8 @@
             }            
         }); 
 
-        $("#id_hr-Status").change(function() {           
+        $("#id_hr-Status").change(function() {
+            alert("การแก้ไขสถานภาพสมรส อนุญาตเฉพาะผู้ที่ส่งรายงานขอแก้ไขให้ กพ.ทอ.แล้วและรายงานอยู่ในขั้นตอนการดำเนินการเท่านั้น กรณีอื่น ๆ ถือว่าแก้ไขข้อมูลโดยไม่ถูกต้อง");
             setMarriedComponent();
         });
 
@@ -682,6 +698,11 @@
         setZoneSelectOption();
         // console.log('home_zone_full_options_html = ',home_zone_full_options_html);
     });
+
+    // console.log('%cหยุด', 'color: red; font-size: 60px; font-weight: bold;');
+    // console.log('%cการแก้ไข script จะทำให้ข้อมูลมีความผิดพลาด ท่านอาจเสียสิทธิการขอบ้านพักอาศัย และสามารถตรวจสอบย้อนกลับหาตัวผู้แก้ไขได้ไม่ยาก', 'color: red; font-size: 20px; font-weight: bold;');
+    // console.log('%cหากท่านมีความสามารถ และต้องการมาร่วมงานกับเรา กรุณาติดต่อ 2-8285', 'color: red; font-size: 20px; font-weight: bold;');
+     
 
 </script>
 {% endblock %}
