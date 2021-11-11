@@ -37,7 +37,7 @@ def checkRTAFPassdword(request, username, password):
     try:
         r = rq.post(url = URL, data = data, verify=False)
     except:
-        messages.error(request, "login LDAP ขัดข้อง กรุณาตรวจสอบกับ link ทดสอบการ login")
+        messages.error(request, "login LDAP ขัดข้อง กรุณาทดสอบโดยเข้า email ของ ทอ. หากไม่ได้กรุณาตรวจสอบกับ link ทดสอบการ login หรือติดต่อ 2-8641")
         return False
 
     return_STR_JSON = r.text 

@@ -326,7 +326,7 @@ class AFPersonListView(AuthenUserTestMixin,ListView):
 
 class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
     model = HomeRequest    
-    template_name = "HomeRequest/list.html"
+    template_name = "HomeRequest/listVue.html"
     allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
 
     def get_queryset(self, *args, **kwargs):
@@ -406,10 +406,10 @@ class HomeRequestAdminListView(HomeRequestUnitListView):
 
 
 class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
-    allow_groups = ['PERSON_ADMIN']
+    allow_groups = ['PERSON_UNIT_ADMIN','PERSON_ADMIN']
 
     def get(self, request, *args, **kwargs):        
-        unit_id = kwargs["unit_id"] if kwargs.get("unit_id", None) is not None else 41
+        unit_id = kwargs["unit_id"] if kwargs.get("unit_id", None) is not None else request.user.Unit.id
 
         queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("-ProcessStep","-PersonTroubleScore")
         queryset = queryset.filter(year_round__Year = get_current_year())
@@ -511,13 +511,13 @@ def update_process_step(request, home_request_id, process_step):
     home_request.save()
     home_request.update_process_step(process_step, request.user)
 
-    if process_step in [ HomeRequestProcessStep.REQUESTER_PROCESS,
-                         HomeRequestProcessStep.UNIT_PROCESS,
-                         HomeRequestProcessStep.UNIT_SENDED]:
+    if process_step == HomeRequestProcessStep.REQUESTER_PROCESS:
         messages.info(request,f'บันทึกขั้นตอนคำขอบ้าน {home_request.Requester.FullName} เรียบร้อย')
         return HttpResponseRedirect("/hr/list")
-    elif process_step in [ HomeRequestProcessStep.PERSON_PROCESS, 
-                           HomeRequestProcessStep.PERSON_ACCEPTED]:
+    elif process_step in [HomeRequestProcessStep.UNIT_PROCESS,
+                         HomeRequestProcessStep.UNIT_SENDED,
+                         HomeRequestProcessStep.PERSON_PROCESS, 
+                         HomeRequestProcessStep.PERSON_ACCEPTED]:
         return JsonResponse({"success": True})
     elif process_step == HomeRequestProcessStep.REQUESTER_CANCEL:
         return HttpResponseRedirect("/hr/list")

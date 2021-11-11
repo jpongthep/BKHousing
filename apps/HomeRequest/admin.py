@@ -33,7 +33,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
     ordering = ('-modified',)
     save_as = True
 
-    actions = ['sendToStartProcess', 'sendToUnitSendProcess']
+    actions = ['sendToStartProcess', 'sendOneStepBack', 'sendToUnitSendProcess']
 
     inlines = [CoResidentInline,]
 
@@ -53,6 +53,16 @@ class HomeRequestAdmin(admin.ModelAdmin):
         updated = queryset.filter(ProcessStep__in = ['PP','PA']
                          ).update(ProcessStep = 'US',    cancel_request = False,
                                   PersonReciever = None, PersonDateRecieved = None,
+                                  PersonApprover = None, PersonDateApproved = None,                                    
+                                  IsPersonEval = False)
+        self.message_user(request, ngettext('แก้ไขสถานะคำขอบ้าน %d คำขอเรียบร้อย','แก้ไขสถานะคำขอบ้าน %d คำขอเรียบร้อย',updated,) % updated, messages.SUCCESS)
+    
+    @admin.action(description='ย้อนไปขั้นตอนก่อนหน้า')
+    def sendOneStepBack(self, request, queryset):        
+        updated = queryset.filter(ProcessStep = 'US'
+                         ).update(ProcessStep = 'UP',    cancel_request = False,
+                                  UnitApprover = None,   PersonReciever = None, 
+                                  PersonDateRecieved = None,
                                   PersonApprover = None, PersonDateApproved = None,                                    
                                   IsPersonEval = False)
         self.message_user(request, ngettext('แก้ไขสถานะคำขอบ้าน %d คำขอเรียบร้อย','แก้ไขสถานะคำขอบ้าน %d คำขอเรียบร้อย',updated,) % updated, messages.SUCCESS)
