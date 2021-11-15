@@ -1,4 +1,4 @@
-DROP PROCEDURE IF EXISTS `createHomeOwner`
+DROP PROCEDURE IF EXISTS createHomeOwner
 
 
 DELIMITER $$
@@ -69,9 +69,9 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL `createHomeOwner`();
+CALL createHomeOwner();
 
-DROP PROCEDURE IF EXISTS `set_home_owner_id_rent`
+DROP PROCEDURE IF EXISTS set_home_owner_id_rent
 
 
 DELIMITER $$
@@ -160,8 +160,8 @@ SELECT
     CONCAT(
       'SUM(CASE when date_format(date, \'%m-%d\') = ''',
       date_format(date, '%m-%d'),
-      ''' then montly_bill end) AS `',
-      date_format(date, '%m-%y'), '`'
+      ''' then montly_bill end) AS ',
+      date_format(date, '%m-%y'), ''
     )
   ) INTO @sql
 FROM 
@@ -176,3 +176,32 @@ SET @sql = CONCAT('CREATE TEMPORARY TABLE pivot_rent_payment SELECT home_owner_i
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+
+
+
+-- ปรับค่า Status ของบ้านที่มีคนพักให้เป็น ST
+
+UPDATE home_homedata 
+SET 
+	status = 'ST' 
+WHERE 
+	id in (
+			SELECT home_id 
+			FROM home_homeowner 
+			WHERE is_stay
+		);
+
+-- ปรับค่า Status ของบ้านที่เพิ่งย้ายออกให้เป็น WC (รอตรวจสอบ)
+
+UPDATE home_homedata 
+SET 
+	status = 'WC' 
+WHERE 
+	status = 'ST'
+		and
+	id not in (
+			SELECT home_id 
+			FROM home_homeowner 
+			WHERE is_stay
+		);
+

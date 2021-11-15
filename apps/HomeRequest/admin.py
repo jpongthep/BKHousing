@@ -59,6 +59,14 @@ class HomeRequestAdmin(admin.ModelAdmin):
     
     @admin.action(description='ย้อนไปขั้นตอนก่อนหน้า')
     def sendOneStepBack(self, request, queryset):        
+        updated = queryset.filter(ProcessStep = 'UP'
+                         ).update(ProcessStep = 'RS',    cancel_request = False,
+                                  UnitReciever = None,   UnitDateRecieved = None,
+                                  IsUnitEval = False,    UnitTroubleScore = None,
+                                  UnitApprover = None,   PersonReciever = None, 
+                                  PersonDateRecieved = None,
+                                  PersonApprover = None, PersonDateApproved = None,                                    
+                                  IsPersonEval = False)
         updated = queryset.filter(ProcessStep = 'US'
                          ).update(ProcessStep = 'UP',    cancel_request = False,
                                   UnitApprover = None,   PersonReciever = None, 

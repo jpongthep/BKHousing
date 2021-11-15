@@ -38,6 +38,12 @@ def file_ext(filename):
     '''Returns the given key from a dictionary.'''
     return filename[-3:].lower()
 
+@register.filter(name='enc')
+def enc(filename):
+
+    '''Returns the given key from a dictionary.'''
+    return "enc" in str(filename)
+
 @register.filter(name='file_name')
 def file_name(filename):
     '''Returns the given key from a dictionary.'''

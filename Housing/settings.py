@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'thaidate',
     'rest_framework',
     'django_admin_listfilter_dropdown',
+
     # My Owner APP
     'apps.UserData',
     'apps.Home',
@@ -192,6 +193,12 @@ DEFAULT_LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'logs/login.log',
         },     
+        'EvidenceAccess': {
+            'level': 'INFO',
+            'formatter': 'simple',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/EvidenceAccess.log',
+        },     
     },
     'loggers': {
         'MainLog': {
@@ -201,6 +208,10 @@ DEFAULT_LOGGING = {
         'LoginLog': {
             'handlers': ['LoginFile'],
             'level': 'DEBUG',
+        },      
+        'EvidenceAccessLog': {
+            'handlers': ['EvidenceAccess'],
+            'level': 'INFO',
         },      
     }
 }

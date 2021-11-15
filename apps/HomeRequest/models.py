@@ -207,6 +207,13 @@ class CoResident(models.Model):
     IsAirforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
     Education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
 
+    def Age(self):
+        if not self.BirthDay:
+            return "-"
+        else:
+            today = date.today()
+            return today.year - self.BirthDay.year
+
     def __str__(self):
         return self.FullName
 

@@ -74,6 +74,9 @@
         text-decoration: none;
         color:green;
     }
+    .nav-link {
+        color: grey;
+    }
 
   </style>
 {% endblock %}
@@ -165,13 +168,14 @@
                     </div>
                 </div>
 
-            </div>                   
+            </div>               
             <table class="table table-bordered table-hover table-striped caption-top unit-data-list mt-2" >
                     <col width="40">
                     <col width="40">
                     <col width="40">
                     <col width="40">
-                    <col width="250">
+                    <col width="220">
+                    <col width="80">
                     <col width="80">
                     <col width="150">
                     <col width="60">
@@ -185,6 +189,7 @@
                         <th colspan = "3">เอกสาร</th>
                         <th>ยศ ชื่อ นามสกุล</th>
                         <th>สถานภาพ</th>
+                        <th>ผู้อาศัยร่วม</th>
                         <th>เบอร์โทร</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
@@ -205,6 +210,7 @@
                             <td><a href = "#" @click = "show_doc(hm.id);"><i class="fas fa-file-word icon-size text-info"></i></a></td>
                             <td>[[ hm.FullName ]]</td>
                             <td>[[ hm.Status ]]</td>
+                            <td>[[ hm.num_coresident ]]</td>
                             <td>[[ hm.MobilePhone ]]</td>
                             <td> <!--Requester -->
                                 <div v-if="hm.RequesterDateSend">
@@ -216,7 +222,7 @@
                             </td>
                             <td> <!-- Unit -->
                                 <div v-if="hm.ProcessStep === 'RequesterSended'">
-                                    <button class="btn btn-outline-primary btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'UP')"><small>รับเรื่อง</small></button>                                
+                                    <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'UP')"><small>รับเรื่อง</small></button>                                
                                 </div>  
                                 <div v-else-if="hm.ProcessStep==='UnitProcess'">                                
                                     <strong v-if="hm.IsUnitEval">
@@ -233,7 +239,7 @@
                                     </a>
                                 </div>                                
                                 <div v-else-if="hm.ProcessStep=='UnitSended'">                                            
-                                    <a href = "#" @click="evaluate(hm.id, 'view');" :title = "[hm.UnitSenderName, hm.UnitSenderPhone, hm.UnitDateSended ]" class = "text-muted">
+                                    <a href = "#" @click="evaluate(hm.id, 'view');" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]" class = "text-muted">
                                         <strong>[[ hm.UnitTroubleScore ]] </strong>&nbsp;
                                         <i class="fa fa-check text-success icon-size" ></i>
                                     </a> 
@@ -302,7 +308,7 @@
                 confirm_modal : null,
                 confirm_text :"",
                 current_index: 0,
-                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน",4,5,6,7],
+                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน","สมรส-แยกกันอยู่","หย่าร้าง","ม่าย",7],
                 current_hr_id: 0,
                 filter_data : 'all',
                 num_report :[],
@@ -360,9 +366,7 @@
                         awesome : "fa-home",
                         text : "รับจัดสรร" 
                     }
-                ],
-
-                        
+                ],                        
                 unit_data : {
                     short_name : "",
                     HomeRequest : []
@@ -435,9 +439,9 @@
                         {
                             this.confirm_modal.hide();
                             switch(this.change_process_step_to){                            
-                                case 'UP': this.unit_data.HomeRequest[1]["ProcessStep"] = 'UnitProcess';
+                                case 'UP': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'UnitProcess';
                                       break;
-                                case 'US': this.unit_data.HomeRequest[1]["ProcessStep"] = 'UnitSended';
+                                case 'US': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'UnitSended';
                                       break;
                             }
                         }
@@ -484,7 +488,7 @@
             {
                 if(status == "หย่า/ม่าย")
                 {
-                    let index1 = this.show_rank_status.indexOf("หย่า");
+                    let index1 = this.show_rank_status.indexOf("หย่าร้าง");
                     let index2 = this.show_rank_status.indexOf("ม่าย");
                     if (index1 !== -1) 
                     {
@@ -493,7 +497,7 @@
                     }
                     else             
                     {
-                        this.show_rank_status.push("หย่า");                  
+                        this.show_rank_status.push("หย่าร้าง");                  
                         this.show_rank_status.push("ม่าย");                  
                     }
                     return ;

@@ -16,6 +16,7 @@ class HomeRequestSerializer(serializers.ModelSerializer):
     PersonApproverPhone = serializers.CharField(source='PersonApprover.OfficePhone',read_only=False,allow_null=True,default=None)
     PersonRecieverName = serializers.CharField(source='PersonReciever.FullName',read_only=False,allow_null=True,default=None)
     PersonRecieverPhone = serializers.CharField(source='PersonReciever.OfficePhone',read_only=False,allow_null=True,default=None)
+    num_coresident = serializers.IntegerField(source='CoResident.count',read_only=True)
     status = serializers.SerializerMethodField('return_status')
 
     def get_Status(self,obj):
@@ -64,5 +65,6 @@ class HomeRequestSerializer(serializers.ModelSerializer):
                     "IsPersonEval",
                     "PersonTroubleScore",
                     "TroubleScore",
+                    "num_coresident",
                     'status'
         ]

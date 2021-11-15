@@ -1,4 +1,5 @@
 {% load thaidate %}
+{% load common_tags %}
 <div class="modal  fade" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
@@ -9,15 +10,16 @@
       <div class="modal-body">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-12">ตำแหน่ง : {{ object.Position }}</div>
-            <div class="col-md-4">สังกัด : {{ object.Unit }}</div>
-            <div class="col-md-4">โทร : {{ object.Requester.OfficePhone }},{{object.Requester.MobilePhone }}</div>
-            <div class="col-md-4">รายได้ : {{ object.Salary }} + {{ object.AddSalary }}</div>
+            <div class="col-md-3">ตำแหน่ง : {{ object.Position }}</div>
+            <div class="col-md-3">สังกัด : {{ object.Unit }}</div>
+            <div class="col-md-3">โทร : {{ object.Requester.OfficePhone }}, {{object.Requester.MobilePhone }}</div>
+            
+            <div class="col-md-3">รายได้ : {{ object.Salary|add:object.AddSalary }}</div>
           </div>
           <div class="row mt-2">
             <div class="col-4">สถานภาพ : {{ object.get_Status_display }}</div>
             {% if object.Status|stringformat:"i" in "2,7" %}
-            <div class="col-4">ชื่อคู่สมรส : {{ object.SpousePID }}</div>
+            <div class="col-4">ชื่อคู่สมรส : {{ object.SpouseName|default_if_none:"-" }}</div>
             {% endif %}
           </div>
         </div>
@@ -57,42 +59,44 @@
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active border border-bottom-0 border-top-0 px-3" id="housedetail" role="tabpanel" aria-labelledby="housedetail-tab">
             <div class="row mt-2">
-              <div class="col-md-12">ที่อยู่ปัจจุบัน : {{ object.Address }} ({{ object.GooglePlusCodes1 }})</div>
-              <div class="">บรรยายการเดินทางแต่ละวัน : {{ object.TravelDescription }}</div>
+              <div class="col-md-12  bg-light text-dark"><strong>ที่อยู่ปัจจุบัน : </strong> {{ object.Address }} <a href = "https://plus.codes/{{object.GooglePlusCodes1}}" target = _new><i class="fas fa-map-pin icon-size shadow text-danger"></i></a></div> 
+              <div class=""><strong> บรรยายการเดินทางแต่ละวัน : </strong> {{ object.TravelDescription }}</div>
             </div>
 
-            <div class="row mt-2 pt-1">
-              <div class="col-md-12">สิทธิ์เบิกค่าเช่าบ้าน : {{ object.get_RentPermission_display }}
-              </div>
-              {% if object.Status|stringformat:"i" in "1,2" %}
-              <div class="col-6">มีข้อมูลเบิก (6 เดือน) : {{ object.have_rent }}</div>
-              <div class="col-6">คู่สมรสเบิก (6 เดือน) : {{ object.have_rent_spouse }}</div>
-              <div class="col-6">ค่าเช่าบ้าน : {{ object.RentalCost }}</div>
-              <div class="col-6">เช่าบ้านคู่สมรส : {{ object.RentalCostSpouse }}</div>
+            <div class="row mt-2 pt-1 ">
+              <div class="col-4 bg-light text-dark"><strong> สิทธิ์เบิกค่าเช่าบ้าน : </strong>{{ object.get_RentPermission_display }}</div>
+
+              {% if object.RentPermission == 3 %}
+                <div class="col-md-4 bg-light text-dark">มีข้อมูลเบิก (6 เดือน) : เป็นเงิน {{object.RentalCost}} </div>
+                {% if object.RentalCostSpouse %}
+                  <div class="col-4 bg-light text-dark">คู่สมรสเบิก (6 เดือน) : เป็นเงิน {{object.RentalCostSpouse}}</div>
+                {% endif %}                
               {% endif %}
+              <div class="row mt-2">
               <div class="col-4">
                 {% if object.IsNotOwnHome %}
-                <i class="far fa-check-square"> </i>
+                  <i class="far fa-check-square"> </i>
                 {% else %}
-                <i class="far fa-square"> </i>
+                  <i class="far fa-square"> </i>
                 {% endif %}
                 ไม่มีกรรมสิทธิ์บ้านรัศมี 20 กม.
               </div>
               <div class="col-4">
                 {% if object.IsNotRTAFHome %}
-                <i class="far fa-check-square"> </i>
+                  <i class="far fa-check-square"> </i>
                 {% else %}
-                <i class="far fa-square"> </i>
+                  <i class="far fa-square"> </i>
                 {% endif %}
                 คู่สมรสไม่เป็นเจ้าของบ้านพัก ทอ.
               </div>
               <div class="col-4">
                 {% if object.rent_comment %}
-                <i class="far fa-check-square"> </i>
+                  <i class="far fa-check-square"> </i>
                 {% else %}
-                <i class="far fa-square"> </i>
+                  <i class="far fa-square"> </i>
                 {% endif %}
                 ข้อมูลเพิ่มเติมเกี่ยวกับการเบิก คชบ.
+              </div>
               </div>
             </div>
           </div>
@@ -102,17 +106,17 @@
                 <div class="row mt-2">
                   <div class="col-6">
                     {% if object.IsHomelessDisaster %}
-                    <i class="far fa-check-square"> </i>
+                      <i class="far fa-check-square"> </i>
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-square"> </i>
                     {% endif %}
                     เป็นผู้ไร้บ้านจากอุบัติภัยธรรมชาติ
                   </div>
                   <div class="col-6">
                     {% if object.IsHomelessEvict %}
-                    <i class="far fa-check-square"> </i>
+                      <i class="far fa-check-square"> </i>
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-square"> </i>
                     {% endif %}
                     เป็นผู้ไร้บ้านจากการโดนไล่ที่
                   </div>
@@ -126,18 +130,22 @@
                   </div>
                   <div class="col-6">
                     {% if object.ImportanceDuty %}
-                    <i class="far fa-check-square"> </i>
+                      <i class="far fa-check-square"> </i>
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-square"> </i>
                     {% endif %}
                     เป็นผู้ปฏิบัติหน้าที่สำคัญ
                   </div>
-                  <div class="pt-2">
-                    <strong> ข้อมูลบ้านหลังเดิม และสาเหตุการออก/ถูกไล่ออกจากบ้านพัก (ถ้าเคย) : </strong>{{ object.RTAFHomeLeaveReason }}
-                  </div>
-                  <div class="pt-2">
-                    <strong> เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ : </strong>{{ object.OtherTrouble }}
-                  </div>
+                  {% if object.RTAFHomeLeaveReason %}
+                    <div class="pt-2 bg-light text-dark">
+                      <strong> ข้อมูลบ้านหลังเดิม และสาเหตุการออก/ถูกไล่ออกจากบ้านพัก (ถ้าเคย) : </strong>{{ object.RTAFHomeLeaveReason }}
+                    </div>                  
+                  {% endif %}
+                  {% if object.OtherTrouble %}
+                    <div class="pt-2">
+                      <strong> เป็นผู้ประสบเหตุเดือดร้อนอื่น ๆ : </strong>{{ object.OtherTrouble }}
+                    </div>                  
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -147,18 +155,17 @@
               <div class="tab-pane fade show active" id="personinhouse" role="tabpanel"
                 aria-labelledby="personinhouse-tab">
                 <div class="row mt-2">
-                  <div class="col-2">ชื่อ-นามสกุล </div>
+                  <div class="col-3">ชื่อ-นามสกุล </div>
                   <div class="col-2">PersonID </div>
                   <div class="col-2">อายุ</div>
                   <div class="col-1">อาชีพ </div>
                   <div class="col-1">รายได้ </div>
-                  <div class="col-2">การศึกษา </div>
-                  <div class="col-2">ความสัมพันธ์ </div>
+                  <div class="col-3">การศึกษา </div>
                 </div>
                 {% if object.CoResident.all.0.id is not None %}
                 <div class="row">
                   {% for cr in object.CoResident.all %}
-                  <div class="col-2">{{ cr.FullName }} ({{ cr.get_Relation_display }})</div>
+                  <div class="col-3">{{ cr.FullName }} ({{ cr.get_Relation_display }})</div>
                   <div class="col-2">
                     {{ cr.PersonID }}
                   </div>
@@ -171,11 +178,8 @@
                   <div class="col-1">
                     {{ cr.Salary }}
                   </div>
-                  <div class="col-2">
+                  <div class="col-3">
                     {{ cr.get_Education_display }}
-                  </div>
-                  <div class="col-2">
-                    {{ cr.get_Relation_display }}
                   </div>
                   {% endfor %}
                 </div>
@@ -263,44 +267,89 @@
               <div class="tab-pane fade show active" id="document" role="tabpanel" aria-labelledby="document-tab">
                 <div class="row mt-2">
                   <div class="col-4">
-                    {% if object.HouseRegistration %}
-                    <i class="far fa-check-square"> </i>
+                    {% if not object.HouseRegistration %}
+                      <i class="far fa-square"> </i>
+                      สำเนาทะเบียนบ้าน 
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-check-square"> </i>
+                      สำเนาทะเบียนบ้าน 
+                      {% if object.HouseRegistration.file|enc %}
+                        <a href = "{% url 'HomeRequest:download_decryp' object.id 'HR' %}" target = "_blank">
+                          <i class="fas fa-lock"></i>
+                        </a>
+                      {% else %}
+                        <a href = "{{ object.HouseRegistration.file }}" target = "_blank">
+                          <i class="fas fa-lock-open"></i>
+                        </a>
+                      {% endif %}
                     {% endif %}
-                    สำเนาทะเบียนบ้าน
+                    
                   </div>
                   <div class="col-4">
-                    {% if object.MarriageRegistration %}
-                    <i class="far fa-check-square"> </i>
+                    {% if not object.MarriageRegistration %}
+                      <i class="far fa-square"> </i>
+                      ทะเบียนสมรส                    
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-check-square"> </i>
+                      ทะเบียนสมรส                    
+                      {% if object.MarriageRegistration.file|enc %}
+                        <a href = "{% url 'HomeRequest:download_decryp' object.id 'MR' %}" target = "_blank">
+                          <i class="fas fa-lock"></i>
+                        </a>
+                      {% else %}
+                        <a href = "{{ object.MarriageRegistration.file }}" target = "_blank">
+                          <i class="fas fa-lock-open"></i>
+                        </a>
+                      {% endif %}                    
                     {% endif %}
-                    ทะเบียนสมรส
                   </div>
                   <div class="col-4">
-                    {% if object.SpouseApproved %}
-                    <i class="far fa-check-square"> </i>
+                    {% if not object.SpouseApproved %}
+                      <i class="far fa-square"> </i>
+                      หนังสือรับรองของคู่สมรส (ถ้ามี)
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-check-square"> </i>
+                      หนังสือรับรองของคู่สมรส (ถ้ามี)
+                      <a href = "{% url 'HomeRequest:download_decryp' object.id 'SA' %}" target = "_blank">
+                        {% if object.SpouseApproved.file|enc %}
+                            <i class="fas fa-lock"></i>                        
+                        {% else %}
+                            <i class="fas fa-lock-open"></i>
+                        {% endif %}                       
+                      </a>
                     {% endif %}
-                    หนังสือรับรองของคู่สมรส (ถ้ามี)
                   </div>
                   <div class="col-4">
-                    {% if object.ImportanceDuty %}
-                    <i class="far fa-check-square"> </i>
+                    {% if not object.DivorceRegistration %}
+                      <i class="far fa-square"> </i>
+                      ทะเบียนหย่า (ถ้ามี)
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-check-square"> </i>
+                      ทะเบียนหย่า (ถ้ามี)
+                      <a href = "{% url 'HomeRequest:download_decryp' object.id 'DR' %}" target = "_blank">
+                        {% if object.DivorceRegistration.file|enc %}
+                            <i class="fas fa-lock"></i>                        
+                        {% else %}
+                            <i class="fas fa-lock-open"></i>
+                        {% endif %}                       
+                      </a>
                     {% endif %}
-                    ทะเบียนหย่า (ถ้ามี)
                   </div>
                   <div class="col-5">
-                    {% if object.SpouseDeathRegistration %}
-                    <i class="far fa-check-square"> </i>
+                   {% if not object.SpouseDeathRegistration %}
+                      <i class="far fa-square"> </i>
+                      ทะเบียนหย่า (ถ้ามี)
                     {% else %}
-                    <i class="far fa-square"> </i>
+                      <i class="far fa-check-square"> </i>
+                      มรณบัตรคู่สมรส (ถ้ามี)
+                      <a href = "{% url 'HomeRequest:download_decryp' object.id 'SD' %}" target = "_blank">
+                        {% if object.SpouseDeathRegistration.file|enc %}
+                            <i class="fas fa-lock"></i>                        
+                        {% else %}
+                            <i class="fas fa-lock-open"></i>
+                        {% endif %}                       
+                      </a>
                     {% endif %}
-                    มรณบัตรคู่สมรส (ถ้ามี)
                   </div>
                 </div>
               </div>

@@ -7,15 +7,20 @@ from .views import (ProcessFlow,
                     HomeRequestAdminListView,
                     HomeRequestDetail,
                     HomeRequestUnitSummaryListView,
-                    TestDocument,
-                    ConsentForm,
-                    TestExcel,
                     UnitList4PersonAdmin,
                     AFPersonListView,
                     update_process_step,
                     cancel_request,
                     homerequest_detail,
-                    UnitReportDocument
+                    )
+
+from .views_documents import (
+                    TestDocument,
+                    ConsentForm,
+                    TestExcel,
+                    UnitReportDocument,
+                    line_api,
+                    download_decryp
                     )
 
 from .views_modals import af_person_data_detailview
@@ -38,6 +43,7 @@ urlpatterns = [
     path('<unit_id>/fetch', UnitList4PersonAdmin.as_view(), name = 'unit_list_admin'),
     # api สำหรับการตรวจสอบความก้าวหน้า ขั้นตอนขอบ้าน ทาง App มือถือ
     path('cps/<str:username>/', homerequest_detail), # check process step
+    path('line/', line_api), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
@@ -50,4 +56,5 @@ urlpatterns = [
     path('cf', ConsentForm, name = 'ConsentForm'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),
     path('<Unit_id>/doc_unit', UnitReportDocument, name = 'doc_unit'),
+    path('dd/<hr_id>/<evidence>', download_decryp, name = 'download_decryp'),
 ] 
