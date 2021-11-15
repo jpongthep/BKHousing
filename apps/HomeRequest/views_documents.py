@@ -24,8 +24,8 @@ from linebot import LineBotApi, WebhookParser
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
-line_bot_api = LineBotApi('odFxpwpkdguKC7pxS5or45Ob358azEPO2Ysg4Ch0PhIYqXdM3Db0N8Q740pKGRCV9YH9SYKFSasYdSYFWYLSTglj8ze55KGhJa1yVWGHzO5DQC+2+8k0lCGljwwUolRCWPpllUeRA/qIWq6mnkaaxgdB04t89/1O/w1cDnyilFU=')
-parser = WebhookParser('ab315a0889e1395ea1695fb0d8ea5790')
+line_bot_api = LineBotApi('odFxpwpkdg')
+parser = WebhookParser('ab315a0889e13')
 
 #My module
 from .models import HomeRequest
