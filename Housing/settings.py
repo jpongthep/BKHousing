@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'thaidate',
     'rest_framework',
     'django_admin_listfilter_dropdown',
+    'django_crontab',
 
     # My Owner APP
     'apps.UserData',
@@ -159,6 +160,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+CRONJOBS = [
+    ('*/5 * * * *', 'Housing.views.daily_notify_message')
+]
 
 
 DEFAULT_LOGGING = {

@@ -173,13 +173,13 @@
                     {{ cr.Age }}
                   </div>
                   <div class="col-1">
-                    {{ cr.Occupation }}
+                    {{ cr.Occupation|default_if_none:"-" }}
                   </div>
                   <div class="col-1">
-                    {{ cr.Salary }}
+                    {{ cr.Salary|default_if_none:"-" }}
                   </div>
                   <div class="col-3">
-                    {{ cr.get_Education_display }}
+                    {{ cr.get_Education_display|default_if_none:"-" }}
                   </div>
                   {% endfor %}
                 </div>
@@ -217,46 +217,22 @@
                     ต้องการห้องแถว
                   </div>
                   <div class="col-4">ลำดับ 1 :
-                    {% if object.ZoneRequestPriority1 != None %}
-                    {{ object.get_ZoneRequestPriority1_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority1_display|default_if_none:"-"  }}
                   </div>
                   <div class="col-4">ลำดับ 2 :
-                    {% if object.ZoneRequestPriority2 != None %}
-                    {{ object.get_ZoneRequestPriority2_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority2_display|default_if_none:"-"  }}                    
                   </div>
                   <div class="col-4">ลำดับ 3 :
-                    {% if object.ZoneRequestPriority3 != None %}
-                    {{ object.get_ZoneRequestPriority3_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority3_display|default_if_none:"-"  }}                    
                   </div>
                   <div class="col-4">ลำดับ 4 :
-                    {% if object.ZoneRequestPriority4 != None %}
-                    {{ object.get_ZoneRequestPriority4_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority4_display|default_if_none:"-"  }}                    
                   </div>
                   <div class="col-4">ลำดับ 5 :
-                    {% if object.ZoneRequestPriority5 != None %}
-                    {{ object.get_ZoneRequestPriority5_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority5_display|default_if_none:"-"  }}                    
                   </div>
                   <div class="col-4">ลำดับ 6 :
-                    {% if object.ZoneRequestPriority6 != None %}
-                    {{ object.get_ZoneRequestPriority6_display }}
-                    {% else %}
-                    -
-                    {% endif %}
+                    {{ object.get_ZoneRequestPriority6_display|default_if_none:"-"  }}                    
                   </div>
                 </div>
               </div>
@@ -291,16 +267,14 @@
                       ทะเบียนสมรส                    
                     {% else %}
                       <i class="far fa-check-square"> </i>
-                      ทะเบียนสมรส                    
-                      {% if object.MarriageRegistration.file|enc %}
-                        <a href = "{% url 'HomeRequest:download_decryp' object.id 'MR' %}" target = "_blank">
-                          <i class="fas fa-lock"></i>
-                        </a>
-                      {% else %}
-                        <a href = "{{ object.MarriageRegistration.file }}" target = "_blank">
-                          <i class="fas fa-lock-open"></i>
-                        </a>
-                      {% endif %}                    
+                      ทะเบียนสมรส    
+                       <a href = "{% url 'HomeRequest:download_decryp' object.id 'MR' %}" target = "_blank">
+                        {% if object.SpouseApproved.file|enc %}
+                            <i class="fas fa-lock"></i>                        
+                        {% else %}
+                            <i class="fas fa-lock-open"></i>
+                        {% endif %}                       
+                      </a>
                     {% endif %}
                   </div>
                   <div class="col-4">

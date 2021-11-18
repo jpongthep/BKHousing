@@ -316,8 +316,8 @@
                 unit_data_list_modal : null,
                 confirm_modal : null,
                 confirm_text :"",
-                current_index: 0,
-                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน",4,5,6,7],
+                current_index: 0,                
+                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน","สมรส-แยกกันอยู่","หย่าร้าง","ม่าย",7],
                 current_hr_id: 0,
                 filter_data : 'all',
                 num_report :[],
@@ -484,7 +484,7 @@
             {
                 if(status == "หย่า/ม่าย")
                 {
-                    let index1 = this.show_rank_status.indexOf("หย่า");
+                    let index1 = this.show_rank_status.indexOf("หย่าร้าง");
                     let index2 = this.show_rank_status.indexOf("ม่าย");
                     if (index1 !== -1) 
                     {
@@ -493,7 +493,7 @@
                     }
                     else             
                     {
-                        this.show_rank_status.push("หย่า");                  
+                        this.show_rank_status.push("หย่าร้าง");                  
                         this.show_rank_status.push("ม่าย");                  
                     }
                     return ;

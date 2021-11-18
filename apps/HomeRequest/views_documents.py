@@ -19,6 +19,7 @@ from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from openpyxl import load_workbook
+from copy import copy
 
 from linebot import LineBotApi, WebhookParser
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
@@ -32,6 +33,7 @@ from .models import HomeRequest
 from .views import get_current_year
 from apps.UserData.models import Unit
 from apps.Utility.utils import decryp_file
+from apps.Utility.Constants import PERSON_STATUS
 logger = logging.getLogger('MainLog')
 evidence_logger = logging.getLogger('EvidenceAccessLog')
 
@@ -361,36 +363,110 @@ def ConsentForm(request):
     response['Content-Length'] = length
     return response
 
- 
+@login_required 
 def TestExcel(request,unit_id):
+    xls_unit = Unit.objects.get(id = unit_id)
+
+    allow_access = False
+    if request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
+        if request.user.CurrentUnit == xls_unit:
+            allow_access = True
+
+    if not allow_access: raise PermissionDenied()
+
     # testdoc = static('documents/test_doc.docx')
     testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/unit_report.xlsx')
     # Start by opening the spreadsheet and selecting the main sheet
     workbook = load_workbook(filename=testxls)
     xls_title= f"unit_report.xlsx"
 
-    sheet = workbook.active
+    # sheet = workbook.active
+
 
     # Write what you want into a specific cell
-    sheet["A1"] = f'หน่วย {request.user.CurrentUnit.ShortName}'
+    sheet_number = 0
+    last_insert = 0
+    officer_rank =  list(range(30100,30600)) + list(range(31411,31540))
+    non_officer_rank = list(range(30611,30850)) +  list(range(40000,40700))
+    status_single = [PERSON_STATUS.SINGLE, ]
+    status_family = [PERSON_STATUS.MARRIES_TOGETHER, PERSON_STATUS.MARRIES_SEPARATE, PERSON_STATUS.DIVOTE, PERSON_STATUS.WIDOW, ]
 
+
+    for rank_level in [officer_rank, non_officer_rank]:
     
-    xls_unit = Unit.objects.get(id = unit_id)
+        for status in [status_single, status_family]:
+            
+            queryset = HomeRequest.objects.filter(Unit = xls_unit
+                                        ).filter(ProcessStep = 'US'
+                                        ).filter(year_round__Year = get_current_year()
+                                        ).filter(Requester__Rank__in = rank_level
+                                        ).filter(Status__in = status 
+                                        ).order_by("-UnitTroubleScore")                      
+                                        
+            sheets = workbook.sheetnames
+            sheet = workbook[sheets[sheet_number]]
+            sheet["A1"] = f'หน่วย {request.user.CurrentUnit.ShortName}'
+            first_row = 6
+            
+            Rank = request.user.get_Rank_display()
+            if "ว่าที่" in request.user.get_Rank_display():
+                Rank = Rank[7:]
 
-    queryset = HomeRequest.objects.filter(Unit = xls_unit
-                                 ).filter(ProcessStep = 'US'
-                                 ).filter(year_round__Year = get_current_year()
-                                 ).order_by("Requester__Rank")
-    first_row = 6
-    for i, data in enumerate(queryset):
-        Salary = data.Salary if data.Salary else 0
-        AddSalary = data.AddSalary if data.AddSalary else 0
-        Income = "{:,}".format(Salary + AddSalary)
-        sheet[f"A{first_row+i}"] = i+1
-        sheet[f"B{first_row+i}"] = data.FullName
-        sheet[f"C{first_row+i}"] = data.get_Status_display()
-        sheet[f"D{first_row+i}"] = ArabicToThai(Income)
-        sheet[f"R{first_row+i}"] = ArabicToThai(data.Requester.MobilePhone)
+            # sheet["J36"] = f"{Rank}"
+            # sheet["J37"] = f"({request.user.first_name}  {request.user.last_name})"
+
+            max_data = queryset.count()
+            for i, data in enumerate(queryset):
+                # if data.Requester.Sex == "หญิง":
+                #     continue
+                
+                last_row = 7
+                if i > last_row:
+                    # sheet.insert_rows(i+last_row + 1)
+                    # sheet.delete_rows(150)
+                    for ch in "ABCDEFGHIJKL":
+                        sheet[f'{ch}{i+last_row + 1}'].font = copy(sheet[f'{ch}{i+last_row-2}'].font)
+                        sheet[f'{ch}{i+last_row + 1}'].border = copy(sheet[f'{ch}{i+last_row-2}'].border)
+                        sheet[f'{ch}{i+last_row + 1}'].alignment = copy(sheet[f'{ch}{i+last_row-2}'].alignment)
+
+                    print('i+last_row = ',i+last_row  )
+                    
+                    
+                Salary = data.Salary if data.Salary else 0
+                AddSalary = data.AddSalary if data.AddSalary else 0
+                RentalCost = data.RentalCost if data.RentalCost else "-"
+
+
+                Income = "{:,}".format(Salary + AddSalary)
+                RentalCost = "{:,}".format(RentalCost) if RentalCost != "-" else "-"
+
+                sheet[f"A{first_row+i}"] = ArabicToThai(str(i+1))
+                sheet[f"B{first_row+i}"] = data.FullName
+                sheet[f"C{first_row+i}"] = data.get_Status_display()
+                sheet[f"D{first_row+i}"] = ArabicToThai(Income)
+                sheet[f"E{first_row+i}"] = ArabicToThai(RentalCost)
+                sheet[f"G{first_row+i}"] = ArabicToThai(str(data.CoResident.all().filter(Relation = '2-CH').count()))
+                sheet[f"F{first_row+i}"] = ArabicToThai(str(data.CoResident.all().exclude(Relation = '2-CH').count()))
+                sheet[f"L{first_row+i}"] = ArabicToThai(data.Requester.MobilePhone)
+                sheet[f"H{first_row+i}"] = "ü" if data.IsHomeNeed else ""
+                sheet[f"I{first_row+i}"] = "ü" if data.IsFlatNeed else ""
+                sheet[f"J{first_row+i}"] = "ü" if data.IsShopHouseNeed else ""
+                sheet[f"k{first_row+i}"] = ArabicToThai(str(data.UnitTroubleScore))
+                sheet[f"L{first_row+i}"] = ArabicToThai(data.Requester.OfficePhone)
+
+                last_insert += 1
+            # # เลื่อนไปชีทต่อไป
+            # last_row_data = i+last_row
+
+            # # print("i+last_row = ", i+last_row)
+            # sheet.move_range("I151:J155", rows = -150 + last_row_data + 4, cols=0)
+
+            # for row_merge in range(last_row_data + 7,last_row_data + 11):
+            #     sheet.merge_cells(f"J{row_merge}:L{row_merge}")
+       
+            # sheet_number += 1         
+
+
 
     f = BytesIO()
     

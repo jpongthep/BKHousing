@@ -256,6 +256,7 @@
             }
         });
         
+        
 
         // ตรวจการกรอกวันเกิด
         $('[id ^=id_CoResident][id $=BirthDay]').each(function(i, element) {
@@ -294,6 +295,8 @@
         }
         return confirm("เมื่อส่งข้อมูลจะไม่สามารถแก้ไขได้อีก และจะต้อง download รายงานและส่งทางธุรการด้วย");
     }
+
+
 
     $(document).ready(function(){
 
@@ -462,6 +465,7 @@
                 $(`select[data-priority='${i}']`).prop('disabled', 'disabled');
             }        
         });
+         
 
         function setMarriedComponent(married, widow_divote)
         {
@@ -481,6 +485,25 @@
             $("#id_hr-IsShopHouseNeed").prop('disabled', ! (married || widow_divote));
             
         }
+
+        // ตรวจการกรอกข้อมูลวันเกิด
+        $('[id ^=id_CoResident][id $=BirthDay]').change(function() {
+            let bd_date =  new Date($(this).val());
+            let year = bd_date.getFullYear();
+            if(year > 2100)
+            {
+                let day = bd_date.getDate();
+                let month = bd_date.getMonth();
+
+                // console.log("" + (year-543) + "-" + month + "-" + day);
+                text_day = ("0" + day).slice(-2);
+                text_month = ("0" + month).slice(-2);
+                alert("กรุณากรอกวันเกิดด้วยปี ค.ศ.");
+                // console.log("" + (year-543) + "-" + text_month + "-" + text_day);
+                $(this).val("" + (year-543) + "-" + text_month + "-" + text_day);
+            }
+            
+        });
 
         $('#add_more').click(function(event) {
             event.preventDefault();

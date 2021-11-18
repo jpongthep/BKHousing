@@ -512,13 +512,29 @@ def update_process_step(request, home_request_id, process_step):
     home_request.ProcessStep = process_step
     if process_step == 'RP':
         home_request.RequesterDateSend = None
+        home_request.RequesterDateSend = None
+        home_request.UnitReciever = None
+        home_request.UnitDateRecieved = None
+        home_request.UnitApprover = None
+        home_request.cancel_request = False
+        home_request.PersonReciever = None
+        home_request.PersonDateRecieved = None
+        home_request.PersonApprover = None
+        home_request.PersonDateApproved = None
+        home_request.IsUnitEval = False
+        home_request.UnitTroubleScore = None
+        home_request.IsPersonEval = False
+        home_request.TroubleScore = None
     home_request.save()
     home_request.update_process_step(process_step, request.user)
+    
 
-    if process_step == HomeRequestProcessStep.REQUESTER_PROCESS:
-        messages.info(request,f'บันทึกขั้นตอนคำขอบ้าน {home_request.Requester.FullName} เรียบร้อย')
-        return HttpResponseRedirect("/hr/list")
-    elif process_step in [HomeRequestProcessStep.UNIT_PROCESS,
+
+    # if process_step == HomeRequestProcessStep.REQUESTER_PROCESS:
+    #     messages.info(request,f'บันทึกขั้นตอนคำขอบ้าน {home_request.Requester.FullName} เรียบร้อย')
+    #     return HttpResponseRedirect("/hr/list")
+    if process_step in [HomeRequestProcessStep.REQUESTER_PROCESS,
+                          HomeRequestProcessStep.UNIT_PROCESS,
                          HomeRequestProcessStep.UNIT_SENDED,
                          HomeRequestProcessStep.PERSON_PROCESS, 
                          HomeRequestProcessStep.PERSON_ACCEPTED]:

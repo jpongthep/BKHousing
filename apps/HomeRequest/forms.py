@@ -50,7 +50,11 @@ class HomeRequestForm(forms.ModelForm):
                 attrs={'placeholder': 'หก.กอษ.กกศ.สนผ.กบ.ทอ.'}),
                         
             'GooglePlusCodes1': forms.TextInput(attrs={'placeholder': 'WJFC+9P Bangkok, Thailand'}),
-            'distance': forms.NumberInput(attrs={'min': 0}),
+            'distance': forms.NumberInput(attrs={
+                                                'min': 0,
+                                                'step':1,
+                                                'onkeypress' : "return event.charCode >= 48 && event.charCode <= 57"
+                                                }),
                         
             'TravelDescription': forms.Textarea(
                 attrs={
@@ -119,12 +123,6 @@ class HomeRequestForm(forms.ModelForm):
     def encryp_file_field(self, upload_file):
         # data = self.cleaned_data['HouseRegistration']
         data = upload_file
-        # print('clean_HouseRegistration = ', data)
-
-        if not data:
-            return data
-        
-        # print('clean_HouseRegistration : data = ',data )
 
         # ถ้าไม่ได้แก้ไขไฟล์เข้ารหัสเดิม ก็ไม่ต้องทำอะไร
         if ".enc" in data.name and data.name[-4:] == ".pdf":
@@ -146,17 +144,12 @@ class HomeRequestForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = self.cleaned_data
-        # print('clean = ')
-        # for k, v in cleaned_data.items():
-        #     print(f"clean['{k}'] = {v}")
 
-        cleaned_data['HouseRegistration'] = self.encryp_file_field(cleaned_data['HouseRegistration']) if cleaned_data['MarriageRegistration'] else None
+        cleaned_data['HouseRegistration'] = self.encryp_file_field(cleaned_data['HouseRegistration']) if cleaned_data['HouseRegistration'] else None
         cleaned_data['MarriageRegistration'] = self.encryp_file_field(cleaned_data['MarriageRegistration']) if cleaned_data['MarriageRegistration'] else None
         cleaned_data['SpouseApproved'] = self.encryp_file_field(cleaned_data['SpouseApproved']) if cleaned_data['SpouseApproved'] else None
         cleaned_data['DivorceRegistration'] = self.encryp_file_field(cleaned_data['DivorceRegistration']) if cleaned_data['DivorceRegistration'] else None
         cleaned_data['SpouseDeathRegistration'] = self.encryp_file_field(cleaned_data['SpouseDeathRegistration']) if cleaned_data['SpouseDeathRegistration'] else None
-
-
 
         return cleaned_data 
 

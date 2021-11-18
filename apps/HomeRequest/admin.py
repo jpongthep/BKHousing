@@ -27,7 +27,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
                     ('ProcessStep', ChoiceDropdownFilter),
                     ('Requester__CurrentUnit', RelatedDropdownFilter),
                 )
-    
+    # date_hierarchy  = 'modified'
     list_display_links = ['FullName']
     raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover')
     ordering = ('-modified',)

@@ -105,7 +105,7 @@ def getUserByRTAFemail(request, email, token):
         search_user.Position = return_data['POSITION']
         search_user.CurrentUnit = user_unit
         search_user.current_salary = float(return_data['SALARY'],)
-        search_user.current_status = return_data['MARRIED']
+        search_user.current_status = return_data['MARRIED'] if return_data['MARRIED'] else 1
         search_user.current_spouse_name = return_data['SPOUSE_NAME']
         search_user.current_spouse_pid = return_data['SPOUSE_IDCARD']
         search_user.Address = return_data['ADDRESS']
@@ -126,7 +126,7 @@ def getUserByRTAFemail(request, email, token):
                         Position = return_data['POSITION'],
                         CurrentUnit = user_unit,
                         current_salary = float(return_data['SALARY'],),
-                        current_status = return_data['MARRIED'],
+                        current_status = return_data['MARRIED'] if return_data['MARRIED'] else 1,
                         current_spouse_name = return_data['SPOUSE_NAME'],
                         current_spouse_pid = return_data['SPOUSE_IDCARD'],
                         Address = return_data['ADDRESS']
@@ -291,7 +291,7 @@ def UpdateRTAFData(request, current_user,person_data):
     current_user.Address = return_data['ADDRESS']
     # print("return_data['MARRIED'] ", return_data['MARRIED'])
     # print("type(return_data['MARRIED)'] ", type(int(return_data['MARRIED'])))
-    current_user.current_status = int(return_data['MARRIED'])
+    current_user.current_status = int(return_data['MARRIED']) if return_data['MARRIED'] else 1
     current_user.save()
 
     # ตรวจสอบว่ามีคู่สมรสหรือไม่

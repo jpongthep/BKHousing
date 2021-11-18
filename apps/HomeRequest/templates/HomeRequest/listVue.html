@@ -105,7 +105,7 @@
         <div id="MainAPP">
             <div class = "row">
                 <div v-for="index in 6" :key="index" class = "mt-2 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6">
-                    <div class = "card text-center shadow rounded-top">
+                    <div class = "card text-center shadow rounded-top" v-bind:class = "{'border border-dark border-3' : link_show_data[index-1] == 'ยกเลิกกรอง'}">
                         <div class = "card-header" v-bind:class = "[card_static[index-1].color, card_static[index-1].bgcolor]">
                             <div class = "row align-items-center">
                                 <div class = "col">
@@ -120,7 +120,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <h6 class = "text-dark" @click = "filter_homerequest(index);" style ="cursor: pointer;">แสดงข้อมูล <i class="fa fa-arrow-alt-circle-right"></i></h6>
+                            <h6 class = "text-dark" @click = "filter_homerequest(index);" style ="cursor: pointer;">[[ link_show_data[index-1] ]] <i class="fa fa-arrow-alt-circle-right"></i></h6>
                         </div>
                     </div>
                 </div>
@@ -256,14 +256,22 @@
                                     </a>
                                 </div>
                             </td>
-                            <td>
+                            <td> <!-- อนุมัติ -->
                                 
                             </td>
-                            <td>
+                            <td> <!-- หมายเหตุ -->                            
+                                <div v-if="hm.cancel_request">
+                                    <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
+                                        <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'RC')"><small>ยกเลิกคำขอ</small></button>                                
+                                    </span>
+                                </div>
                                 <div v-if="hm.ProcessStep === 'PersonProcess' ">
                                     <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
                                         <small>รอประเมิน</small>
                                     </span>
+                                </div>
+                                <div v-else-if="hm.ProcessStep === 'RequesterSended' || hm.ProcessStep ==='UnitProcess'">
+                                    <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'RP')"><small>ส่งเรื่องกลับ</small></button>                                
                                 </div>
                             </td>
                         </tr>
@@ -314,6 +322,8 @@
                 num_report :[],
                 change_process_step_to : "",
                 step_action :"รับเรื่อง",
+                link_show_data : ["กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล"],
+
 
                 object_list : [
                     {
@@ -389,7 +399,7 @@
                 fetch(new_urltext)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("show_unit_data_list vdata = ",data);
+                        // console.log("show_unit_data_list vdata = ",data);
                         this.current_index = index;
                         this.unit_data.HomeRequest = data;
                         this.unit_data.short_name = data[0]["UnitName"];
@@ -416,9 +426,13 @@
                 this.current_hr_id = hr_id;
                 this.change_process_step_to = step;
                 switch(step){                            
+                                case 'RP': this.step_action ="ส่งกลับ"                                           
+                                           break;
                                 case 'UP': this.step_action ="รับเรื่อง"
                                            break;
                                 case 'US': this.step_action ="ส่งเรื่อง";
+                                           break;                                
+                                case 'RC': this.step_action ="ยกเลิก";
                                            break;                                
                             }
                 this.confirm_text = this.unit_data.HomeRequest[index]["FullName"];                
@@ -434,14 +448,19 @@
                 fetch(new_urltext)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("data ",data);
+                        // console.log("data ",data);
                         if(data["success"])
                         {
                             this.confirm_modal.hide();
                             switch(this.change_process_step_to){                            
+                                case 'RP': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'RequesterProcess';
+                                           this.unit_data.HomeRequest[this.current_index]["RequesterDateSend"] = false;
+                                      break;
                                 case 'UP': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'UnitProcess';
                                       break;
                                 case 'US': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'UnitSended';
+                                      break;
+                                case 'RC': this.unit_data.HomeRequest[this.current_index]["ProcessStep"] = 'RequesterCancel';
                                       break;
                             }
                         }
@@ -481,8 +500,21 @@
                 ProcessStep = ['RequesterProcess','RequesterSended','UnitProcess',
                                'UnitSended','PersonProcess','PersonApproved','GetHouse'
                             ];
-                console.log(ProcessStep[step_report-1]);
-                this.filter_data = ProcessStep[step_report-1];
+                console.log('this.filter_data ',this.filter_data);
+                for(i = 0;i < 6;i++)
+                {
+                    this.link_show_data[i] = "กรองข้อมูล"
+                }
+                if(this.filter_data == ProcessStep[step_report-1])
+                {
+                    this.filter_data = 'all';
+                    this.link_show_data[step_report -1 ] = "กรองข้อมูล"
+                }
+                else
+                {
+                    this.filter_data = ProcessStep[step_report-1];
+                    this.link_show_data[step_report-1] = "ยกเลิกกรอง"
+                }
             },
             toggle_display(status)
             {

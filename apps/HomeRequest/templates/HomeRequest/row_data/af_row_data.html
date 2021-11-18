@@ -91,7 +91,27 @@
                 {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="requester" %}
             </td>
             <td>
-                {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="UnitPerson" %}
+                {% if object.UnitApprover %}
+                    <a  href = "{% url 'Trouble:view_eval' object.id 'Unit' %}" 
+                        target = "_blank"
+                        title = "{{ object.UnitApprover.FullName }} ({{ object.UnitApprover.OfficePhone}}) {{ object.UnitDateApproved|thaidate:"d M y"}}"
+                        class = "font-weight-bolder text-success"
+                    >
+                        <strong>{{ object.UnitTroubleScore}}</strong>
+                    </a>
+                {% elif  object.IsUnitEval %}
+                    <a  href = "{% url 'Trouble:view_eval' object.id 'Unit' %}" 
+                        target = "_blank"
+                        title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}"
+                        class = "text-primary"
+                    >
+                        <strong>{{ object.UnitTroubleScore}}</strong>
+                    </a>
+                {% elif  object.get_ProcessStep_display == 'UnitProcess' %}
+                    <a href = "#" title = "{{ object.UnitReciever.FullName}} ({{ object.UnitReciever.OfficePhone}}) {{ object.UnitDateRecieved|thaidate:"d M y"}}">
+                        รับเรื่อง
+                    </a>
+                {% endif %}
             </td>
             <td>
                 {% include "HomeRequest/row_data/cell_processor.html" with object=object processor="PersonAdmin" %}              

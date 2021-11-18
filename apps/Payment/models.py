@@ -11,6 +11,7 @@ def first_day_of_month():
 class WaterPayment(models.Model):
     class Meta:
         verbose_name_plural = "WaterPayment : ค่าน้ำประปา"
+        ordering = ['-date']
     home_owner = models.ForeignKey(HomeOwner, verbose_name="บ้านและผู้พักอาศัย", on_delete=models.CASCADE, related_name='WaterPayment', null=True, blank=True)
     PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
     date = models.DateField(verbose_name="เดือน-ปี", null = True, blank = True, default = first_day_of_month)
@@ -33,6 +34,7 @@ class WaterPayment(models.Model):
 class RentPayment(models.Model):
     class Meta:
         verbose_name_plural = "RentPayment : ค่าบำรุงแรกเข้า / รายเดือน"
+        ordering = ['-date']
     home_owner = models.ForeignKey(HomeOwner, verbose_name="บ้านและผู้พักอาศัย", on_delete=models.CASCADE, related_name='RentPayment', null=True, blank=True)
     PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
     date = models.DateField(verbose_name="เดือน-ปี", null = True, blank = True, default = first_day_of_month)

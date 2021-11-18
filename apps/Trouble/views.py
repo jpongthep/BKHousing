@@ -15,7 +15,7 @@ from .models import ( SetForm,
 
 def view_eval(request, HomeRequstID = 1, eval_type = 'Unit'):
     
-    print(HomeRequstID, eval_type)
+    # print(HomeRequstID, eval_type)
     home_request = HomeRequest.objects.get(id = HomeRequstID)
         
     set_form = SetForm.objects.get(code = 'F60')

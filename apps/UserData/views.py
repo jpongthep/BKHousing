@@ -43,5 +43,3 @@ class UserProfilesView(UpdateView):
         messages.success(request,'บันทึกการแก้ไขเรียบร้อย')
         return super().post(request, *args, **kwargs)
 
-
-
