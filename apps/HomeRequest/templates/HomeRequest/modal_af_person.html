@@ -10,13 +10,12 @@
       <div class="modal-body">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-3">ตำแหน่ง : {{ object.Position }}</div>
-            <div class="col-md-3">สังกัด : {{ object.Unit }}</div>
-            <div class="col-md-3">โทร : {{ object.Requester.OfficePhone }}, {{object.Requester.MobilePhone }}</div>
-            
-            <div class="col-md-3">รายได้ : {{ object.Salary|add:object.AddSalary }}</div>
+            <div class="col-md-10">ตำแหน่ง : {{ object.Position }}</div>
+            {% comment %} <div class="col-md-3">สังกัด : {{ object.Unit }}</div> {% endcomment %}
+            <div class="col-md-2">รายได้ : {{ object.Salary|add:object.AddSalary }}</div>
           </div>
           <div class="row mt-2">
+            <div class="col-md-4">โทร : {{ object.Requester.OfficePhone }}, {{object.Requester.MobilePhone }}</div>            
             <div class="col-4">สถานภาพ : {{ object.get_Status_display }}</div>
             {% if object.Status|stringformat:"i" in "2,7" %}
             <div class="col-4">ชื่อคู่สมรส : {{ object.SpouseName|default_if_none:"-" }}</div>

@@ -204,10 +204,20 @@ DEFAULT_LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'logs/EvidenceAccess.log',
         },     
+        'adminFile': {
+            'level': 'INFO',
+            'formatter': 'simple',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/admin.log',
+        },     
     },
     'loggers': {
         'MainLog': {
             'handlers': ['DebugFile', 'WarningFile'],
+            'level': 'DEBUG',
+        },      
+        'AdminLog': {
+            'handlers': ['adminFile'],
             'level': 'DEBUG',
         },      
         'LoginLog': {

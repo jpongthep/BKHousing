@@ -12,7 +12,8 @@ from apps.Utility.Constants import ( PERSON_STATUS,
                                      HomeZone,
                                      HomeRequestProcessStep,
                                      CoResidenceRelation,
-                                     HomeRentPermission)
+                                     HomeRentPermission,
+                                     HomeRequestType)
 
 from apps.Configurations.models import YearRound
 from apps.UserData.models import User, Unit as TheUnit
@@ -117,6 +118,16 @@ class HomeRequest(models.Model):
     PersonTroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน กพ.", null=True,blank = True)
     #คะแนนประเมินล่าสุด
     TroubleScore = models.IntegerField(verbose_name="คะแนนประเมินล่าสุด", null=True,blank = True)
+
+    recorder = models.ForeignKey(User, on_delete = models.DO_NOTHING, related_name='recorder_admin',default = None, null=True,blank = True)
+    request_type =  models.CharField(verbose_name="ประเภทคำขอ", max_length = 2, choices = HomeRequestType.choices,default = HomeRequestType.NEW, null=True, blank = True)
+    specificed_need = models.CharField(verbose_name="ความต้องการเฉพาะเจาะจง", max_length = 50, default = '', null=True,blank = True)
+    foster_person = models.CharField(verbose_name="ผู้ฝาก", max_length = 50, default = '', null=True,blank = True)
+    foster_date = models.DateField(verbose_name = "วันที่รับฝาก", default=date.today, null=True, blank=True)
+    foster_reason = models.CharField(verbose_name="หมายเหตุผู้ฝาก", max_length = 100, default = '', null=True,blank = True)
+    have_document = models.BooleanField(verbose_name = 'มีเอกสารคำขอ', default = True)
+    document_number = models.CharField(verbose_name="เลข กห.", default = '', max_length = 200, null=True,blank = True)
+    document_date = models.DateField(verbose_name="ลงวันที่", default = date.today, max_length = 200, null=True,blank = True)
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

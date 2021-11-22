@@ -49,8 +49,15 @@
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row mb-2">
-                    <div class="col-sm-10"><h4>ปีงบประมาณ 2565</h4> </div>
-                    <div class="col-sm-2"></div>
+                    <div class="col-sm-9"><h4>ปีงบประมาณ 2565</h4> </div>
+                    <div class="col-sm-3">
+                        <div class="input-group mb-3">
+                            <input type="text"  v-model="create_person_id" placeholder = "เลขบัตรประชาชน" class="form-control">
+                            <div class="input-group-append">
+                                <button class="btn btn-info" type="button" @click = "check_create();">สร้างคำขอบ้านพัก</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <table class="table table-bordered table-striped unit-list">
@@ -321,6 +328,7 @@
                 current_hr_id: 0,
                 filter_data : 'all',
                 num_report :[],
+                create_person_id : "",
 
                 object_list : [
                     {% for object in object_list %}
@@ -508,6 +516,33 @@
                     this.show_rank_status.splice(index,1);       
                 else             
                     this.show_rank_status.push(status);                  
+            },
+            check_create()
+            {
+                // alert(this.create_person_id);
+                urltext = "{% url 'HomeRequest:check_create' 99999 %}";
+                new_urltext = urltext.replace("99999",this.create_person_id)
+                // new_urltext = urltext.replace("99999","PP")
+                // console.log(new_urltext);
+                // console.log(index, hr_id);
+
+                fetch(new_urltext)
+                    .then(response => response.json())
+                    .then(data => {
+                        
+                        if(data["status"] == "exists")
+                        {
+                            urltext = "{% url 'HomeRequest:manual_update' '99999' %}";
+                            manualURL = urltext.replace("99999",data["hr_id"])  
+                            window.open(manualURL ,'_blank');
+                        }
+                        else if(data["status"] != "reject")
+                        {
+                            urltext = "{% url 'HomeRequest:manual' '99999' %}";
+                            manualURL = urltext.replace("99999",this.create_person_id)  
+                            window.open(manualURL ,'_blank');
+                        }
+                    });
             },
             show_doc(hm_id)
             {

@@ -127,6 +127,13 @@ class HomeDataStatus(models.TextChoices):
     FIX = 'FX', _('ซ่อม')
     REMOVE = 'RM', _('รื้อถอน')
 
+class HomeRequestType(models.TextChoices):
+    NEW = 'NW', _('ขอใหม่')
+    CHANGE = 'CH', _('ขอเปลี่ยน')
+    SWAP = 'SW', _('ขอสับเปลี่ยน')
+    CONTINUE = 'CT', _('ขอต่อจากบิดา/มารดา')
+    
+
 class PAYMENT_METHOD(models.IntegerChoices):
     NOMETHOD = 0, _('ไม่ระบุ')
     CASH = 1, _('จ่ายเงินสด')

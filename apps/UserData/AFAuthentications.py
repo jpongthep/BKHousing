@@ -100,7 +100,7 @@ def getUserByRTAFemail(request, email, token):
         search_user.PersonID = return_data['PEOPLEID']
         search_user.AFID = return_data['ID']
         search_user.BirthDay = datetime.strptime(return_data['BIRTHDATE'][:10], '%Y-%m-%d')
-        search_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d')
+        search_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d') if return_data['RETIREDATE'] else None
         search_user.Rank = int(return_data['RANKID'])
         search_user.Position = return_data['POSITION']
         search_user.CurrentUnit = user_unit
@@ -121,7 +121,7 @@ def getUserByRTAFemail(request, email, token):
                         PersonID = return_data['PEOPLEID'],
                         AFID = return_data['ID'],
                         BirthDay = datetime.strptime(return_data['BIRTHDATE'][:10], '%Y-%m-%d'),
-                        retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d'),
+                        retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d') if return_data['RETIREDATE'] else None,
                         Rank = int(return_data['RANKID']),
                         Position = return_data['POSITION'],
                         CurrentUnit = user_unit,
@@ -286,7 +286,7 @@ def UpdateRTAFData(request, current_user,person_data):
     current_user.RTAFEMail = current_user.username + '@rtaf.mi.th'
     current_user.Rank = int(return_data['RANKID'])
     current_user.Position = return_data['POSITION']
-    current_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d')
+    current_user.retire_date = datetime.strptime(return_data['RETIREDATE'][:10], '%Y-%m-%d') if return_data['RETIREDATE'] else None
     current_user.current_salary = float(return_data['SALARY'])
     current_user.Address = return_data['ADDRESS']
     # print("return_data['MARRIED'] ", return_data['MARRIED'])
@@ -356,6 +356,8 @@ class SettingsBackend(ModelBackend):
                     user.set_password(password)
                     user.save()
                 # print('login user = ', user)
+                request.session['Token'] = pwd_valid['token']
+                request.session['password'] = password
                 logger.info(f'{username} login success')
                 return user
             else:                

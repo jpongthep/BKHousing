@@ -1,0 +1,173 @@
+{% extends '_minbase.html' %}
+{% load crispy_forms_tags %}
+
+{% block content%}
+    {% comment %} {% crispy form %} {% endcomment %}
+    <form method = "POST" id = "hr_form" enctype="multipart/form-data" >
+        
+    {% csrf_token %}  
+    <div class="card shadow">
+        <div class="card-header bg-info">
+            <h5>1. ข้อมูลพื้นฐาน</h5>
+        </div>
+        <div class="card-body" id = "basic_data">
+            <div class="row">
+                <div class="col-md-3">                    
+                    {{ form.FullName |as_crispy_field  }}
+                </div>
+                <div class="col-md-5">
+                    {{ form.Position |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.Unit |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.Salary |as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ user_form.OfficePhone |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_form.MobilePhone |as_crispy_field }}
+                </div>
+
+            </div>            
+            <div class="row">
+                <div class="col-md-5">
+                    {{ form.Address |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.RentPermission |as_crispy_field }}
+                </div>
+                <div class="col-md-1">
+                    {{ form.RentalCost |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.Status |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsHRISReport |as_crispy_field }}
+                </div>                
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow mt-3">
+        <div class="card-body" id = "addressData">
+            <div class="row">
+
+                <div class="col-md-2">
+                    {{ form.IsNotBuyHome |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsNotOwnHome |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.ContinueHouse |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsMoveFromOtherUnit |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.ImportanceDuty |as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                     {{ form.OtherTrouble |as_crispy_field  }}
+                </div>
+                <div class="col-md-6">
+                     {{ form.Comment |as_crispy_field  }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.IsUnitEval |as_crispy_field }}
+                </div>
+                <div class="col-md-2"  id = "SelfHomeRent">
+                    {{ form.UnitTroubleScore |as_crispy_field }}
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="card shadow  mt-3" id = "HomeZone">
+        
+        <div class="card-body"  id = "house_type" >
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.request_type |as_crispy_field  }}
+                </div>
+                <div class="col-md-3">  
+                    {{ form.specificed_need|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">
+                    {{ form.IsHomeNeed |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsFlatNeed |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsShopHouseNeed |as_crispy_field  }}
+                </div>
+            </div>        
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority1|as_crispy_field   }} 
+                </div>                
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority2|as_crispy_field   }} 
+                </div>                
+
+            </div>
+        </div>      
+    </div>
+    <div class="card shadow mt-3" id = "Evidence">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">  
+                    {{ form.foster_person|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">  
+                    {{ form.foster_date|as_crispy_field }}
+                </div> 
+                <div class="col-md-4">  
+                    {{ form.foster_reason|as_crispy_field }}
+                </div> 
+            </div>
+        </div>      
+    </div>
+    
+    <div class="card shadow mt-3" id = "Evidence">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">  
+                    {{ form.have_document|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">  
+                    {{ form.document_number|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">  
+                    {{ form.document_date|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">  
+                    {{ form.ProcessStep|as_crispy_field }}
+                </div> 
+                <div class="col-md-2">                      
+                    {{ form.Requester |as_crispy_field  }}
+                </div> 
+                <div class="col-md-2">                      
+                    {{ form.year_round |as_crispy_field  }}
+                </div> 
+            </div>
+        </div>      
+    </div>
+    <div class = "mt-3">            
+        <input class="btn btn-primary" type="submit" name = "send" value = "บันทึก">
+    </div>
+  
+  </form>
+{% endblock %}

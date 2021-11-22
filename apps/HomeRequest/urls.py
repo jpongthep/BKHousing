@@ -22,6 +22,12 @@ from .views_documents import (
                     line_api,
                     download_decryp
                     )
+from .views_admin import (ManualCreateHomeRequestView,
+                          ListHomeRequestView,
+                          check_create_hr,
+                          ManualHomeRequestAPIView,
+                          ManualUpdateHomeRequestView
+                        )
 
 from .views_modals import af_person_data_detailview
 # from rest_framework import routers
@@ -34,6 +40,12 @@ app_name = 'HomeRequest'
 urlpatterns = [
     path('pf', ProcessFlow.as_view(), name = 'process_flow'),
     path('cr', CreateHomeRequestView.as_view(), name = 'create'),
+    path('ml_sv', ManualHomeRequestAPIView.as_view(), name = 'manual_save'),
+    path('ml_ck/<person_id>', check_create_hr, name = 'check_create'),
+    path('ml/<person_id>', ManualCreateHomeRequestView.as_view(), name = 'manual'),
+    path('ml_up/<pk>', ManualUpdateHomeRequestView.as_view(), name = 'manual_update'),
+    path('mlls', ListHomeRequestView.as_view(), name = 'manual_list'),
+
     path('<pk>/ud', UpdateHomeRequestView.as_view(), name = 'update'),
     path('<pk>/dt', HomeRequestDetail.as_view(), name = 'detail'),
     path('afp', AFPersonListView.as_view(), name = 'af_person'),

@@ -7,8 +7,11 @@ from django.utils.translation import ugettext as _
 from django.template import loader
 from django.utils.safestring import mark_safe
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Submit, Row, Column
 
 from .models import HomeRequest, CoResident
+from apps.UserData.forms import UserCurrentDataForm
 from apps.Utility.utils import encryp_file
 
 
@@ -58,7 +61,7 @@ class HomeRequestForm(forms.ModelForm):
                         
             'TravelDescription': forms.Textarea(
                 attrs={
-                        'placeholder': 'ในวันทำงานจะตื่นตั้งแต่ 0500 และปฏิบัติภารกิจส่วนตัว ออกจากบ้านเวลา 0540 แวะซื้อข้าวเพื่อทานเช้าและเที่ยง ถึงที่ทำงานเวลาประมาณ 0630',
+                        'placeholder': 'เขียนอธิบายการเดินทางไป - กลับในแต่ละวันตั้งแต่เวลาตื่นตอนเช้าจนถึงเวลากลับบ้าน เวลาออกจากบ้าน เวลาถึงบ้าน ระยะทาง ระยะเวลาที่ใช้เดินทาง ภารกิจที่ต้องทำในแต่ละวัน เช่น การส่ง-รับลูก การดูแลพ่อแม่ หรือภารกิจของหน่วยที่ทำให้ต้องมาก่อน / เลิกหลังเวลา...',
                         'rows' : 4
                 }),
             'OtherTrouble': forms.Textarea(
@@ -152,6 +155,107 @@ class HomeRequestForm(forms.ModelForm):
         cleaned_data['SpouseDeathRegistration'] = self.encryp_file_field(cleaned_data['SpouseDeathRegistration']) if cleaned_data['SpouseDeathRegistration'] else None
 
         return cleaned_data 
+
+
+class ManualHomeRequestForm(forms.ModelForm):
+    class Meta:
+        model = HomeRequest
+        fields = ['Requester','year_round', 'FullName', 'Position', 'Unit', 'Address', 'Salary',
+                'RentPermission', 'RentalCost','Status', 'IsHRISReport', 'IsNotBuyHome', 
+                'IsNotOwnHome', 'ContinueHouse', 'IsMoveFromOtherUnit', 'IsUnitEval','UnitTroubleScore',
+                'ImportanceDuty','OtherTrouble', 'Comment', 'request_type', 'IsHomeNeed', 'IsFlatNeed', 'IsShopHouseNeed', 
+                'ZoneRequestPriority1','ZoneRequestPriority2',
+                'specificed_need', 'foster_person', 'foster_date', 'foster_reason', 'have_document', 
+                'document_number', 'document_date','ProcessStep'
+                ]
+        widgets = {
+            'Requester': forms.TextInput(attrs = {'class': 'd-none'}),
+            'year_round': forms.TextInput(attrs = {'class': 'd-none'}),
+            'OtherTrouble': forms.Textarea(attrs={'rows' : 2}),
+            'Comment': forms.Textarea(attrs={'rows' : 2}),
+            'foster_date': forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
+            'document_date': forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
+        }
+
+
+class CrispyManualHomeRequestForm(ManualHomeRequestForm): #,UserCurrentDataForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Row(
+                Column('Requester', css_class='d-none form-group col-md-4 mb-0 hidden'),
+                Column('year_round', css_class='d-none form-group col-md-2 mb-0'),
+
+                css_class='form-row'
+            ),
+            Row(
+                Column('FullName', css_class='form-group col-md-4 mb-0'),
+                Column('Position', css_class='form-group col-md-6 mb-0'),
+                Column('Unit', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row'
+            ),
+            # Row(
+            #     Column('UserCurrentDataForm', css_class='form-group col-md-3 mb-0'),
+            #     Column('MobilePhone', css_class='form-group col-md-3 mb-0'),
+            #     Column('RTAFEMail', css_class='form-group col-md-3 mb-0'),
+            #     Column('email', css_class='form-group col-md-3 mb-0'),
+            #     css_class='form-row'
+            # ),
+            Row(
+                Column('Address', css_class='form-group col-md-5 mb-0'),
+                Column('RentPermission', css_class='form-group col-md-2 mb-0'),
+                Column('RentalCost', css_class='form-group col-md-2 mb-0'),
+                Column('Status', css_class='form-group col-md-3 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('IsHRISReport', css_class='form-group col-md-2 mb-0'),
+                Column('IsNotBuyHome', css_class='form-group col-md-2 mb-0'),
+                Column('IsNotOwnHome', css_class='form-group col-md-2 mb-0'),
+                Column('ContinueHouse', css_class='form-group col-md-2 mb-0'),
+                Column('IsMoveFromOtherUnit', css_class='form-group col-md-2 mb-0'),
+                Column('ImportanceDuty', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('OtherTrouble', css_class='form-group col-md-6 mb-0'),
+                Column('Comment', css_class='form-group col-md-6 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('IsUnitEval', css_class='form-group col-md-2 mb-0'),
+                Column('UnitTroubleScore', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row'
+            ),
+
+            Row(
+                Column('request_type', css_class='form-group col-md-2 mb-0'),
+                Column('IsHomeNeed', css_class='form-group col-md-2 mb-0'),
+                Column('IsFlatNeed', css_class='form-group col-md-2 mb-0'),
+                Column('IsShopHouseNeed', css_class='form-group col-md-2 mb-0'),                
+                Column('ZoneRequestPriority1', css_class='form-group col-md-2 mb-0'),                
+                Column('ZoneRequestPriority2', css_class='form-group col-md-2 mb-0'),                
+                css_class='form-row'
+            ),
+            Row(
+                Column('specificed_need', css_class='form-group col-md-4 mb-0'),
+                Column('foster_person', css_class='form-group col-md-2 mb-0'),
+                Column('foster_date', css_class='form-group col-md-2 mb-0'),                
+                Column('foster_reason', css_class='form-group col-md-4 mb-0'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('have_document', css_class='form-group col-md-2 mb-0'),
+                Column('document_number', css_class='form-group col-md-2 mb-0'),
+                Column('document_date', css_class='form-group col-md-2 mb-0'),
+                Column('ProcessStep', css_class='form-group col-md-2 mb-0'),
+                css_class='form-row'
+            ),
+            Submit('submit', 'บันทึกข้อมูล')
+        )
+
+
 
 CoResidentFormSet = inlineformset_factory(HomeRequest,  # parent form
                                           CoResident,  # inline-form

@@ -371,6 +371,9 @@ def TestExcel(request,unit_id):
     if request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
         if request.user.CurrentUnit == xls_unit:
             allow_access = True
+            
+    if request.user.groups.filter(name='PERSON_ADMIN').exists():
+        allow_access = True
 
     if not allow_access: raise PermissionDenied()
 
@@ -397,7 +400,7 @@ def TestExcel(request,unit_id):
         for status in [status_single, status_family]:
             
             queryset = HomeRequest.objects.filter(Unit = xls_unit
-                                        ).filter(ProcessStep = 'US'
+                                        #).filter(ProcessStep = 'US'
                                         ).filter(year_round__Year = get_current_year()
                                         ).filter(Requester__Rank__in = rank_level
                                         ).filter(Status__in = status 

@@ -3,6 +3,12 @@ from rest_framework import serializers
 from .models import HomeRequest
 
 
+class ManualHomeRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HomeRequest
+        fields = '__all__'
+
+
 class HomeRequestSerializer(serializers.ModelSerializer):
     UnitName = serializers.CharField(source='Requester.CurrentUnit.ShortName',read_only=False,allow_null=True,default=None)
     MobilePhone = serializers.CharField(source='Requester.OfficePhone',read_only=False,allow_null=True,default=None)
