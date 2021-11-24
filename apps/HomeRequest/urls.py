@@ -20,13 +20,14 @@ from .views_documents import (
                     TestExcel,
                     UnitReportDocument,
                     line_api,
-                    download_decryp
+                    download_decryp,
+                    Excel4PersonAdmin
                     )
 from .views_admin import (ManualCreateHomeRequestView,
                           ListHomeRequestView,
                           check_create_hr,
                           ManualHomeRequestAPIView,
-                          ManualUpdateHomeRequestView
+                          ManualUpdateHomeRequestView,
                         )
 
 from .views_modals import af_person_data_detailview
@@ -64,6 +65,7 @@ urlpatterns = [
 
     path('<pk>/md',af_person_data_detailview.as_view(), name = 'md'),
 
+    path('ps_xls', Excel4PersonAdmin, name = 'xls_person_admin'),
     path('<unit_id>/xls', TestExcel, name = 'xls'),
     path('cf', ConsentForm, name = 'ConsentForm'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),

@@ -49,7 +49,10 @@
         <div class="table-wrapper">
             <div class="table-title">
                 <div class="row mb-2">
-                    <div class="col-sm-9"><h4>ปีงบประมาณ 2565</h4> </div>
+                    <div class="col-sm-8"><h4>ปีงบประมาณ 2565</h4> </div>
+                    <div class="col-sm-1 text-end">
+                        <a href = "{% url 'HomeRequest:xls_person_admin' %}" target = '_blank'><i class="fas fa-file-excel text-success fa-2x"></i></a>
+                    </div>
                     <div class="col-sm-3">
                         <div class="input-group mb-3">
                             <input type="text"  v-model="create_person_id" placeholder = "เลขบัตรประชาชน" class="form-control">

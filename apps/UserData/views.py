@@ -84,21 +84,6 @@ def AddUserByPersonID(request, person_id):
         # print('return_data = ',return_data)
         token_expired = TokenExpire(request, return_data)
 
-    
-    
-
-
-
-                            # data = {
-                            #     "user" : request.user.username ,
-                            #     "pass": request.session['password']
-                            # } 
-                            # try:
-                            #     r = rq.post(url = URL, data = data, verify=False)
-                            # except:
-                            #     return False
-           
-
     if return_data['result'] == "Process-Error":
         return "Process-Error"
 

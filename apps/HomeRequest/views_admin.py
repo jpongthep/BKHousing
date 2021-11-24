@@ -175,16 +175,7 @@ def check_create_hr(request, person_id):
     else:
         result = AddUserByPersonID(request, person_id)
     
-        if result == "create new":
-            return JsonResponse({"status": "new", "user" : result})
-        elif result == "exists":
-            return JsonResponse({"status": "new", "user" : result})
-        elif result == "no data":
-            return JsonResponse({"status": "new", "user" : result})
-        elif  result == "TokenExpiredError":
-            return JsonResponse({"status": "new", "user" : result})
-        else:
-            return JsonResponse({"status": "new", "user" : result})
+        return JsonResponse({"status": "new", "user" : result})
 
 
     

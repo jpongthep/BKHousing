@@ -89,6 +89,7 @@ CHOICE_Rank = (
     ( 0 ,  '' )
 ) 
 
+
 # HomeDataType,
 
 # 1234
@@ -224,3 +225,8 @@ FillFormTypeChoice = [
     ('Self', 'ประเมินตนเอง'),
     ('Unit', 'นขต.ประเมิน'),
     ('HR', 'กพ.ทอ.ประเมิน')]
+
+officer_rank =  list(range(30100,30600)) + list(range(31411,31540)) 
+non_officer_rank = list(range(30611,30850)) +  list(range(40000,40700)) 
+status_single = [PERSON_STATUS.SINGLE, ] 
+status_family = [PERSON_STATUS.MARRIES_TOGETHER, PERSON_STATUS.MARRIES_SEPARATE, PERSON_STATUS.DIVOTE, PERSON_STATUS.WIDOW, ] 

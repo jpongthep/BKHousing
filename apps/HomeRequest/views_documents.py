@@ -33,12 +33,14 @@ from .models import HomeRequest
 from .views import get_current_year
 from apps.UserData.models import Unit
 from apps.Utility.utils import decryp_file
-from apps.Utility.Constants import PERSON_STATUS
+from apps.Utility.Constants import PERSON_STATUS, officer_rank, non_officer_rank, status_single, status_family
 logger = logging.getLogger('MainLog')
 evidence_logger = logging.getLogger('EvidenceAccessLog')
 
 
 def ArabicToThai(number_string): 
+    if not number_string:
+        return number_string
     dic = { 
         '0':'๐', 
         '1':'๑', 
@@ -385,14 +387,9 @@ def TestExcel(request,unit_id):
 
     # sheet = workbook.active
 
-
     # Write what you want into a specific cell
     sheet_number = 0
     last_insert = 0
-    officer_rank =  list(range(30100,30600)) + list(range(31411,31540))
-    non_officer_rank = list(range(30611,30850)) +  list(range(40000,40700))
-    status_single = [PERSON_STATUS.SINGLE, ]
-    status_family = [PERSON_STATUS.MARRIES_TOGETHER, PERSON_STATUS.MARRIES_SEPARATE, PERSON_STATUS.DIVOTE, PERSON_STATUS.WIDOW, ]
 
 
     for rank_level in [officer_rank, non_officer_rank]:
@@ -484,6 +481,96 @@ def TestExcel(request,unit_id):
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(xls_title)
     response['Content-Length'] = length
     return response
+
+
+@login_required 
+def Excel4PersonAdmin(request):
+
+    allow_access = False
+          
+    if request.user.groups.filter(name='PERSON_ADMIN').exists():
+        allow_access = True
+
+    if not allow_access: raise PermissionDenied()
+
+    # testdoc = static('documents/test_doc.docx')
+    testxls =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/af_report.xlsx')
+    # Start by opening the spreadsheet and selecting the main sheet
+    workbook = load_workbook(filename=testxls)
+    xls_title= f"RequestTotal.xlsx"
+
+    # sheet = workbook.active
+
+    # Write what you want into a specific cell
+    last_insert = 0
+    
+    queryset = HomeRequest.objects.filter(year_round__Year = get_current_year()
+                                ).order_by("-UnitTroubleScore")                      
+                                
+    sheets = workbook.sheetnames
+    sheet = workbook[sheets[0]]
+    first_row = 3
+    
+    Rank = request.user.get_Rank_display()
+    if "ว่าที่" in request.user.get_Rank_display():
+        Rank = Rank[7:]
+
+    # sheet["J36"] = f"{Rank}"
+    # sheet["J37"] = f"({request.user.first_name}  {request.user.last_name})"
+    RentPermission_text = { 1 : "ไม่มี" , 2 : "มี-ไม่เบิก", 3 : "มี-เบิก"}
+    max_data = queryset.count()
+    for i, data in enumerate(queryset):
+            
+        Salary = data.Salary if data.Salary else 0
+        AddSalary = data.AddSalary if data.AddSalary else 0
+        RentalCost = data.RentalCost if data.RentalCost else "-"
+
+
+        Income = "{:,}".format(Salary + AddSalary)
+        RentalCost = "{:,}".format(RentalCost) if RentalCost != "-" else "-"
+
+        sheet[f"A{first_row+i}"] = "ป." if data.Requester.Rank in non_officer_rank else "ส."
+        sheet[f"B{first_row+i}"] = data.Requester.get_Rank_display()
+        sheet[f"C{first_row+i}"] = data.Requester.first_name + " " + data.Requester.first_name
+        sheet[f"D{first_row+i}"] = str(data.Requester.CurrentUnit.ShortName)
+        sheet[f"E{first_row+i}"] = data.Requester.PersonID
+        sheet[f"G{first_row+i}"] = data.Requester.MobilePhone
+        sheet[f"F{first_row+i}"] = data.Requester.OfficePhone
+        sheet[f"L{first_row+i}"] = ArabicToThai(data.Requester.MobilePhone)
+        sheet[f"H{first_row+i}"] = RentPermission_text[data.RentPermission]
+        sheet[f"I{first_row+i}"] = data.Address
+        sheet[f"J{first_row+i}"] = data.get_Status_display()
+        sheet[f"k{first_row+i}"] = "รายงานแล้ว" if data.IsHRISReport else "-"
+        sheet[f"L{first_row+i}"] = ArabicToThai(data.Requester.OfficePhone)
+
+        last_insert += 1
+            # # เลื่อนไปชีทต่อไป
+            # last_row_data = i+last_row
+
+            # # print("i+last_row = ", i+last_row)
+            # sheet.move_range("I151:J155", rows = -150 + last_row_data + 4, cols=0)
+
+            # for row_merge in range(last_row_data + 7,last_row_data + 11):
+            #     sheet.merge_cells(f"J{row_merge}:L{row_merge}")
+       
+            # sheet_number += 1         
+
+
+
+    f = BytesIO()
+    
+    workbook.save(f)
+    length = f.tell()
+    f.seek(0)
+    response = HttpResponse(
+        f.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    # print('xls = ',xls_title)
+    response['Content-Disposition'] = 'attachment; filename="{}"'.format(xls_title)
+    response['Content-Length'] = length
+    return response
+
 
 @csrf_exempt
 def line_api(request):

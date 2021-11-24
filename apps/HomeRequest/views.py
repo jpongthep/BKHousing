@@ -5,7 +5,7 @@ import json
 from io import StringIO, BytesIO
 import logging
 #django Module
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
@@ -67,13 +67,19 @@ class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
             for ag in self.allow_groups:
                 if self.request.user.groups.filter(name=ag).exists():
                     return True
+        
+        if self.has_home_request():
+            return True
 
         return False
 
     def has_home_request(self):
         queryset = HomeRequest.objects.filter(Requester = self.request.user)
         queryset = queryset.filter(year_round__Year = get_current_year())
-        return queryset.exists()
+        if queryset.exists():
+            return queryset[0].id
+        else:
+            return False
 
 
 class ProcessFlow(TemplateView):
@@ -86,13 +92,18 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
     template_name = "HomeRequest/CreateHomeRequest.html"
 
     # ทดสอบเพิ่มเติมว่าถ้าปีนี้มีการส่งคำขอแล้ว ก็ส่งอีกไม่ได้
-    def test_func(self):
-        if super().test_func() == False:
-            return False
-        else:
-            return not super().has_home_request()
+    # def test_func(self):
+    #     if super().test_func() == False:
+    #         return False
+    #     else:
+    #         return not super().has_home_request()
 
     def get(self, request, *args, **kwargs):
+
+        hr_id = super().has_home_request()
+        if hr_id:
+            return redirect('HomeRequest:update', pk = hr_id)
+
         self.object = None
         # form_class = self.get_form_class()
         # form = self.get_form(form_class)
