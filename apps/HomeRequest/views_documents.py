@@ -29,7 +29,7 @@ line_bot_api = LineBotApi('odFxpwpkdg')
 parser = WebhookParser('ab315a0889e13')
 
 #My module
-from .models import HomeRequest
+from .models import CoResident, HomeRequest
 from .views import get_current_year
 from apps.UserData.models import Unit
 from apps.Utility.utils import decryp_file
@@ -66,7 +66,7 @@ month_text = ["","ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","�
 full_month_text = ["","มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"]
 
 
-def TestDocument(request, home_request_id):
+def TestDocument(request, home_request_id,detail_doc = 0):
     # testdoc = static('documents/test_doc.docx')
     home_request = HomeRequest.objects.get(id = home_request_id)
 
@@ -74,7 +74,10 @@ def TestDocument(request, home_request_id):
     #     testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_1_page_draft.docx')
     #     docx_title= f"Draft-{home_request.Requester.AFID}.docx"
     # else:
-    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_1_page.docx')
+    if detail_doc:
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_detail.docx')
+    else:
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/house_request_data_1_page.docx')
     docx_title= f"House-{home_request.Requester.AFID}.docx"
 
     document = Document(testdoc)
@@ -168,10 +171,20 @@ def TestDocument(request, home_request_id):
     FullName = home_request.FullName
     if "ว่าที่" in FullName:
         FullName = FullName[7:]
+    
+    co_residence = CoResident.objects.filter(home_request = home_request).order_by("Relation")
+    cr_text = ""
+    for cr in co_residence:
+        cr_text += str(cr.FullName) + " (" 
+        cr_text += str(cr.get_Relation_display()) + ")\t" 
+        cr_text += f"อาชีพ {cr.Occupation}\t"  if cr.Occupation != "-" else "\t"
+        cr_text += "รายได้ {:,} บาท\n".format(cr.Salary) if cr.Salary > 0 else "ไม่มีรายได้\n"
+ 
+
     dic = {
             'Sex': self_call,
             'Rank': Rank,
-            'FullName':FullName,
+            'FullName':FullName ,
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
             'ADDR':home_request.Address,
@@ -199,6 +212,9 @@ def TestDocument(request, home_request_id):
             'Z6':IsNeverRTAFHome,
             'Z7':IsNotRTAFHome,
             'Z8':ImportanceDuty,
+            'TravelDescription': home_request.TravelDescription,
+            'OtherTrouble': home_request.OtherTrouble,
+            'co_residence': cr_text,
             'Z9':IsMoveFromOtherUnit,
             'ZA':IsHomelessEvict,
             'ZB':IsHomelessDisaster,
@@ -224,7 +240,7 @@ def TestDocument(request, home_request_id):
             'Year':Year
             }
     # print(dic)
-    
+   
     for para in document.paragraphs:
         # print('para = ',para)
         for key, value in dic.items():
@@ -509,7 +525,7 @@ def Excel4PersonAdmin(request):
                                 
     sheets = workbook.sheetnames
     sheet = workbook[sheets[0]]
-    first_row = 3
+    first_row = 2
     
     Rank = request.user.get_Rank_display()
     if "ว่าที่" in request.user.get_Rank_display():
@@ -529,9 +545,16 @@ def Excel4PersonAdmin(request):
         Income = "{:,}".format(Salary + AddSalary)
         RentalCost = "{:,}".format(RentalCost) if RentalCost != "-" else "-"
 
+        if data.IsHomeNeed : 
+            home_type = "บ้านพัก"
+        elif data.IsFlatNeed : 
+            home_type = "แฟลต"
+        elif data.IsShopHouseNeed :
+            home_type = "ห้องแถว"
+
         sheet[f"A{first_row+i}"] = "ป." if data.Requester.Rank in non_officer_rank else "ส."
         sheet[f"B{first_row+i}"] = data.Requester.get_Rank_display()
-        sheet[f"C{first_row+i}"] = data.Requester.first_name + " " + data.Requester.first_name
+        sheet[f"C{first_row+i}"] = data.Requester.first_name + " " + data.Requester.last_name
         sheet[f"D{first_row+i}"] = str(data.Requester.CurrentUnit.ShortName)
         sheet[f"E{first_row+i}"] = data.Requester.PersonID
         sheet[f"G{first_row+i}"] = data.Requester.MobilePhone
@@ -541,7 +564,40 @@ def Excel4PersonAdmin(request):
         sheet[f"I{first_row+i}"] = data.Address
         sheet[f"J{first_row+i}"] = data.get_Status_display()
         sheet[f"k{first_row+i}"] = "รายงานแล้ว" if data.IsHRISReport else "-"
-        sheet[f"L{first_row+i}"] = ArabicToThai(data.Requester.OfficePhone)
+        sheet[f"L{first_row+i}"] = "ข้าพเจ้าไม่เป็นผู้เบิกค่าเช่าซื้อ" if data.IsNotBuyHome else "-"
+        sheet[f"M{first_row+i}"] = "ข้าพเจ้าและคู่สมรสไม่มีกรรมสิทธิ์ รัศมี 20 กม." if data.IsNotOwnHome else "-"
+        sheet[f"N{first_row+i}"] = "-"
+        sheet[f"O{first_row+i}"] = "-"
+        sheet[f"O{first_row+i}"] = "-"
+        sheet[f"P{first_row+i}"] = home_type
+        sheet[f"Q{first_row+i}"] = str(data.get_ZoneRequestPriority1_display()) if data.ZoneRequestPriority1 else "-"
+        sheet[f"R{first_row+i}"] = "-"
+        sheet[f"S{first_row+i}"] = data.specificed_need if data.specificed_need else "-"
+        sheet[f"T{first_row+i}"] = data.foster_person if data.foster_person else "-"
+        sheet[f"U{first_row+i}"] = "-"
+        sheet[f"V{first_row+i}"] = "-"
+        sheet[f"W{first_row+i}"] = "-"
+        sheet[f"X{first_row+i}"] = "-"
+        sheet[f"Y{first_row+i}"] = "-"
+        sheet[f"Z{first_row+i}"] = "-"
+        sheet[f"AA{first_row+i}"] = str(data.UnitTroubleScore) if data.UnitTroubleScore else "-"
+        sheet[f"AD{first_row+i}"] = str(data.get_request_type_display()) if data.request_type else "-"
+        sheet[f"AK{first_row+i}"] = str(data.get_Status_display()) if data.Status else "-"
+        sheet[f"AL{first_row+i}"] = "มีรายงาน" if data.IsHRISReport else "ไม่มีรายงาน"
+        sheet[f"AM{first_row+i}"] = str(data.Salary) if data.Salary else "-"
+        
+        sheet[f"AN{first_row+i}"] = str(data.Requester.PlacementCommandDate) if data.Requester.PlacementCommandDate else "-"
+        sheet[f"AO{first_row+i}"] = str(data.Requester.retire_date) if data.Requester.retire_date else "-"
+        sheet[f"AP{first_row+1}"] = "-"
+        sheet[f"AQ{first_row+i}"] = "-"
+        sheet[f"AR{first_row+i}"] = "-"
+        sheet[f"AS{first_row+i}"] = "-"
+        sheet[f"AT{first_row+i}"] = "-"
+        sheet[f"AU{first_row+i}"] = "-"
+        sheet[f"AV{first_row+i}"] = "-"
+        sheet[f"AW{first_row+i}"] = "-"
+        sheet[f"AX{first_row+i}"] = "-"
+
 
         last_insert += 1
             # # เลื่อนไปชีทต่อไป

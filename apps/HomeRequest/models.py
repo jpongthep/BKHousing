@@ -10,6 +10,7 @@ from apps.Utility.Constants import ( PERSON_STATUS,
                                      CHOICE_Rank,
                                      YEARROUND_PROCESSSTEP,
                                      HomeZone,
+                                     CommuteType,
                                      HomeRequestProcessStep,
                                      CoResidenceRelation,
                                      HomeRentPermission,
@@ -30,6 +31,7 @@ class HomeRequest(models.Model):
     Rank = models.PositiveIntegerField(choices = CHOICE_Rank, default = 0, null=True, blank = True)
     FullName = models.CharField(max_length = 255, verbose_name="ยศ - ชื่อ - นามสกุล", null = False, default = '')
     Position = models.CharField(max_length = 200, null=True, verbose_name="ตำแหน่ง")
+    sub_unit =  models.CharField(max_length = 30, verbose_name="สังกัดย่อย", null = True, blank=True)
     Unit = models.ForeignKey(TheUnit, models.SET_NULL, null = True, verbose_name="สังกัด", related_name='Unit')
 
     Salary = models.IntegerField(verbose_name="เงินเดือน(ปัจจุบัน)", null=True, blank=True)
@@ -39,6 +41,7 @@ class HomeRequest(models.Model):
     Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
     GooglePlusCodes1 = models.CharField(max_length = 60, null=True, blank=True, verbose_name="Google Plus Codes 1")
     distance = models.IntegerField(verbose_name="ระยะทางถึงที่ทำงาน (กม.)", null=True, blank=True, default = 0)
+    work_commute =  models.CharField(verbose_name="การเดินทางไปทำงาน", max_length = 5, choices = CommuteType.choices,default = CommuteType.PrivateVehical, null=True, blank = True)
     TravelDescription = models.TextField(null=True, blank=True, verbose_name="บรรยายการเดินทางแต่ละวัน")
 
     # การเบิกค่าเช่าบ้าน
@@ -196,6 +199,12 @@ class HomeRequest(models.Model):
             return step.index(self.ProcessStep)
         elif self.ProcessStep in ['RC','RF']:
             return 0
+    
+    def PriorityList(self):
+        text = ""
+        priority_list = [self.ZoneRequestPriority1,self.ZoneRequestPriority2,self.ZoneRequestPriority3,self.ZoneRequestPriority4,self.ZoneRequestPriority5,self.ZoneRequestPriority6]
+        priority_list = [x for x in priority_list if x]
+        return ">".join(priority_list)
 
 
     def status_icon(self):

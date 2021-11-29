@@ -19,6 +19,8 @@ class Unit(models.Model):
     ShortName = models.CharField(max_length = 20, blank = False)
     FullName  = models.CharField(max_length = 90, blank = False)
     is_Bangkok = models.BooleanField(verbose_name = "กทม.และปริมณฑล", default = True)
+    sub_unit_list  = models.TextField(verbose_name = "รายชื่อหน่วยย่อย", null = True, blank = False)
+    re_cal_sub_unit = models.BooleanField(verbose_name = "คำนวณหน่วยย่อย", default = True)
 
     def __str__(self):
         return f'{self.ShortName}'
@@ -39,6 +41,7 @@ class User(AbstractUser):
     MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True, blank=True)
     RTAFEMail = models.EmailField(verbose_name = "ที่อยู่ email ทอ.", null=True, blank=True)
 
+    sub_unit =  models.CharField(max_length = 30, verbose_name="สังกัดย่อย", null = True, blank=True)
     CurrentUnit =  models.ForeignKey(Unit, verbose_name="สังกัด", on_delete=models.SET_NULL, null = True, blank=True, related_name='CurrentUnit')
     current_salary = models.DecimalField(verbose_name="เงินเดือนปัจจุบัน", max_digits = 9, decimal_places = 2, null=True, blank=True)
     current_status = models.IntegerField(verbose_name="สถานภาพ", default = PERSON_STATUS.SINGLE, choices=PERSON_STATUS.choices, null=True, blank=True)
@@ -78,6 +81,8 @@ class User(AbstractUser):
         RankDisplay = str(self.get_Rank_display())
         if RankDisplay == '':
             return  '??'
+        if "ว่าที่" in RankDisplay:
+            RankDisplay = RankDisplay[6:]
 
         if re.findall("หญิง", RankDisplay ):
             return f'{RankDisplay} {self.first_name} {self.last_name}'

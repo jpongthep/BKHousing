@@ -39,6 +39,7 @@ class HomeRequestSerializer(serializers.ModelSerializer):
         fields = [
                     "id", 
                     "FullName", 
+                    "sub_unit",
                     "UnitName", 
                     "MobilePhone", 
                     "Position",

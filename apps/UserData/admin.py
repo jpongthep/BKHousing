@@ -21,7 +21,7 @@ class UnitAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'CurrentUnit', 'FullName','MobilePhone', 'OfficePhone','last_login')
+    list_display = ('username', 'CurrentUnit','sub_unit', 'FullName','MobilePhone', 'OfficePhone','last_login')
     list_display_links = ['FullName']
     # date_hierarchy  = 'last_login'
     ordering = ('-last_login','CurrentUnit','Rank',)

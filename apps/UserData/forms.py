@@ -4,7 +4,7 @@ from django import forms
 from django.utils.translation import gettext as _
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import User
+from .models import User, Unit
 
 class MyAuthForm(AuthenticationForm):
 
@@ -46,3 +46,11 @@ class UserCurrentDataForm(forms.ModelForm):
         super(UserCurrentDataForm, self).__init__(*args, **kwargs)
         self.fields['email'].label = "ที่อยู่ email อื่น ๆ"
 
+class UnitUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Unit
+        fields = ['sub_unit_list', 're_cal_sub_unit']
+        
+        widgets = {
+            're_cal_sub_unit': forms.CheckboxInput(attrs={'class': 'form-control',})
+        }

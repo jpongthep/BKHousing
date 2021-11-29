@@ -12,7 +12,7 @@ from django.contrib import messages
 from .models import User, Unit
 from apps.Home.models import HomeOwner
 from apps.Payment.models import FinanceData
-from .forms import MyAuthForm, UserCurrentDataForm
+from .forms import MyAuthForm, UserCurrentDataForm, UnitUpdateForm
 from apps.UserData.AFAuthentications import checkRTAFPassdword
 
 from apps.Utility.Constants import FINANCE_CODE
@@ -21,6 +21,10 @@ class MyLoginView(LoginView):
     authentication_form = MyAuthForm
     template_name = 'registration/new_login.html'
 
+
+class UnitUpdateView(UpdateView):
+    model = Unit
+    form_class = UnitUpdateForm
 
 class UserProfilesView(UpdateView):
     model = User

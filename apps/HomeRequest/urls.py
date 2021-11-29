@@ -68,6 +68,7 @@ urlpatterns = [
     path('ps_xls', Excel4PersonAdmin, name = 'xls_person_admin'),
     path('<unit_id>/xls', TestExcel, name = 'xls'),
     path('cf', ConsentForm, name = 'ConsentForm'),
+    path('<home_request_id>/<detail_doc>/doc', TestDocument, name = 'detail_doc'),
     path('<home_request_id>/doc', TestDocument, name = 'doc'),
     path('<Unit_id>/doc_unit', UnitReportDocument, name = 'doc_unit'),
     path('dd/<hr_id>/<evidence>', download_decryp, name = 'download_decryp'),

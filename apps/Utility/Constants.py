@@ -182,6 +182,13 @@ class HomeRequestProcessStep(models.TextChoices):
     ROUND_FINISHED = 'RF', _('RoundFinished')
 
 
+# การเดินทางไปทำงาน
+class CommuteType(models.TextChoices):
+    PrivateVehical = '1-PV', _('ยานพาหนะส่วนตัว')    
+    PublicTranspotation = '2-PT', _('ขนส่งสาธารณะ')
+    PrivateRent = '3-PR', _('รถรับจ้าง')
+  
+
 # ขั้นตอนของเอกสาร
 class CoResidenceRelation(models.TextChoices):
     SPOUSE = '1-SP', _('คู่สมรส')    

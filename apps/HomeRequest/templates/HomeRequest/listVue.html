@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-รายการขอบ้านพัก
+รายการขอบ้านพัก 
 {% endblock %}
 
 {% block scriptlink %}
@@ -45,11 +45,6 @@
         });
     }
 
-    
-
-    
-
-
 </script>
 {% endblock %}
 
@@ -82,7 +77,7 @@
 {% endblock %}
 
 {% block header %}
-รายการคำขอ {{ request.user.CurrentUnit}}
+รายการคำขอ {{ request.user.CurrentUnit}}  
 {% endblock %}
 
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
@@ -128,54 +123,36 @@
             <div class = "row mt-4">
                 <div class="row mb-2">
               
-                    <div class="col-md-7">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('น.5+');" >
-                            <label class="form-check-label">น.5 + </label>
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <input type="text" v-model="name_search_input" v-on:keyup.enter="name_filter()" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button @click="name_filter()" class="btn btn-outline-primary" type="button">ค้นหา</button>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สัญญาบัตร');" >
-                            <label class="form-check-label">สัญญาบัตร</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('ประทวน');" >
-                            <label class="form-check-label">ประทวน</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('โสด');" >
-                            <label class="form-check-label">โสด</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-อยู่ร่วมกัน');"  >
-                            <label class="form-check-label">สมรส-อยู่ร่วมกัน</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-แยกกันอยู่');"  >
-                            <label class="form-check-label">สมรส-แยกกันอยู่</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('หย่า/ม่าย');"  >
-                            <label class="form-check-label">หย่า/ม่าย</label>
-                        </div>                        
                     </div>
-            
-                    <div class="col-md-2">                    
-                        <button class = "btn btn-primary shadow" v-if="filter_data != 'all'" @click="filter_data = 'all'">แสดงทั้งหมด</button>
-                    </div>
-                   <div class="col-sm-3 text-end">
+                    <div class="col-md-3">
+                        <div class="form-check form-check-inline">
+                            <select v-model="sub_unit_filter" class="form-select form-select-inline">
+                                <option value="all">ทุกหน่วย</option>                         
+                                <option v-for="(su,j) in sub_units" :value="su">[[ su ]]  [[ sub_unit_count[j] > 0 ? "[" + sub_unit_count[j] + "]" : ""]] </option>
+                            </select>                            
+                        </div>                             
+                    </div>            
+                    <div class="col-sm-6 text-end">
                         <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success m-1"><i class="fa fa-file-excel"></i> excel</a>
                         <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
                 </div>
-
             </div>               
             <table class="table table-bordered table-hover table-striped caption-top unit-data-list mt-2" >
                     <col width="40">
                     <col width="40">
                     <col width="40">
                     <col width="40">
-                    <col width="220">
+                    <col width="200">
                     <col width="80">
+                    <col width="100">
                     <col width="80">
                     <col width="150">
                     <col width="60">
@@ -188,6 +165,7 @@
                         <th>#</th>
                         <th colspan = "3">เอกสาร</th>
                         <th>ยศ ชื่อ นามสกุล</th>
+                        <th>สังกัด</th>
                         <th>สถานภาพ</th>
                         <th>ผู้อาศัยร่วม</th>
                         <th>เบอร์โทร</th>
@@ -200,7 +178,8 @@
                 </thead>
                 <tbody>
                     <template v-for="(hm,i) in unit_data.HomeRequest" >
-                        <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_rank_status.includes(hm.Status)">
+                    
+                        <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_sub_unit(hm.sub_unit) && check_fullname_search(hm.FullName,hm.sub_unit)"> 
                             <td>[[ i + 1 ]] </td>
                             <td>
                                 <i v-if="hm.ProcessStep != 'RequesterProcess'" class="fa fa-lock icon-size" v-bind:class="ProcessStepClass(hm.ProcessStep)" ></i>
@@ -209,8 +188,9 @@
                             <td><a href = "#" @click = "show_hr_detail(hm.id);"><i class="fa fa-eye text-info icon-size" ></i></a></td>
                             <td><a href = "#" @click = "show_doc(hm.id);"><i class="fas fa-file-word icon-size text-info"></i></a></td>
                             <td>[[ hm.FullName ]]</td>
+                            <td>[[ hm.sub_unit ]]</td>
                             <td>[[ hm.Status ]]</td>
-                            <td>[[ hm.num_coresident ]]</td>
+                            <td>[[ hm.num_coresident > 0 ? hm.num_coresident : "-"]]</td>
                             <td>[[ hm.MobilePhone ]]</td>
                             <td> <!--Requester -->
                                 <div v-if="hm.RequesterDateSend">
@@ -222,14 +202,14 @@
                             </td>
                             <td> <!-- Unit -->
                                 <div v-if="hm.ProcessStep === 'RequesterSended'">
-                                    <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'UP')"><small>รับเรื่อง</small></button>                                
+                                    <button class="btn btn-outline-primary btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'UP')"><small>รับเรื่อง</small></button>                                
                                 </div>  
                                 <div v-else-if="hm.ProcessStep==='UnitProcess'">                                
                                     <strong v-if="hm.IsUnitEval">
                                         <a href = "#" @click="evaluate(hm.id, 'edit');" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">
                                             [[ hm.UnitTroubleScore ]] 
                                         </a> &nbsp;
-                                        <button class="btn btn-outline-primary btn-sm" @click.native.prevent="ConfirmChangeProcessStep(i, hm.id,'US')"><small>ส่งเรื่อง</small></button>                                
+                                        <button class="btn btn-outline-success btn-sm" @click.native.prevent="ConfirmChangeProcessStep(i, hm.id,'US')"><small>ส่งเรื่อง</small></button>                                
                                     </strong>
                                     <a  v-else href = "#" @click="evaluate(hm.id, 'edit');" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">
                                         <span class="fa-stack" style="vertical-align: top;">
@@ -316,14 +296,17 @@
                 confirm_modal : null,
                 confirm_text :"",
                 current_index: 0,
-                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน","สมรส-แยกกันอยู่","หย่าร้าง","ม่าย",7],
+                sub_units : {{ sub_units|safe }},
+                sub_unit_count : [],
+                sub_unit_filter : "all",                
                 current_hr_id: 0,
                 filter_data : 'all',
                 num_report :[],
+                name_search_input : "",
+                fullname_search : "",
                 change_process_step_to : "",
                 step_action :"รับเรื่อง",
                 link_show_data : ["กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล"],
-
 
                 object_list : [
                     {
@@ -402,8 +385,16 @@
                         // console.log("show_unit_data_list vdata = ",data);
                         this.current_index = index;
                         this.unit_data.HomeRequest = data;
+                        
+                        let i = 0;
+                        this.sub_unit_count.length = this.sub_units.length;
+                        this.sub_units.forEach(
+                            sub_unit => {
+                                this.sub_unit_count[i] = this.unit_data.HomeRequest.filter(hm => hm.Position.includes(sub_unit)).length;
+                                // console.log(sub_unit, this.sub_unit_count[i]);
+                                i++;
+                        });
                         this.unit_data.short_name = data[0]["UnitName"];
-
                         this.num_report[0] = this.object_list[index-1].num_RP ;
                         this.num_report[1] = this.object_list[index-1].num_RS ;
                         this.num_report[2] = this.object_list[index-1].num_UP ;
@@ -412,7 +403,6 @@
                         this.num_report[5] =  this.object_list[index-1].num_GH ;
                         //this.unit_data_list_modal.show();
                     });
-
             },
             show_hr_detail(hr_id){
                 urltext = "{% url 'HomeRequest:md' 99999 %}"
@@ -469,8 +459,7 @@
                     });
             },
             ProcessStepClass(hm_process_step)
-            {
-                
+            {                
                 switch(hm_process_step)
                 {
                     case 'RequesterSended' :  return 'text-danger';
@@ -479,8 +468,7 @@
                     case 'PersonProcess' :    return 'text-secondary';
                     case 'GetHouse' :      return 'text-primary';
                 }
-                return '';
-                
+                return '';                
             },
             num_report_func(step_report)
             {   
@@ -516,38 +504,24 @@
                     this.link_show_data[step_report-1] = "ยกเลิกกรอง"
                 }
             },
-            toggle_display(status)
-            {
-                if(status == "หย่า/ม่าย")
-                {
-                    let index1 = this.show_rank_status.indexOf("หย่าร้าง");
-                    let index2 = this.show_rank_status.indexOf("ม่าย");
-                    if (index1 !== -1) 
-                    {
-                        this.show_rank_status.splice(index1,1);       
-                        this.show_rank_status.splice(index2,1);       
-                    }
-                    else             
-                    {
-                        this.show_rank_status.push("หย่าร้าง");                  
-                        this.show_rank_status.push("ม่าย");                  
-                    }
-                    return ;
-                }  
-
-                // กรณีอื่น ๆ 
-                let index = this.show_rank_status.indexOf(status);
-                // console.log(index);
-                // console.log(status);
-                // console.log(this.show_rank_status);
-                if (index !== -1) 
-                    this.show_rank_status.splice(index,1);       
-                else             
-                    this.show_rank_status.push(status);                  
+            show_sub_unit(sub_unit){                
+                if(this.sub_unit_filter == "all")
+                    return true;
+                else
+                    return sub_unit.includes(this.sub_unit_filter);                
             },
-            show_doc(hm_id)
+            check_fullname_search(FullName,sub_unit){   
+                if(this.fullname_search != "")             
+                    return FullName.includes(this.fullname_search) || sub_unit.includes(this.fullname_search);
+                else
+                    return true;
+            },            
+            name_filter(){
+                this.fullname_search = this.name_search_input;
+            },
+        show_doc(hm_id)
             {
-                urltext = "{% url 'HomeRequest:doc' '99999' %}";
+                urltext = "{% url 'HomeRequest:detail_doc' '99999' 1 %}";
                 docURL = urltext.replace("99999",hm_id);               
                 window.open(docURL ,'_blank');
             },
@@ -566,8 +540,7 @@
                 trouble_eval = urltext.replace("99999",hm_id);               
                 window.open(trouble_eval ,'_self');
             }
-        }       
-        
+        }        
     }
 
     Vue.createApp(MainAPP).mount('#MainAPP')

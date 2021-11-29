@@ -344,10 +344,42 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
     template_name = "HomeRequest/listVue.html"
     allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
 
+    def split_sub_unit(self):
+        user_unit = self.request.user.CurrentUnit
+        sub_unit_list = str(user_unit.sub_unit_list)
+        sub_unit_list = [x.strip() for x in sub_unit_list.split(",")]
+        hr_queryset = HomeRequest.objects.filter(Unit = user_unit)
+        for hr in hr_queryset:
+            if not hr.Position:
+                continue
+
+            match = next((x for x in sub_unit_list if x in hr.Position), False)
+            print("#",hr.Position, match)
+            if match:
+                hr.sub_unit = match
+                hr.save()
+
+        user_queryset = User.objects.filter(CurrentUnit = user_unit)
+        for user in user_queryset:
+            if not user.Position:
+                continue
+
+            match = next((x for x in sub_unit_list if x in user.Position), False)
+            print("#",user.Position, match)
+            if match:
+                user.sub_unit = match
+                user.save() 
+
+        user_unit.re_cal_sub_unit = False
+        user_unit.save()
+
+
     def get_queryset(self, *args, **kwargs):
 
         if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
-                queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)                
+                queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)  
+                if self.request.user.CurrentUnit.re_cal_sub_unit:
+                    self.split_sub_unit()
         
         if 'unit_id' in self.kwargs:
             unit_id = self.kwargs['unit_id']
@@ -400,6 +432,10 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
         # print('queryset = ',queryset.query)
 
         context['hr'] = queryset[0]
+
+        sub_unit_list = str(self.request.user.CurrentUnit.sub_unit_list)        
+        sub_unit_list = [x.strip() for x in sub_unit_list.split(",")]
+        context['sub_units'] = sub_unit_list
         return context
     
 
@@ -477,8 +513,15 @@ class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
                                     'Num_PA',
                                     'Num_GH'
                                 )
-        
         return queryset
+        
+    def get_context_data(self, **kwargs):
+        context = super(HomeRequestUnitSummaryListView, self).get_context_data(**kwargs)
+        sub_unit_list = str(self.request.user.CurrentUnit.sub_unit_list)        
+        sub_unit_list = [x.strip() for x in sub_unit_list.split(",")]
+        context['sub_units'] = sub_unit_list
+        return context
+
 
 class HomeRequestDetail(AuthenUserTestMixin, DetailView):
     allow_groups = ['RTAF_NO_HOME_USER','PERSON_UNIT_ADMIN']

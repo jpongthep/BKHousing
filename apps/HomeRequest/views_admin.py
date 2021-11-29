@@ -34,7 +34,7 @@ class ManualUpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
     model = HomeRequest
     # form_class = ManualHomeRequestForm
     form_class = ManualHomeRequestForm
-    template_name = "HomeRequest/CreateManualHomeRequest.html"
+    template_name = "Person/CreateManualHomeRequest.html"
 
     def get(self, request, *args, **kwargs):
             home_request = HomeRequest.objects.get(id = self.kwargs['pk'])
@@ -58,7 +58,7 @@ class ManualCreateHomeRequestView(AuthenUserTestMixin, CreateView):
     model = HomeRequest
     # form_class = ManualHomeRequestForm
     form_class = ManualHomeRequestForm
-    template_name = "HomeRequest/CreateManualHomeRequest.html"
+    template_name = "Person/CreateManualHomeRequest.html"
 
     def get(self, request, *args, **kwargs):
             user = User.objects.get(PersonID = self.kwargs['person_id'])
@@ -139,7 +139,8 @@ class ManualCreateHomeRequestView(AuthenUserTestMixin, CreateView):
 
 class ListHomeRequestView(AuthenUserTestMixin, ListView):
     allow_groups = ['PERSON_ADMIN']    
-    template_name = "HomeRequest/listManualHomeRequest.html"
+    # template_name = "Person/test.html"
+    template_name = "Person/listManualHomeRequest.html"
     paginate_by = 25 
 
     def get_queryset(self):        

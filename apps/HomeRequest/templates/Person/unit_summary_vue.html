@@ -145,60 +145,43 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <h6 class = "text-dark" @click = "filter_homerequest(index);" style ="cursor: pointer;">แสดงข้อมูล <i class="fa fa-arrow-alt-circle-right"></i></h6>
+                            <h6 class = "text-dark" @click = "filter_homerequest(index);" style ="cursor: pointer;">[[ link_show_data[index-1] ]] <i class="fa fa-arrow-alt-circle-right"></i></h6>
                         </div>
                     </div>
                 </div>
             </div>                   
             <div class = "row mt-4">
-                <div class="row mb-2">
-              
-                    <div class="col-md-8">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('น.5+');" >
-                            <label class="form-check-label">น.5 + </label>
+                <div class="row mb-2">              
+                    <div class="col-md-3">
+                        <div class="input-group mb-3">
+                            <input type="text" v-model="name_search_input" v-on:keyup.enter="name_filter()" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button @click="name_filter()" class="btn btn-outline-primary" type="button">ค้นหา</button>
+                            </div>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สัญญาบัตร');" >
-                            <label class="form-check-label">สัญญาบัตร</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('ประทวน');" >
-                            <label class="form-check-label">ประทวน</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('โสด');" >
-                            <label class="form-check-label">โสด</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-อยู่ร่วมกัน');"  >
-                            <label class="form-check-label">สมรส-อยู่ร่วมกัน</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('สมรส-แยกกันอยู่');"  >
-                            <label class="form-check-label">สมรส-แยกกันอยู่</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" checked type="checkbox" @click = "toggle_display('หย่า/ม่าย');"  >
-                            <label class="form-check-label">หย่า/ม่าย</label>
-                        </div>
-                        
                     </div>
-            
-                    <div class="col-md-2">
-                    
-                        <button class = "btn btn-primary shadow" v-if="filter_data != 'all'" @click="filter_data = 'all'">แสดงทั้งหมด</button>
+                    <div class="col-md-3">
+                        <div class="form-check form-check-inline">
+                            <select v-model="sub_unit_filter" class="form-select form-select-inline">
+                                <option value="all">ทุกหน่วย</option>                         
+                                <option v-for="(su,j) in sub_units" :value="su">[[ su ]]  [[ sub_unit_count[j] > 0 ? "[" + sub_unit_count[j] + "]" : ""]] </option>
+                            </select>                            
+                        </div>                             
+                    </div>            
+                    <div class="col-sm-6 text-end">
+                        <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success m-1"><i class="fa fa-file-excel"></i> excel</a>
+                        <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
-
                 </div>
-
-            </div>                   
+            </div>                  
             <table class="table table-bordered table-hover table-striped caption-top unit-data-list mt-2" >
                     <col width="40">
                     <col width="40">
                     <col width="40">
                     <col width="40">
-                    <col width="250">
+                    <col width="200">
+                    <col width="80">
+                    <col width="100">
                     <col width="80">
                     <col width="150">
                     <col width="60">
@@ -211,18 +194,20 @@
                         <th>#</th>
                         <th colspan = "3">เอกสาร</th>
                         <th>ยศ ชื่อ นามสกุล</th>
+                        <th>สังกัด</th>
                         <th>สถานภาพ</th>
+                        <th>ผู้อาศัยร่วม</th>
                         <th>เบอร์โทร</th>
                         <th>ผู้ขอ</th>
                         <th>นขต.</th>
                         <th>กพ.ทอ.</th>
                         <th>อนุมัติ</th>
-                        <th>หมายเหตุ</th>                        
+                        <th>หมายเหตุ</th>                         
                     </tr>
                 </thead>
                 <tbody>
                     <template v-for="(hm,i) in unit_data.HomeRequest" >
-                        <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_rank_status.includes(hm.Status)">
+                        <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_sub_unit(hm.sub_unit) && check_fullname_search(hm.FullName,hm.sub_unit)">                
                             <td>[[ i + 1 ]] </td>
                             <td>
                                 <i v-if="hm.ProcessStep != 'RequesterProcess'" class="fa fa-lock icon-size" v-bind:class="ProcessStepClass(hm.ProcessStep)" ></i>
@@ -230,8 +215,10 @@
                             </td>
                             <td><a href = "#" @click = "show_hr_detail(hm.id);"><i class="fa fa-eye text-info icon-size" ></i></a></td>
                             <td><a href = "#" @click = "show_doc(hm.id);"><i class="fas fa-file-word icon-size"></i></a></td>
-                            <td>[[ hm.FullName ]]</td>
+                           <td>[[ hm.FullName ]]</td>
+                            <td>[[ hm.sub_unit ]]</td>
                             <td>[[ hm.Status ]]</td>
+                            <td>[[ hm.num_coresident > 0 ? hm.num_coresident : "-"]]</td>
                             <td>[[ hm.MobilePhone ]]</td>
                             <td>
                                 <div v-if="hm.RequesterDateSend">
@@ -316,7 +303,6 @@
 
 
 {% block buttom_script %}
-
 <script>
     const MainAPP = {
         delimiters: ['[[', ']]'],
@@ -326,12 +312,17 @@
                 unit_data_list_modal : null,
                 confirm_modal : null,
                 confirm_text :"",
-                current_index: 0,                
-                show_rank_status : ["โสด","สมรส-อยู่ร่วมกัน","สมรส-แยกกันอยู่","หย่าร้าง","ม่าย",7],
+                current_index: 0, 
                 current_hr_id: 0,
                 filter_data : 'all',
+                fullname_search :"",
+                sub_unit_filter : [],
+                sub_unit_count : 0,
+                sub_units : [],
+                name_search_input : "",
                 num_report :[],
                 create_person_id : "",
+                link_show_data : ["กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล"],
 
                 object_list : [
                     {% for object in object_list %}
@@ -411,7 +402,16 @@
                     .then(data => {
                         this.current_index = index;
                         this.unit_data.HomeRequest = data;
-                        console.log('data ',data);
+                        console.log("HomeRequest = ", data);
+                        this.unit_data.sub_units = data[0]["sub_units"];                         
+                        let i = 0;
+                        this.sub_unit_count.length = this.sub_units.length;
+                        this.sub_units.forEach(
+                            sub_unit => {
+                                this.sub_unit_count[i] = this.unit_data.HomeRequest.filter(hm => hm.Position.includes(sub_unit)).length;
+                                // console.log(sub_unit, this.sub_unit_count[i]);
+                                i++;
+                        });
                         this.unit_data.short_name = data[0]["UnitName"];
 
                         this.num_report[0] = this.object_list[index-1].num_RP ;
@@ -483,56 +483,58 @@
                     case 6: return this.object_list[ci].num_GH;
                 }                 
             },
+            show_sub_unit(sub_unit){            
+                // console.log("sub_unit = ",sub_unit)
+                if(this.sub_unit_filter == "all")
+                    return true;
+                else 
+                    if(sub_unit != null)
+                        return sub_unit.includes(this.sub_unit_filter);
+                    else
+                        return true;
+            },            
+            check_fullname_search(FullName,sub_unit){   
+                if(this.fullname_search != "")
+                    if(sub_unit != null)
+                        return FullName.includes(this.fullname_search) || sub_unit.includes(this.fullname_search);
+                    else
+                        return FullName.includes(this.fullname_search);
+                else
+                    return true;
+            },            
+            name_filter(){
+                this.fullname_search = this.name_search_input;
+            },            
             filter_homerequest(step_report)
             {
                 ProcessStep = ['RequesterProcess','RequesterSended','UnitProcess',
                                'UnitSended','PersonProcess','PersonApproved','GetHouse'
                             ];
-                console.log(ProcessStep[step_report-1]);
-                this.filter_data = ProcessStep[step_report-1];
-            },
-            toggle_display(status)
-            {
-                if(status == "หย่า/ม่าย")
+                console.log('this.filter_data ',this.filter_data);
+                for(i = 0;i < 6;i++)
                 {
-                    let index1 = this.show_rank_status.indexOf("หย่าร้าง");
-                    let index2 = this.show_rank_status.indexOf("ม่าย");
-                    if (index1 !== -1) 
-                    {
-                        this.show_rank_status.splice(index1,1);       
-                        this.show_rank_status.splice(index2,1);       
-                    }
-                    else             
-                    {
-                        this.show_rank_status.push("หย่าร้าง");                  
-                        this.show_rank_status.push("ม่าย");                  
-                    }
-                    return ;
-                }  
-
-                // กรณีอื่น ๆ 
-                let index = this.show_rank_status.indexOf(status);
-                // console.log(index);
-                // console.log(status);
-                // console.log(this.show_rank_status);
-                if (index !== -1) 
-                    this.show_rank_status.splice(index,1);       
-                else             
-                    this.show_rank_status.push(status);                  
+                    this.link_show_data[i] = "กรองข้อมูล"
+                }
+                if(this.filter_data == ProcessStep[step_report-1])
+                {
+                    this.filter_data = 'all';
+                    this.link_show_data[step_report -1 ] = "กรองข้อมูล"
+                }
+                else
+                {
+                    this.filter_data = ProcessStep[step_report-1];
+                    this.link_show_data[step_report-1] = "ยกเลิกกรอง"
+                }
             },
             check_create()
             {
-                // alert(this.create_person_id);
+
                 urltext = "{% url 'HomeRequest:check_create' 99999 %}";
                 new_urltext = urltext.replace("99999",this.create_person_id)
-                // new_urltext = urltext.replace("99999","PP")
-                // console.log(new_urltext);
-                // console.log(index, hr_id);
 
                 fetch(new_urltext)
                     .then(response => response.json())
                     .then(data => {
-                        
                         if(data["status"] == "exists")
                         {
                             urltext = "{% url 'HomeRequest:manual_update' '99999' %}";
@@ -549,7 +551,7 @@
             },
             show_doc(hm_id)
             {
-                urltext = "{% url 'HomeRequest:doc' '99999' %}";
+                urltext = "{% url 'HomeRequest:detail_doc' '99999' 1 %}";
                 docURL = urltext.replace("99999",hm_id)                
                 window.open(docURL ,'_blank');
             },
@@ -566,7 +568,6 @@
         }       
         
     }
-
     Vue.createApp(MainAPP).mount('#MainAPP')
 </script>
 {% endblock buttom_script %}
