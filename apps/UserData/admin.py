@@ -14,10 +14,20 @@ from apps.Home.admin import HomeOwnerInline
 
 @admin.register(Unit)
 class UnitAdmin(admin.ModelAdmin):
-    list_display = ['get_UnitGroup_display','ShortName', 'FullName']
+    class Media:
+        css = {
+            'all': ('assets/admin_userdata.css',)
+        }
+    list_display = ['get_UnitGroup_display','ShortName', 'FullName','sub_unit_list']
     list_display_links = ['ShortName']
     search_fields = ('ShortName', 'FullName')
     ordering = ["UnitGroup", "id"]
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(UnitAdmin, self).get_fieldsets(request, obj)
+
+        print('self.media = ',self.media)
+        return fieldsets
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -40,7 +50,7 @@ class UserAdmin(BaseUserAdmin):
         ),
         ('RTAF info', 
             {'fields': (
-                        ('Position', 'CurrentUnit') ,
+                        ('Position', 'CurrentUnit','sub_unit') ,
                         ('AFID', 'RTAFEMail', 'OfficePhone'),
                         ('current_salary','retire_date')
 
@@ -82,6 +92,7 @@ class UserAdmin(BaseUserAdmin):
         fieldsets = super(UserAdmin, self).get_fieldsets(request, obj)
         if request.user.groups.filter(name__in= self.limited_groups).exists():
             fieldsets = self.limited_fieldsets
+        print('self.media = ',self.media)
         
         return fieldsets
 

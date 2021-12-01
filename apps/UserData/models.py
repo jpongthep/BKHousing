@@ -19,7 +19,7 @@ class Unit(models.Model):
     ShortName = models.CharField(max_length = 20, blank = False)
     FullName  = models.CharField(max_length = 90, blank = False)
     is_Bangkok = models.BooleanField(verbose_name = "กทม.และปริมณฑล", default = True)
-    sub_unit_list  = models.TextField(verbose_name = "รายชื่อหน่วยย่อย", null = True, blank = False)
+    sub_unit_list  = models.TextField(verbose_name = "รายชื่อหน่วยย่อย", null = True, blank = True)
     re_cal_sub_unit = models.BooleanField(verbose_name = "คำนวณหน่วยย่อย", default = True)
 
     def __str__(self):
@@ -81,16 +81,26 @@ class User(AbstractUser):
         RankDisplay = str(self.get_Rank_display())
         if RankDisplay == '':
             return  '??'
+            
         if "ว่าที่" in RankDisplay:
             RankDisplay = RankDisplay[6:]
+        elif "กห." in RankDisplay:
+            if "หญิง" in RankDisplay:
+                RankDisplay = "น.ส."
+            else:
+                RankDisplay = "นาย"
+        elif "พนง." in RankDisplay:
+            if "หญิง" in RankDisplay:
+                RankDisplay = "น.ส."
+            else:
+                RankDisplay = "นาย"
 
         if re.findall("หญิง", RankDisplay ):
             return f'{RankDisplay} {self.first_name} {self.last_name}'
-        else:
-            if re.findall("(พ)", RankDisplay ):
-                return f'{RankDisplay} {self.first_name} {self.last_name}'
-            else:
-                return f'{RankDisplay}{self.first_name} {self.last_name}'
+        elif re.findall("(พ)", RankDisplay ):
+            RankDisplay = RankDisplay.replace("(พ)", "")    
+        
+        return f'{RankDisplay}{self.first_name} {self.last_name}'
         
     def __str__(self):
         return self.FullName

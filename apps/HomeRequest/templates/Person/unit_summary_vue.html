@@ -152,23 +152,25 @@
             </div>                   
             <div class = "row mt-4">
                 <div class="row mb-2">              
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <div class="input-group mb-3">
-                            <input type="text" v-model="name_search_input" v-on:keyup.enter="name_filter()" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <input type="text" v-model="name_search_input" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
                             <div class="input-group-append">
                                 <button @click="name_filter()" class="btn btn-outline-primary" type="button">ค้นหา</button>
                             </div>
                         </div>
                     </div>
+                    <!--
                     <div class="col-md-3">
                         <div class="form-check form-check-inline">
                             <select v-model="sub_unit_filter" class="form-select form-select-inline">
                                 <option value="all">ทุกหน่วย</option>                         
                                 <option v-for="(su,j) in sub_units" :value="su">[[ su ]]  [[ sub_unit_count[j] > 0 ? "[" + sub_unit_count[j] + "]" : ""]] </option>
                             </select>                            
-                        </div>                             
-                    </div>            
-                    <div class="col-sm-6 text-end">
+                        </div>                          
+                    </div>    
+                    -->        
+                    <div class="col-sm-8 text-end">
                         <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success m-1"><i class="fa fa-file-excel"></i> excel</a>
                         <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
@@ -382,6 +384,7 @@
                         
                 unit_data : {
                     short_name : "",
+                    sub_units : [],
                     HomeRequest : []
                 }
             }
@@ -403,7 +406,8 @@
                         this.current_index = index;
                         this.unit_data.HomeRequest = data;
                         console.log("HomeRequest = ", data);
-                        this.unit_data.sub_units = data[0]["sub_units"];                         
+                        this.unit_data.sub_units = data[0]["sub_units"];
+                        console.log("this.unit_data.sub_units = ", this.unit_data.sub_units);                       
                         let i = 0;
                         this.sub_unit_count.length = this.sub_units.length;
                         this.sub_units.forEach(
@@ -492,19 +496,19 @@
                         return sub_unit.includes(this.sub_unit_filter);
                     else
                         return true;
-            },            
-            check_fullname_search(FullName,sub_unit){   
-                if(this.fullname_search != "")
-                    if(sub_unit != null)
-                        return FullName.includes(this.fullname_search) || sub_unit.includes(this.fullname_search);
-                    else
-                        return FullName.includes(this.fullname_search);
-                else
-                    return true;
-            },            
+            },                      
             name_filter(){
                 this.fullname_search = this.name_search_input;
-            },            
+            },       
+            check_fullname_search: function (FullName,sub_unit){   
+                if(this.name_search_input != "")
+                    if(sub_unit != null)
+                        return FullName.includes(this.name_search_input) || sub_unit.includes(this.name_search_input);
+                    else
+                        return FullName.includes(this.name_search_input);
+                else
+                    return true;
+            },                 
             filter_homerequest(step_report)
             {
                 ProcessStep = ['RequesterProcess','RequesterSended','UnitProcess',
@@ -565,7 +569,10 @@
             {
                 alert('ประเมิน ' + hm_id);
             }
-        }       
+        },
+        computed : {
+
+        }
         
     }
     Vue.createApp(MainAPP).mount('#MainAPP')

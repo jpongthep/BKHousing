@@ -11,7 +11,6 @@ from django.contrib.auth.models import Group
 from django.conf import settings
 from django.db.models import Q
 
-
 from .models import User, Unit
 from apps.Home.models import HomeOwner
 from apps.Configurations.models import YearRound
@@ -40,6 +39,7 @@ def checkRTAFPassdword(request, username, password):
         messages.error(request, "login LDAP ขัดข้อง กรุณาทดสอบโดยเข้า email ของ ทอ. หากไม่ได้กรุณาตรวจสอบกับ link ทดสอบการ login หรือติดต่อ 2-8641")
         return False
 
+    logger.info(f'{username} {r.text}')
     return_STR_JSON = r.text 
     returnData = json.loads(return_STR_JSON)
 
@@ -165,7 +165,19 @@ def getPersonID(request, person_data):
 
     # แยกยศ ชื่อ นามสกุล
     rank = re.findall("[(ว่าที่)]*[ ]*[(พล.อ)]*[(พ.อ.)]*[นรจ]*\.[สตทอ]\.[(หญิง)]*", full_name)[0]
-    first_name, last_name = full_name.replace(rank, "").strip().split()
+    first_name = person_data['fname']
+    last_name = person_data['lname']
+    
+    # fullname = full_name.replace(rank, "").strip().split()
+    # if len(fullname) == 2:
+    #     first_name = fullname[0]
+    #     last_name = fullname[1]
+    # else:
+    #     first_name = fullname[0]
+    #     last_name = " ".join(fullname[1:])
+
+    # print("first_name = ", first_name)
+    # print("last_name = ", last_name)
 
     data = {
         "token" : person_data['token'],
@@ -202,7 +214,21 @@ def UpdateRTAFData(request, current_user,person_data):
 
     # แยกยศ ชื่อ นามสกุล
     rank = re.findall("[(ว่าที่)]*[ ]*[(พล.อ)]*[(พ.อ.)]*[นรจ]*\.[สตทอ]\.[(หญิง)]*", full_name)[0]
-    first_name, last_name = full_name.replace(rank, "").strip().split()
+    first_name = person_data['fname']
+    last_name = person_data['lname']
+
+    # else:
+    # fullname = full_name.replace(rank, "").strip().split()
+    
+    # if len(fullname) == 2:
+    #     first_name = fullname[0]
+    #     last_name = fullname[1]
+    # else:
+    #     first_name = fullname[0]
+    #     last_name = " ".join(fullname[1:])
+
+    print("first_name = ",first_name)
+    print("last_name = ",last_name)
 
     data = {
         "token" : person_data['token'],
@@ -248,6 +274,17 @@ def UpdateRTAFData(request, current_user,person_data):
         UserUnit = NewUnit
     else:
         UserUnit = UserUnit[0]
+
+    current_user.sub_unit = UserUnit.ShortName
+    if UserUnit.sub_unit_list: # ถ้ามีการระบุหน่วยย่อยในหน่วยงาน
+        sub_unit_list = str(UserUnit.sub_unit_list)
+        sub_unit_list = [x.strip() for x in sub_unit_list.split(",")]
+
+        if current_user.Position:
+            match = next((x for x in sub_unit_list if x in current_user.Position), False)
+            print("#",current_user.Position, match)
+            if match:
+                current_user.sub_unit = match
 
     current_user.CurrentUnit = UserUnit                
     current_user.save()
@@ -313,9 +350,9 @@ def UpdateRTAFData(request, current_user,person_data):
         if 'data' not in return_data: 
             return
         if  return_data['data'] == 'ไม่มีข้อมูล': 
-            return      
+            return
         if  not return_data['data']: 
-            return      
+            return
 
         return_data = return_data['data'][0]
         # กรณีที่คู่สมรสเป็น ทอ.

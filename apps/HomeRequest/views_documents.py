@@ -14,6 +14,8 @@ from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.conf import settings
+from django.db.models import Count, Q, F
+from django.http.response import JsonResponse
 
 from docx import Document
 from docx.oxml import OxmlElement
@@ -31,6 +33,7 @@ parser = WebhookParser('ab315a0889e13')
 #My module
 from .models import CoResident, HomeRequest
 from .views import get_current_year
+from apps.Configurations.models import YearRound
 from apps.UserData.models import Unit
 from apps.Utility.utils import decryp_file
 from apps.Utility.Constants import PERSON_STATUS, officer_rank, non_officer_rank, status_single, status_family
@@ -627,44 +630,52 @@ def Excel4PersonAdmin(request):
     response['Content-Length'] = length
     return response
 
-
+#127.0.0.1:8000/hr/lnfy/
 @csrf_exempt
-def line_api(request):
-    # Chanel ID = 1656623264
-    # Channel secret ab315a0889e1395ea1695fb0d8ea5790
-    # Channel access token (long-lived) = odFxpwpkdguKC7pxS5or45Ob358azEPO2Ysg4Ch0PhIYqXdM3Db0N8Q740pKGRCV9YH9SYKFSasYdSYFWYLSTglj8ze55KGhJa1yVWGHzO5DQC+2+8k0lCGljwwUolRCWPpllUeRA/qIWq6mnkaaxgdB04t89/1O/w1cDnyilFU=
-    print("function access")
-    if request.method == 'POST':
-        dump = json.dumps({'type': 'text', 'text': 'armis สวัสดีครับ'})            
-        return HttpResponse(dump, content_type='application/json')    
-        signature = request.META['HTTP_X_LINE_SIGNATURE']
-        body = request.body.decode('utf-8')
-        try:
-            events = parser.parse(body, signature)
-        except InvalidSignatureError:
-            return HttpResponseForbidden()
-        except LineBotApiError:
-            return HttpResponseBadRequest()
+def line_notify(request):
+    CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
+    year_round = CurrentYearRound[0] 
 
-        for event in events:
-            if isinstance(event, MessageEvent):
-                if isinstance(event.message, TextMessage):
-                    try:
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(text=event.message.text)
-                        )
-                    except LineBotApiError as e:
-                        print("1: ",e.status_code)
-                        print("2: ",e.error.message)
-                        print("3: ",e.error.details)
+    Num_RS = Count('ProcessStep', filter = Q(ProcessStep = 'RS'))
+    Num_US = Count('ProcessStep', filter = Q(ProcessStep = 'US'))
 
-        dump = json.dumps({'type': 'text', 'text': 'armis สวัสดีครับ'})            
-        return HttpResponse(dump, content_type='application/json')            
-    else:
-        if request.method == 'GET':
-            dump = json.dumps({'type': 'text', 'text': 'armis สวัสดีครับ'})            
-            return HttpResponse(dump, content_type='application/json')    
+    homerequest = HomeRequest.objects.filter(year_round = year_round
+                                    ).filter(ProcessStep__in = ['RS','US','PP']   
+                                    ).values('Unit'                             
+                                    ).annotate(                                    
+                                        Num_RS = Num_RS,                                   
+                                        Num_US = Num_US                                        
+                                    ).values('Num_RS','Num_US',UnitName = F('Unit__ShortName')
+                                    ).exclude(Q(Num_RS = 0) & Q(Num_US = 0))
+                                    
+
+
+    data = list(homerequest)
+    return JsonResponse(data, safe=False)
+    # print('homerequest = ',homerequest)
+    # hr_data = {'data': {'status': 'hr not found'}}
+    # dump = json.dumps(hr_data)            
+    # return HttpResponse(dump, content_type='application/json')    
+
+    try:
+        user = User.objects.get(username = username)     
+        CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
+        year_round = CurrentYearRound[0] 
+        homerequest = HomeRequest.objects.filter(year_round = year_round).filter(Requester = user)
+    except User.DoesNotExist:
+        dump = json.dumps({'status': 'username not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    # print('homerequest',homerequest)
+    if not homerequest.exists():
+        dump = json.dumps({'status': 'hr not found'})            
+        return HttpResponse(dump, content_type='application/json')
+
+    if request.method == 'GET':
+        serializer = HomeRequestSerializer(homerequest[0])
+        return JsonResponse(serializer.data)
+
+
         
 from django.conf import settings
 from django.http import HttpResponse, Http404

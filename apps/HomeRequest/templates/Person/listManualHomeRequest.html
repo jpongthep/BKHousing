@@ -7,8 +7,12 @@
 {% block scriptlink %}
 {% endblock scriptlink %}
 {% block style %}
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<!--
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+-->
 <style>
+
     .nav li a {
         position: relative;
         display: block;
@@ -16,65 +20,69 @@
     }
 
     body{
-        margin-top:20px;
         background:#eee;
     }
-    /* EMAIL */
+
     .email {
         padding: 20px 10px 15px 10px;
         font-size: 1em;
     }
 
+  
     .email .btn.search {
         font-size: 0.9em;
     }
 
-    .email h2 {
-        margin-top: 0;
-        padding-bottom: 8px;
-    }
 
-    .email .nav.nav-pills > li > a {
-        border-top: 3px solid transparent;
-    }
 
-    .email .nav.nav-pills > li > a > .fa {
-        margin-right: 5px;
+    .dt-pagination-ul {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+      padding-left: 0;
+      border-top: 1px solid #dee2e6;
+      padding-top : 15px;
     }
-
-    .email .nav.nav-pills > li.active > a,
-    .email .nav.nav-pills > li.active > a:hover {
-        background-color: #f6f6f6;
-        border-top-color: #3c8dbc;
+    
+    .dt-pagination .dt-item {
+        display: inline-block;
     }
-
-    .email .nav.nav-pills > li.active > a {
-        font-weight: 600;
+    
+    .dt-pagination .dt-item .dt-link {
+        padding: 6px 8px;
+        //min-width: 32px;
+        //min-height: 32px;
+        border-radius: 8px;
+        margin-left: 0;
+        margin-right: 8px;
+        border: 1px solid #fff;
+        font-size: 12px;
+        font-weight: 500;
+        color: #8A93A6;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
     }
-
-    .email .nav.nav-pills > li > a:hover {
-        background-color: #f6f6f6;
+    
+    .dt-pagination .dt-item .dt-link:hover {
+        background-color: #ebf2fd;
+        color: #5a8dee;
     }
-
-    .email .nav.nav-pills.nav-stacked > li > a {
-        color: #666;
-        border-top: 0;
-        border-left: 3px solid transparent;
-        border-radius: 0px;
+    
+    .dt-pagination .dt-item.disabled .dt-link {
+        background-color: #F6F7FB;
+        color: #D7DAE0;
+      cursor: not-allowed;
     }
-
-    .email .nav.nav-pills.nav-stacked > li.active > a,
-    .email .nav.nav-pills.nav-stacked > li.active > a:hover {
-        background-color: #f6f6f6;
-        border-left-color: #3c8dbc;
-        color: #444;
+    
+    .dt-pagination .dt-item:first-child .dt-link, .dt-pagination .dt-item:last-child .dt-link {
+        background-color: #F6F7FB;
     }
-
-    .email .nav.nav-pills.nav-stacked > li.header {
-        color: #777;
-        text-transform: uppercase;
-        position: relative;
-        padding: 0px 0 10px 0;
+    
+    .dt-pagination .dt-item.active .dt-link {
+        background-color: #5a8dee;
+        border-color: #5a8dee;
+        color: #fff;
     }
 
     .email table {
@@ -122,8 +130,6 @@
         margin-bottom: 25px;
         box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
     }
-
-
 
     .grid .grid-header:after {
         clear: both;
@@ -237,6 +243,7 @@
         border-bottom-width: 4px !important;
         border-bottom-style: solid !important;
     }
+   
 </style>
 {% endblock style%}
 
@@ -244,50 +251,27 @@
 {% block body %}{% endblock %}
 {% block content%}
 
-<div class="row mt-1">
+<div class="row mt-1"  style="overflow:scroll;" >
 	<!-- BEGIN INBOX -->
-	<div class="col-md-12">
+	<div class="col-md-12" >
 		<div class="grid email">
 			<div class="grid-body">
 				<div class="row">
-					<!-- BEGIN INBOX MENU -->
-					<div class="col-md-2">
-						<h2 class="grid-title"><i class="fa fa-inbox"></i> Inbox</h2>
-						<a class="btn btn-block btn-primary" data-toggle="modal" data-target="#compose-modal"><i class="fa fa-pencil"></i>&nbsp;&nbsp;NEW MESSAGE</a>
-
-						<hr>
-
-						<div>
-							<ul class="nav nav-pills nav-stacked">
-								<li class="header">Folders</li>
-								<li class="active"><a href="#"><i class="fa fa-inbox"></i> Inbox (14)</a></li>
-								<li><a href="#"><i class="fa fa-star"></i> Starred</a></li>
-								<li><a href="#"><i class="fa fa-bookmark"></i> Important</a></li>
-								<li><a href="#"><i class="fa fa-mail-forward"></i> Sent</a></li>
-								<li><a href="#"><i class="fa fa-pencil-square-o"></i> Drafts</a></li>
-								<li><a href="#"><i class="fa fa-folder"></i> Spam (217)</a></li>
-							</ul>
-						</div>
-					</div>
-					<!-- END INBOX MENU -->
-					
 					<!-- BEGIN INBOX CONTENT -->
-					<div class="col-md-10">
-						<div class="row">
-							<div class="col-sm-8">								
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
-                                    <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                    <a class="dropdown-item" href="#">Something else here</a>
-                                    <div role="separator" class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Separated link</a>
-                                    </div>
-                                </div>            
+
+							<div class="col-sm-2">								
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Action
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                    <li><a class="dropdown-item text-primary" href="#">กพ.ทอ.รับเรื่อง</a></li>
+                                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                                    </ul>
+                                </div>
 							</div>
 
-							<div class="col-md-4 search-form">
+							<div class="col-md-2 search-form">
 								<form action="#" class="text-right">
 									<div class="input-group">
 										<input type="text" class="form-control input-sm" placeholder="Search">
@@ -299,15 +283,15 @@
 						</div>
 						
 						<div class="table-responsive mt-2">
-                        <table class="table">
+                        <table class="table table-hover" style="width:3000px">
                                 <col width="30">
                                 <col width="30">
                                 <col width="30">
                                 <col width="30">
                                 <col width="75"> <!-- วันที่ส่งเรื่อง -->
-                                <col width="230"> <!-- ยศ ชื่อ นามสกุล-->
+                                <col width="250"> <!-- ยศ ชื่อ นามสกุล-->
                                 <col width="80"> <!-- หน่วยย่อย-->
-                                <col width="80"> <!-- หน่วย-->
+                                <!-- <col width="80">  หน่วย-->
                                 <col width="80"> <!-- ประเภทบ้านที่ขอ -->
                                 <col width="40"> <!-- คะแนนประเมิน-->
                                 <col width="130"> <!-- ความต้องการ #1 -->
@@ -317,13 +301,13 @@
                                 {% for object in object_list %}
                                 <tr>
 									<td class="action"><input type="checkbox" /></td>
-									<td class="action"><i class="fa {% cycle 'fa-star' 'fa-star-o' %}"></i></td>
-									<td class="action"><i class="fa {% cycle 'fa-bookmark-o' 'fa-bookmark-o' 'fa-bookmark' %}"></i></td>
-									<td class="action"><i class="fa  {% cycle '' 'fa-check text-warning' 'fa-check text-success' %}"></i></td>
+									<td class="action"><i class="{% cycle 'far' 'fas' %} fa-star"></i></td>
+									<td class="action"><i class="{% cycle 'far' 'far' 'fas' %} fa-bookmark"></i></td>
+									<td class="action"><i class="far {% cycle '' 'fa-check text-warning' 'fa-check text-success' %}"></i></td>
 									<td class="time">{{ object.RequesterDateSend|thaidate:"d-m-y" }}</td>
-									<td class="name"><a href="#">{{ object.FullName|truncatechars:80 }}</a></td>
+									<td class="name">{{ object.FullName|truncatechars:80 }}</td>
 									<td>{{ object.sub_unit|default_if_none:"" }}</td>
-									<td>{{ object.Unit }}</td>
+									<!--  <td>{{ object.Unit }}</td> -->
 									<td>
                                         {% if object.get_Status_display == "โสด" %}โสด{% else %}ครอบครัว{% endif %}
                                     </td>
@@ -358,71 +342,64 @@
 							</tbody>
                         </table>
                     </div>
+                    <!-- https://codepen.io/piyushpd/pen/BadGaMg -->
+                    <div class="dt-pagination">
+                        <ul class="dt-pagination-ul">
+                          <li class="dt-item disabled">
+                            <a class="dt-link">Prev</a>
+                          </li>
+                          <li class="dt-item active">
+                            <a class="dt-link">1</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">2</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">3</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">4</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">...</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">25</a>
+                          </li>
+                          <li class="dt-item ">
+                            <a class="dt-link">Next</a>
+                          </li>
+                        </ul>
+                      </div>
+                    
 
+                <div class = "dt-pagination">
                 {% if is_paginated  %}
-                    <ul class="pagination">
+                    <ul class="dt-pagination-ul">
                         {% if page_obj.has_previous %}
-                        <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                        <li class = "dt-item active"><a class = "dt-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
                         {% else %}
-                        <li class="disabled"><span>&laquo;</span></li>
+                        <li class="dt-item disabled"><span>&laquo;</span></li>
                         {% endif %}
                         {% for i in page_obj.paginator.page_range %}
                         {% if page_obj.number == i %}
-                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                            <li class="dt-item active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
                         {% else %}
-                            <li><a href="?page={{ i }}">{{ i }}</a></li>
+                            <li><a class = "dt-link" href="?page={{ i }}">{{ i }}</a></li>
                         {% endif %}
                         {% endfor %}
                         {% if page_obj.has_next %}
-                        <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                        <li class="dt-item"><a class = "dt-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
                         {% else %}
-                        <li class="disabled"><span>&raquo;</span></li>
+                        <li class="dt-item disabled"><span>&raquo;</span></li>
                         {% endif %}
                     </ul>
                 {% endif %}
+                </div>
 
 					</div>
 					<!-- END INBOX CONTENT -->
 					
-					<!-- BEGIN COMPOSE MESSAGE -->
-					<div class="modal fade" id="compose-modal" tabindex="-1" role="dialog" aria-hidden="true">
-						<div class="modal-wrapper">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header bg-blue">
-										<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-										<h4 class="modal-title"><i class="fa fa-envelope"></i> Compose New Message</h4>
-									</div>
-									<form action="#" method="post">
-										<div class="modal-body">
-											<div class="form-group">
-												<input name="to" type="email" class="form-control" placeholder="To">
-											</div>
-											<div class="form-group">
-												<input name="cc" type="email" class="form-control" placeholder="Cc">
-											</div>
-											<div class="form-group">
-												<input name="bcc" type="email" class="form-control" placeholder="Bcc">
-											</div>
-											<div class="form-group">
-												<input name="subject" type="email" class="form-control" placeholder="Subject">
-											</div>
-											<div class="form-group">
-												<textarea name="message" id="email_message" class="form-control" placeholder="Message" style="height: 120px;"></textarea>
-											</div>
-											<div class="form-group">														<input type="file" name="attachment">
-											</div>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Discard</button>
-											<button type="submit" class="btn btn-primary pull-right"><i class="fa fa-envelope"></i> Send Message</button>
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- END COMPOSE MESSAGE -->
 				</div>
 			</div>
 		</div>

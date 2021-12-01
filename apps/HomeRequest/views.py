@@ -116,6 +116,7 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'MobilePhone' : request.user.MobilePhone,
                             'OfficePhone' : request.user.OfficePhone,
                             'Unit' : request.user.CurrentUnit,
+                            'sub_unit' : request.user.sub_unit,
                             'Salary' : request.user.current_salary,
                             'Status' : request.user.current_status,
                             'SpouseName' : request.user.current_spouse_name,
@@ -350,29 +351,32 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
         sub_unit_list = [x.strip() for x in sub_unit_list.split(",")]
         hr_queryset = HomeRequest.objects.filter(Unit = user_unit)
         for hr in hr_queryset:
+            hr.sub_unit = hr.Unit.ShortName
             if not hr.Position:
+                hr.save()
                 continue
 
             match = next((x for x in sub_unit_list if x in hr.Position), False)
             print("#",hr.Position, match)
             if match:
                 hr.sub_unit = match
-                hr.save()
+            hr.save()
 
         user_queryset = User.objects.filter(CurrentUnit = user_unit)
         for user in user_queryset:
+            user.sub_unit = user.CurrentUnit.ShortName
             if not user.Position:
+                user.save() 
                 continue
 
             match = next((x for x in sub_unit_list if x in user.Position), False)
             print("#",user.Position, match)
             if match:
                 user.sub_unit = match
-                user.save() 
+            user.save() 
 
         user_unit.re_cal_sub_unit = False
         user_unit.save()
-
 
     def get_queryset(self, *args, **kwargs):
 
@@ -465,6 +469,7 @@ class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
         queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("-ProcessStep","-PersonTroubleScore")
         queryset = queryset.filter(year_round__Year = get_current_year())
         serializer = HomeRequestSerializer(queryset, many=True)
+        # print("serializer.data = ", serializer.data)
         return Response(serializer.data)
 
 

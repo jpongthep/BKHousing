@@ -1,0 +1,12 @@
+.column-get_UnitGroup_display {
+  width: 200px;
+}
+.column-column-ShortName {
+  width: 200px;
+}
+.column-FullName {
+  width: 400px;
+}
+.column-sub_unit_list {
+  max-width: 200px !important;
+}

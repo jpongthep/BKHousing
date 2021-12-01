@@ -125,7 +125,7 @@
               
                     <div class="col-md-3">
                         <div class="input-group mb-3">
-                            <input type="text" v-model="name_search_input" v-on:keyup.enter="name_filter()" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                            <input type="text" v-model="name_search_input" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
                             <div class="input-group-append">
                                 <button @click="name_filter()" class="btn btn-outline-primary" type="button">ค้นหา</button>
                             </div>
@@ -511,8 +511,8 @@
                     return sub_unit.includes(this.sub_unit_filter);                
             },
             check_fullname_search(FullName,sub_unit){   
-                if(this.fullname_search != "")             
-                    return FullName.includes(this.fullname_search) || sub_unit.includes(this.fullname_search);
+                if(this.name_search_input != "")             
+                    return FullName.includes(this.name_search_input) || sub_unit.includes(this.name_search_input);
                 else
                     return true;
             },            

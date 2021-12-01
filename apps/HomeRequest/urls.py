@@ -19,7 +19,7 @@ from .views_documents import (
                     ConsentForm,
                     TestExcel,
                     UnitReportDocument,
-                    line_api,
+                    line_notify,
                     download_decryp,
                     Excel4PersonAdmin
                     )
@@ -56,7 +56,7 @@ urlpatterns = [
     path('<unit_id>/fetch', UnitList4PersonAdmin.as_view(), name = 'unit_list_admin'),
     # api สำหรับการตรวจสอบความก้าวหน้า ขั้นตอนขอบ้าน ทาง App มือถือ
     path('cps/<str:username>/', homerequest_detail), # check process step
-    path('line/', line_api), # check process step
+    path('lnfy/', line_notify, name = 'line_notify'), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
