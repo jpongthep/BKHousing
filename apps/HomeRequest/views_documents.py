@@ -644,9 +644,12 @@ def line_notify(request):
                                     ).values('Unit'                             
                                     ).annotate(                                    
                                         Num_RS = Num_RS,                                   
-                                        Num_US = Num_US                                        
-                                    ).values('Num_RS','Num_US',UnitName = F('Unit__ShortName')
-                                    ).exclude(Q(Num_RS = 0) & Q(Num_US = 0))
+                                        Num_US = Num_US,
+                                        waited_doc = F('Num_RS') + F('Num_US')                                        
+                                    ).values('Num_RS', 'Num_US', UnitName = F('Unit__ShortName')
+                                    ).exclude(Q(Num_RS = 0) & Q(Num_US = 0)
+                                    ).order_by("-Num_RS","-Num_US","-waited_doc")
+                                    
                                     
 
 
