@@ -181,7 +181,7 @@ def TestDocument(request, home_request_id,detail_doc = 0):
         cr_text += str(cr.FullName) + " (" 
         cr_text += str(cr.get_Relation_display()) + ")\t" 
         cr_text += f"อาชีพ {cr.Occupation}\t"  if cr.Occupation != "-" else "\t"
-        cr_text += "รายได้ {:,} บาท\n".format(cr.Salary) if cr.Salary > 0 else "ไม่มีรายได้\n"
+        cr_text += "รายได้ {:,} บาท\n".format(cr.Salary) if cr.Salary  else "ไม่มีรายได้\n"
  
 
     dic = {
@@ -637,21 +637,20 @@ def line_notify(request):
     year_round = CurrentYearRound[0] 
 
     Num_RS = Count('ProcessStep', filter = Q(ProcessStep = 'RS'))
+    Num_UP = Count('ProcessStep', filter = Q(ProcessStep = 'UP'))
     Num_US = Count('ProcessStep', filter = Q(ProcessStep = 'US'))
 
     homerequest = HomeRequest.objects.filter(year_round = year_round
-                                    ).filter(ProcessStep__in = ['RS','US','PP']   
+                                    ).filter(ProcessStep__in = ['RS','UP','US']   
                                     ).values('Unit'                             
                                     ).annotate(                                    
                                         Num_RS = Num_RS,                                   
+                                        Num_UP = Num_UP,
                                         Num_US = Num_US,
-                                        waited_doc = F('Num_RS') + F('Num_US')                                        
-                                    ).values('Num_RS', 'Num_US', UnitName = F('Unit__ShortName')
-                                    ).exclude(Q(Num_RS = 0) & Q(Num_US = 0)
-                                    ).order_by("-Num_RS","-Num_US","-waited_doc")
-                                    
-                                    
-
+                                        waited_doc = F('Num_RS') + F('Num_UP') + F('Num_US')                                        
+                                    ).values('Num_RS', 'Num_UP', 'Num_US', UnitName = F('Unit__ShortName')
+                                    ).exclude(Q(Num_RS = 0) & Q(Num_UP = 0) & Q(Num_US = 0)
+                                    ).order_by("-Num_RS","-Num_UP","-Num_US","-waited_doc")
 
     data = list(homerequest)
     return JsonResponse(data, safe=False)

@@ -1,16 +1,15 @@
 from django.urls import path, include
 
-from .views import (ProcessFlow,
-                    CreateHomeRequestView, 
+from .views import (CreateHomeRequestView, 
                     UpdateHomeRequestView,
                     HomeRequestUnitListView,
                     HomeRequestAdminListView,
-                    HomeRequestDetail,
                     HomeRequestUnitSummaryListView,
                     UnitList4PersonAdmin,
                     AFPersonListView,
                     update_process_step,
                     cancel_request,
+                    delete_hr,
                     homerequest_detail,
                     )
 
@@ -39,7 +38,6 @@ from .views_modals import af_person_data_detailview
 
 app_name = 'HomeRequest'
 urlpatterns = [
-    path('pf', ProcessFlow.as_view(), name = 'process_flow'),
     path('cr', CreateHomeRequestView.as_view(), name = 'create'),
     path('ml_sv', ManualHomeRequestAPIView.as_view(), name = 'manual_save'),
     path('ml_ck/<person_id>', check_create_hr, name = 'check_create'),
@@ -48,7 +46,7 @@ urlpatterns = [
     path('mlls', ListHomeRequestView.as_view(), name = 'manual_list'),
 
     path('<pk>/ud', UpdateHomeRequestView.as_view(), name = 'update'),
-    path('<pk>/dt', HomeRequestDetail.as_view(), name = 'detail'),
+
     path('afp', AFPersonListView.as_view(), name = 'af_person'),
     path('list', HomeRequestUnitListView.as_view(), name = 'list'),
     path('<unit_id>/list', HomeRequestUnitListView.as_view(), name = 'person_unit_list'),
@@ -62,6 +60,7 @@ urlpatterns = [
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),
     path('<home_request_id>/hrc',cancel_request, name = 'cancel_request'),
+    path('<home_request_id>/del',delete_hr, name = 'delete_hr'),
 
     path('<pk>/md',af_person_data_detailview.as_view(), name = 'md'),
 

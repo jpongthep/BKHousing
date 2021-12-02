@@ -391,7 +391,7 @@
                         this.sub_units.forEach(
                             sub_unit => {
                                 this.sub_unit_count[i] = this.unit_data.HomeRequest.filter(hm => hm.Position.includes(sub_unit)).length;
-                                // console.log(sub_unit, this.sub_unit_count[i]);
+                                console.log(sub_unit, this.sub_unit_count[i]);
                                 i++;
                         });
                         this.unit_data.short_name = data[0]["UnitName"];
@@ -508,7 +508,10 @@
                 if(this.sub_unit_filter == "all")
                     return true;
                 else
-                    return sub_unit.includes(this.sub_unit_filter);                
+                    if(sub_unit)
+                        return sub_unit.includes(this.sub_unit_filter);                
+                    else
+                        return true;
             },
             check_fullname_search(FullName,sub_unit){   
                 if(this.name_search_input != "")             

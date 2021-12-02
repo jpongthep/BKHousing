@@ -52,6 +52,41 @@
         );
         return false;
     }
+
+    
+    function confirm_delete(hr_id)
+    {
+        
+        showModal(
+                "กรุณายืนยัน", "ลบคำขอบ้านพัก (ถ้าต้องการส่งใหม่ จะต้องกรอกข้อมูลใหม่ทั้งหมด)", 
+                yesBtnLabel = 'ยืนยัน', noBtnLabel = 'ยกเลิก', 
+                function() {
+
+                    urltext = "{% url 'HomeRequest:delete_hr' 99999 %}"            
+                    new_urltext = urltext.replace("99999", hr_id)
+
+                    fetch(new_urltext, {
+                        method: 'post',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            "X-CSRFToken": "{{ csrf_token }}" }                                   
+                    }).then(res => res.json())
+                      .then(
+                            res => { 
+                                console.log(res);
+                                document.getElementById("hr_row"+hr_id).remove();
+                                showModalDialog('ลบคำขอเรียบร้อย', 'ลบคำขอบ้านพักเรียบร้อยแล้ว', yesBtnLabel = 'Close');
+                                // location.reload();
+                            }
+                        );
+                }
+                , yes_button = 'danger'
+        );
+        return false;
+    }
+
+
      
     function showdetail(textid, buttonid) {
         

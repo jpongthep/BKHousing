@@ -34,7 +34,7 @@ class HomeRequestForm(forms.ModelForm):
     class Meta:
         model = HomeRequest
         fields = [
-                'Rank' ,'FullName', 'Position', 'Unit',
+                'Rank' ,'FullName', 'Position', 'Unit', 'sub_unit',
                 'Salary', 'AddSalary',
                 'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
                 'Address','GooglePlusCodes1','distance',

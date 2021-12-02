@@ -563,6 +563,21 @@
             };    
         });
 
+        $("#id_hr-SpouseApproved"
+            ).on("change", function (e) {
+            var ext = this.value.match(/\.([^\.]+)$/)[1];
+
+            if(ext.toLowerCase() != 'pdf'){
+                alert('เฉพาะ pdf file เท่านั้น');
+                this.value = '';
+                return ;
+            }
+            if(this.files[0].size > 3198576){
+                alert("ไฟล์ใหญ่เกินไป ขนาดไฟล์ต้องไม่เกิน 3 MB");
+                this.value = "";
+            };    
+        });
+
         $('[data-priority]').change(function(){
             changed_item = $(this).data('priority');
             selected_value = $(`select[data-priority='${changed_item}']`).val();
@@ -739,6 +754,7 @@
     .cr-row:hover {
         background-color: rgb(192,224,192);        
     }
+    .pointer {cursor: pointer;}
 </style>    
 {% endblock%}
 
@@ -760,11 +776,14 @@
         </div>
         <div class="card-body" id = "basic_data">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     {{ form.FullName |as_crispy_field  }}
                 </div>
                 <div class="col-md-3">
                     {{ form.Position |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.sub_unit |as_crispy_field  }}
                 </div>
                 <div class="col-md-2">
                     {{ form.Unit |as_crispy_field  }}
@@ -772,7 +791,7 @@
                 <div class="col-md-2">
                     {{ form.Salary |as_crispy_field }}
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     {{ form.AddSalary |as_crispy_field  }}
                 </div>
             </div>
@@ -950,8 +969,12 @@
                     {{ form.HouseRegistration }}
                 </div> 
                 <div class="col-md-3 SpouseEvidence">                    
-                    หนังสือรับรองของคู่สมรส 
-                    <img  id = "consent_form" src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" width = 25>
+                    หนังสือรับรองของคู่สมรส
+                    <span class = "text-success">
+                    [download ฟอร์ม
+                        <img  id = "consent_form" src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" class = "pointer" width = 25>
+                    ]
+                    </span>
                     {{ form.SpouseApproved }}
                 </div>
                 <div class="col-md-3 SpouseEvidence">

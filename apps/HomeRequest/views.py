@@ -82,8 +82,6 @@ class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
             return False
 
 
-class ProcessFlow(TemplateView):
-    template_name = "HomeRequest/process_flow.html"
 
 class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
     allow_groups = ['RTAF_NO_HOME_USER']
@@ -553,6 +551,16 @@ def cancel_request(request, home_request_id):
         home_request.cancel_request = True
         home_request.Comment = home_request.Comment + 'แจ้งยกเลิกคำขอเมื่อ ' + str(date.today()) + Comment
         home_request.save()
+        return JsonResponse({"ok": True}, safe=False)
+        
+@login_required
+def delete_hr(request, home_request_id):
+    home_request = HomeRequest.objects.get(id = home_request_id)
+    if request.user != home_request.Requester:
+        raise PermissionDenied()
+    else:
+        home_request.delete()
+        logger.info(request,'ลบคำขอบ้านพักเรียบร้อย')
         return JsonResponse({"ok": True}, safe=False)
     
                

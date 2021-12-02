@@ -62,7 +62,7 @@ const showModalURL = (modal_html, success_callback) => {
 
 
 
-const showModal = (title, description, yesBtnLabel = 'Yes', noBtnLabel = 'Cancel', callback) => {
+const showModal = (title, description, yesBtnLabel = 'Yes', noBtnLabel = 'Cancel', callback, yes_button = 'primary') => {
   if (modalWrap !== null) {
     modalWrap.remove();
   }
@@ -81,7 +81,7 @@ const showModal = (title, description, yesBtnLabel = 'Yes', noBtnLabel = 'Cancel
           </div>
           <div class="modal-footer bg-light">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${noBtnLabel}</button>
-            <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>
+            <button type="button" class="btn btn-${yes_button} modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>
           </div>
         </div>
       </div>
@@ -148,7 +148,7 @@ const showModalDialog = (title, description, yesBtnLabel = 'Close') => {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p><img scr = '{% static 'images/google_plus_code.png'%}' width = 300></p>
+            <p>${description}</p>
           </div>
           <div class="modal-footer bg-light">            
             <button type="button" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>

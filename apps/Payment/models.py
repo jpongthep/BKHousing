@@ -61,7 +61,7 @@ class FinanceData(models.Model):
             UniqueConstraint(fields=['PersonID', 'date','code'], name='finance_data')
         ]        
     PersonID = models.CharField(verbose_name="เลขบัตรประชาชน", max_length = 13, null=True, blank=True, default = '' )
-    is_hire_purchase = models.BooleanField(default = False, verbose_name = 'เป็นผู้เบิกค่าเช่าซื้อ')
+    # is_hire_purchase = models.BooleanField(default = False, verbose_name = 'เป็นผู้เบิกค่าเช่าซื้อ')
     date = models.DateField(verbose_name="เดือน-ปี", null = True, blank = True, default = first_day_of_month)
     code = models.IntegerField(verbose_name="รหัสสั่งจ่าย", choices = FINANCE_CODE.choices, null = True, blank = True, default = FINANCE_CODE.HOMERENT)
     money = models.IntegerField(verbose_name="เงิน", null = True, blank = True, default = 0)
