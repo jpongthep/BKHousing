@@ -550,6 +550,10 @@
         
         $("#id_hr-HouseRegistration, #id_hr-SpouseApproved, #id_hr-MarriageRegistration, #id_hr-DivorceRegistration, #id_hr-SpouseDeathRegistration"
             ).on("change", function (e) {
+
+            if (typeof this.value !== 'undefined') 
+                return ;
+
             var ext = this.value.match(/\.([^\.]+)$/)[1];
 
             if(ext.toLowerCase() != 'pdf'){
@@ -565,6 +569,9 @@
 
         $("#id_hr-SpouseApproved"
             ).on("change", function (e) {
+                
+            if (typeof this.value !== 'undefined') 
+                return ;
             var ext = this.value.match(/\.([^\.]+)$/)[1];
 
             if(ext.toLowerCase() != 'pdf'){
@@ -970,9 +977,9 @@
                 </div> 
                 <div class="col-md-3 SpouseEvidence">                    
                     หนังสือรับรองของคู่สมรส
-                    <span class = "text-success">
+                    <span id = "consent_form" class = "text-success pointer">
                     [download ฟอร์ม
-                        <img  id = "consent_form" src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" class = "pointer" width = 25>
+                        <img   src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" width = 25>
                     ]
                     </span>
                     {{ form.SpouseApproved }}

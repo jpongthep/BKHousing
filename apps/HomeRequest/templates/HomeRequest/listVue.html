@@ -218,11 +218,13 @@
                                         </span>                                                    
                                     </a>
                                 </div>                                
-                                <div v-else-if="hm.ProcessStep=='UnitSended'">                                            
-                                    <a href = "#" @click="evaluate(hm.id, 'view');" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]" class = "text-muted">
-                                        <strong>[[ hm.UnitTroubleScore ]] </strong>&nbsp;
-                                        <i class="fa fa-check text-success icon-size" ></i>
-                                    </a> 
+                                <div v-else-if="['UnitSended','PersonProcess','GetHouse'].includes(hm.ProcessStep)">      
+                                    <span >                         
+                                        <a href = "#" @click="evaluate(hm.id, 'view');" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]" class = "text-muted">
+                                            <strong>[[ hm.UnitTroubleScore ]] </strong>&nbsp;
+                                            <i class="fa fa-check text-success icon-size" ></i>
+                                        </a> 
+                                    </span>
                                 </div>                                      
                             </td>
                             <td> <!-- Admin -->

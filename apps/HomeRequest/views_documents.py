@@ -44,6 +44,8 @@ evidence_logger = logging.getLogger('EvidenceAccessLog')
 def ArabicToThai(number_string): 
     if not number_string:
         return number_string
+    if number_string == "0":
+        return "-"
     dic = { 
         '0':'๐', 
         '1':'๑', 
@@ -407,14 +409,12 @@ def TestExcel(request,unit_id):
     # sheet = workbook.active
 
     # Write what you want into a specific cell
-    sheet_number = 0
+    sheet_number = 1
     last_insert = 0
 
 
     for rank_level in [officer_rank, non_officer_rank]:
-    
-        for status in [status_single, status_family]:
-            
+        for status in [status_single, status_family]:            
             queryset = HomeRequest.objects.filter(Unit = xls_unit
                                         #).filter(ProcessStep = 'US'
                                         ).filter(year_round__Year = get_current_year()
@@ -438,8 +438,8 @@ def TestExcel(request,unit_id):
             for i, data in enumerate(queryset):
                 # if data.Requester.Sex == "หญิง":
                 #     continue
-                
                 last_row = 7
+                
                 if i > last_row:
                     # sheet.insert_rows(i+last_row + 1)
                     # sheet.delete_rows(150)
@@ -483,7 +483,7 @@ def TestExcel(request,unit_id):
             # for row_merge in range(last_row_data + 7,last_row_data + 11):
             #     sheet.merge_cells(f"J{row_merge}:L{row_merge}")
        
-            # sheet_number += 1         
+            sheet_number += 1         
 
 
 

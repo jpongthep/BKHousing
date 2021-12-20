@@ -53,15 +53,19 @@ class HomeRequestForm(forms.ModelForm):
                 attrs={'placeholder': 'หก.กอษ.กกศ.สนผ.กบ.ทอ.'}),
                         
             'GooglePlusCodes1': forms.TextInput(attrs={'placeholder': 'WJFC+9P Bangkok, Thailand'}),
-            'distance': forms.NumberInput(attrs={
-                                                'min': 0,
+
+            'Salary': forms.NumberInput(attrs={ 'min': 0,
                                                 'step':1,
                                                 'onkeypress' : "return event.charCode >= 48 && event.charCode <= 57"
                                                 }),
+
+            'distance': forms.NumberInput(attrs={ 'min': 0,
+                                                  'step':1,
+                                                  'onkeypress' : "return event.charCode >= 48 && event.charCode <= 57"
+                                                }),
                         
             'TravelDescription': forms.Textarea(
-                attrs={
-                        'placeholder': 'เขียนอธิบายการเดินทางไป - กลับในแต่ละวันตั้งแต่เวลาตื่นตอนเช้าจนถึงเวลากลับบ้าน เวลาออกจากบ้าน เวลาถึงบ้าน ระยะทาง ระยะเวลาที่ใช้เดินทาง ภารกิจที่ต้องทำในแต่ละวัน เช่น การส่ง-รับลูก การดูแลพ่อแม่ หรือภารกิจของหน่วยที่ทำให้ต้องมาก่อน / เลิกหลังเวลา...',
+                attrs={ 'placeholder': 'เขียนอธิบายการเดินทางไป - กลับในแต่ละวันตั้งแต่เวลาตื่นตอนเช้าจนถึงเวลากลับบ้าน เวลาออกจากบ้าน เวลาถึงบ้าน ระยะทาง ระยะเวลาที่ใช้เดินทาง ภารกิจที่ต้องทำในแต่ละวัน เช่น การส่ง-รับลูก การดูแลพ่อแม่ หรือภารกิจของหน่วยที่ทำให้ต้องมาก่อน / เลิกหลังเวลา...',
                         'rows' : 4
                 }),
             'OtherTrouble': forms.Textarea(

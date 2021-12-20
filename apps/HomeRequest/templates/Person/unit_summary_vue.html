@@ -567,7 +567,9 @@
             },
             evaluate(hm_id)
             {
-                alert('ประเมิน ' + hm_id);
+                urltext = "{% url 'Trouble:person_evaluation' '99999' %}";
+                person_evaluation_url = urltext.replace("99999",hm_id)                
+                window.open(person_evaluation_url ,'_blank');
             }
         },
         computed : {

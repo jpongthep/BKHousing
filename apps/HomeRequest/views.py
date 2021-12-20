@@ -97,9 +97,10 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
     #         return not super().has_home_request()
 
     def get(self, request, *args, **kwargs):
-
+        
         hr_id = super().has_home_request()
         if hr_id:
+            print('Create get -> hr_id')
             return redirect('HomeRequest:update', pk = hr_id)
 
         self.object = None
@@ -230,16 +231,12 @@ class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
     form_class = HomeRequestForm
     template_name = "HomeRequest/CreateHomeRequest.html"
 
-    #ในกรณีที่ส่งรายงานแล้ว จะไม่สามารถแก้ไขข้อมูลได้
-    def test_func(self):
-        if super().test_func() == False:
-            return False
-        else:
-            self.object = self.get_object()
-            return not self.object.RequesterSended
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
+        if self.object.RequesterSended:
+            return redirect('HomeRequest:af_person')
+
         home_request = self.object
         
         co_resident_formset = CoResidentFormSet(instance = home_request, 
@@ -629,4 +626,5 @@ def homerequest_detail(request, username):
     if request.method == 'GET':
         serializer = HomeRequestSerializer(homerequest[0])
         return JsonResponse(serializer.data)
+
 

@@ -14,6 +14,7 @@ class Question(models.Model):
         ordering = ["id"]  
 
     text = models.CharField(max_length = 150)
+    hris_api = models.CharField(max_length = 50, null = True, default = "")
 
     def __str__(self):
             return f'{self.text}'
@@ -73,8 +74,10 @@ class FilledForm(models.Model):
                                                 ).values('filled_form'
                                                 ).annotate(sum = Sum('choice_selected__score')
                                                 ).aggregate(Sum('sum'))['sum__sum']
-
-        self.total_score =  total_score
+        if total_score:
+            self.total_score =  total_score
+        else:
+            self.total_score =  0
         self.save()
 
         return total_score

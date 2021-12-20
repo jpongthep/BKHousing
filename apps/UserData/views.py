@@ -52,16 +52,17 @@ class UserProfilesView(UpdateView):
         messages.success(request,'บันทึกการแก้ไขเรียบร้อย')
         return super().post(request, *args, **kwargs)
 
+def TokenExpire(request,result):
+    if "error" in result:
+        if "name" in result["error"]:
+            if result["error"]["name"] == "TokenExpiredError":
+                pwd_valid = checkRTAFPassdword(request, request.user.username,request.session['password'])
+                request.session['Token'] = pwd_valid['token']
+                return True
+    return False
+    
 def AddUserByPersonID(request, person_id):
 
-    def TokenExpire(request,result):
-        if "error" in result:
-            if "name" in result["error"]:
-                if result["error"]["name"] == "TokenExpiredError":
-                    pwd_valid = checkRTAFPassdword(request, request.user.username,request.session['password'])
-                    request.session['Token'] = pwd_valid['token']
-                    return True
-        return False
 
     check_exist = User.objects.filter(PersonID = person_id)
     if check_exist.exists():
@@ -152,7 +153,6 @@ def AddUserByPersonID(request, person_id):
         new_user.save()
         # print('User.DoesNotExist ')
         user = new_user
-
 
     #ค้นหาว่ามีบ้านที่พักอยู่หรือไม่
     home_owner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)

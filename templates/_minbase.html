@@ -251,7 +251,8 @@
             {% endif %}
 
             {% if request.user|has_group:"PERSON_ADMIN" %}
-              <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> รายการคำขอ นขต.ทอ.</a></li>
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> คำขอ แยกตาม นขต.ทอ.</a></li>
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:manual_list'%}"><i class="fa fa-building"></i> คำขอ รวมทุก นขต.ทอ.</a></li>
             {% endif %}
             {% endif %}
             </ul>
