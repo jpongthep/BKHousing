@@ -40,6 +40,7 @@ class User(AbstractUser):
     OfficePhone = models.CharField(verbose_name="เบอร์ที่ทำงาน", max_length = 20, null=True, blank=True)
     MobilePhone = models.CharField(verbose_name="มือถือ", max_length = 30, null=True, blank=True)
     RTAFEMail = models.EmailField(verbose_name = "ที่อยู่ email ทอ.", null=True, blank=True)
+    line_user_id = models.CharField(max_length = 40, unique = True, null=True, blank=True)
 
     sub_unit =  models.CharField(max_length = 30, verbose_name="สังกัดย่อย", null = True, blank=True)
     CurrentUnit =  models.ForeignKey(Unit, verbose_name="สังกัด", on_delete=models.SET_NULL, null = True, blank=True, related_name='CurrentUnit')
@@ -104,3 +105,13 @@ class User(AbstractUser):
         
     def __str__(self):
         return self.FullName
+
+
+import string
+import random
+
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+

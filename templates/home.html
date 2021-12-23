@@ -1,11 +1,14 @@
 {% extends '_minbase.html' %}
 
+
 {% block title %}ARMIS ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.{% endblock %}
 
 
 {% block header %}
 ข้อมูลปีงบประมาณ 65
 {% endblock %}
+
+
 
 {% block script %}
 <script>
@@ -21,7 +24,15 @@
           form.submit();
       });
   }, false);
+
+  $(window).on('load', function() {
+    $('#LineModal').modal('show');
+});
+{% comment %} 
+  var myModal = new bootstrap.Modal(document.getElementById('LineModal'), {});
+  myModal.toggle(); {% endcomment %}
 </script>
+
 {% endblock %}
 
 
@@ -108,4 +119,34 @@
     </div>
   </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="LineModal" tabindex="-1" aria-labelledby="LineModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="LineModalLabel">ส่งข้อมูล</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-id" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">ข้อผิดพลาด/ข้อเสนอแนะ:</label>
+            <textarea name="text" required="" id="comment-text" class="form-control"  rows = 4></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">ผู้ส่ง:</label>
+            <input type="text" value = "{{ request.user.FullName }} ({{ request.user.CurrentUnit }})" class="form-control" id="recipient-name" Disabled>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+        <button id = "btn-save" onclick = "$('#LineModal').fadeOut();" type="button" class="btn btn-primary">บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {% endblock modal %}
