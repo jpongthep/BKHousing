@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 USER_PERMISSION = (
     ("RTAF_NO_HOME_USER", "RTAF_no_home_user"),
     ("RTAF_HOME_USER", "RTAF_home_user"),
+    ("PERSON_SUBUNIT_ADMIN", "Person_subunit_admin"),
     ("PERSON_UNIT_ADMIN", "Person_unit_admin"),
     ("PERSON_ADMIN", "Person_admin"),
     ("HOME_EXAMINE_OFFICER", "Home_examine_officer"),
@@ -11,7 +12,6 @@ USER_PERMISSION = (
     ("FINANCIAL_OFFICER", "Financial_officer"),
     ("CIVIL_OFFICER", "Civil_officer"),
 )
-
 
 class RTAFUnitSection(models.TextChoices):    
     NotDefine = '0', _('-')
@@ -181,13 +181,11 @@ class HomeRequestProcessStep(models.TextChoices):
     REQUESTER_CANCEL = 'RC', _('RequesterCancel')
     ROUND_FINISHED = 'RF', _('RoundFinished')
 
-
 # การเดินทางไปทำงาน
 class CommuteType(models.TextChoices):
     PrivateVehical = '1-PV', _('ยานพาหนะส่วนตัว')    
     PublicTranspotation = '2-PT', _('ขนส่งสาธารณะ')
     PrivateRent = '3-PR', _('รถรับจ้าง')
-  
 
 # ขั้นตอนของเอกสาร
 class CoResidenceRelation(models.TextChoices):
@@ -206,6 +204,14 @@ class PERSON_STATUS(models.IntegerChoices):
     MARRIES_SEPARATE = 7, _('สมรส-แยกกันอยู่')
     DIVOTE = 3, _('หย่าร้าง')
     WIDOW = 4, _('ม่าย')
+
+class SPOUSEOFFICE(models.IntegerChoices):
+    NO_SPOUSE = 0, _('ไม่ระบุคู่สมรส')    
+    AF_Bangkok = 1, _('เป็น ทอ.ทำงานกทม.')    
+    AF_Provinces = 2, _('เป็น ทอ. ทำงานภูมิภาค')
+    NOT_AF_Bangkok = 3, _('ไม่ใช่ ทอ. ทำงานกทม.')
+    NOT_AF_Provinces = 4, _('ไม่ใช่ ทอ. ทำงานภูมิภาค')     
+    
     
 # การศึกษาของผู้พักอาศัยร่วม
 class EDUCATION(models.IntegerChoices):

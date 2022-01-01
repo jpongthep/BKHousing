@@ -18,7 +18,8 @@ class ChoicesInline(admin.TabularInline):
     extra = 0
 
 class QuestionAdmin(admin.ModelAdmin):    
-    list_display = ['text', 'hris_api']
+    list_display = ['text', 'hris_api','homerequest_field']
+    list_editable= [ 'hris_api','homerequest_field']
     inlines = [ChoicesInline,]
 
 class AnsweredFormInline(admin.TabularInline):

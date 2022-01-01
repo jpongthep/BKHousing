@@ -14,7 +14,8 @@ class Question(models.Model):
         ordering = ["id"]  
 
     text = models.CharField(max_length = 150)
-    hris_api = models.CharField(max_length = 50, null = True, default = "")
+    homerequest_field = models.CharField(max_length = 50, null = True, blank = True, default = "")
+    hris_api = models.CharField(max_length = 50, null = True, blank = True, default = "")
 
     def __str__(self):
             return f'{self.text}'

@@ -36,9 +36,9 @@ class HomeRequestForm(forms.ModelForm):
         fields = [
                 'Rank' ,'FullName', 'Position', 'Unit', 'sub_unit',
                 'Salary', 'AddSalary',
-                'Status', 'SpouseName','SpousePID','SpouseAFID','IsHRISReport',
+                'Status', 'SpouseName','SpousePID','spouse_office','SpouseAFID','num_children','num_study_children', 'IsHRISReport',
                 'Address','GooglePlusCodes1','distance',
-                'TravelDescription',
+                'work_commute','TravelDescription',
                 'RentPermission','have_rent', 'have_rent_spouse', 'RentalCost', 'RentalCostSpouse', 'rent_comment',
                 'IsNotBuyHome','IsNotOwnHome','IsNotRTAFHome','RTAFHomeLeaveReason','IsNeverRTAFHome',
                 'IsHomelessDisaster','ContinueHouse', 'IsHomelessEvict','IsMoveFromOtherUnit','ImportanceDuty','OtherTrouble',

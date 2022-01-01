@@ -97,33 +97,25 @@
     {% if not object_list %}
         <h3>ไม่มีข้าราชการส่งรายงานขอบ้านพักในระบบ</h3>
     {% else %}
-        <div id="MainAPP">
-            <div class = "row">
-                <div v-for="index in 6" :key="index" class = "mt-2 col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6">
-                    <div class = "card text-center shadow rounded-top" v-bind:class = "{'border border-dark border-3' : link_show_data[index-1] == 'ยกเลิกกรอง'}">
-                        <div class = "card-header" v-bind:class = "[card_static[index-1].color, card_static[index-1].bgcolor]">
-                            <div class = "row align-items-center">
-                                <div class = "col">
-                                    <i class="fa fa-2x" v-bind:class = "[card_static[index-1].awesome]"></i>
-                                </div>
-                                <div class = "col">
-                                    <h3 class = "display-6">
-                                        [[ num_report[index-1] ]]
-                                    </h3>
-                                    <h6>[[ card_static[index-1].text ]]</h6>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <h6 class = "text-dark" @click = "filter_homerequest(index);" style ="cursor: pointer;">[[ link_show_data[index-1] ]] <i class="fa fa-arrow-alt-circle-right"></i></h6>
-                        </div>
+        <div id="MainAPP">              
+            <div class = "row mt-2">
+                <div class="row mb-2">              
+                    <div class="col-md-6">
+                        <button  
+                            v-for="index in 6" 
+                            :key="index" 
+                            v-bind:class = "[card_static[index-1].color, card_static[index-1].bgcolor]"
+                            @click="filter_homerequest(index)"
+                            type="button" class="btn  m-1"  
+                        >
+                            [[ card_static[index-1].text ]] <span class="badge" v-bind:class = "[card_static[index-1].badgecolor]">[[ num_report[index-1] ]]</span>
+                        </button>
+                        <button @click="filter_homerequest('all')" type="button" class="btn btn-primary m-1" >
+                            ทั้งหมด <span class="badge bg-secondary">6</span>
+                        </button>
                     </div>
-                </div>
-            </div>                   
-            <div class = "row mt-4">
-                <div class="row mb-2">
-              
                     <div class="col-md-3">
+
                         <div class="input-group mb-3">
                             <input type="text" v-model="name_search_input" class="form-control" placeholder="ยศ ชื่อ นามสกุล หรือหน่วยงาน" aria-label="Recipient's username" aria-describedby="basic-addon2">
                             <div class="input-group-append">
@@ -131,15 +123,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 text-end">
                         <div class="form-check form-check-inline">
                             <select v-model="sub_unit_filter" class="form-select form-select-inline">
                                 <option value="all">ทุกหน่วย</option>                         
                                 <option v-for="(su,j) in sub_units" :value="su">[[ su ]]  [[ sub_unit_count[j] > 0 ? "[" + sub_unit_count[j] + "]" : ""]] </option>
                             </select>                            
                         </div>                             
-                    </div>            
-                    <div class="col-sm-6 text-end">
                         <a href = '{% url 'HomeRequest:xls' request.user.CurrentUnit.id%}' type="button" class="btn btn-success m-1"><i class="fa fa-file-excel"></i> excel</a>
                         <a href = '{% url 'HomeRequest:doc_unit' request.user.CurrentUnit.id%}' type="button" class="btn btn-primary text-white"><i class="fa fa-file-word"></i> word</a>
                     </div>
@@ -308,7 +298,6 @@
                 fullname_search : "",
                 change_process_step_to : "",
                 step_action :"รับเรื่อง",
-                link_show_data : ["กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล","กรองข้อมูล"],
 
                 object_list : [
                     {
@@ -326,39 +315,39 @@
              
                 card_static:[
                     {
-                        color : "text-dark",
-                        bgcolor : "bg-light",
-                        awesome : "fa-pen",
+                        color : "text-white",
+                        bgcolor : "bg-primary",
+                        badgecolor : "bg-secondary",
                         text : "เริ่มกรอก" 
                     },
                     {                        
                         color : "text-white",
                         bgcolor : "bg-danger",
-                        awesome : "fa-list",
+                        badgecolor : "bg-warning",
                         text : "ส่งหน่วย"
                     },
                     {
                         color : "text-white",
                         bgcolor : "bg-warning",
-                        awesome : "fa-cog fa-spin",
+                        badgecolor : "bg-secondary",
                         text : "นขต.รับ"
                     },
                     {
                         color : "text-white",
                         bgcolor : "bg-success",
-                        awesome : "fa-check",
+                        badgecolor : "bg-secondary",
                         text : "นขต.ส่ง"
                     },
                     {
                         color : "text-white",
                         bgcolor : "bg-secondary",
-                        awesome : "fa-paperclip",
+                        badgecolor : "bg-dark",
                         text : "กพ.รับเรื่อง"
                     },
                     {
-                        color : "text-white",
-                        bgcolor : "bg-primary",
-                        awesome : "fa-home",
+                        color : "text-dark",
+                        bgcolor : "bg-light",
+                        badgecolor : "bg-secondary",
                         text : "รับจัดสรร" 
                     }
                 ],                        
@@ -491,19 +480,14 @@
                                'UnitSended','PersonProcess','PersonApproved','GetHouse'
                             ];
                 console.log('this.filter_data ',this.filter_data);
-                for(i = 0;i < 6;i++)
-                {
-                    this.link_show_data[i] = "กรองข้อมูล"
-                }
+                
                 if(this.filter_data == ProcessStep[step_report-1])
                 {
-                    this.filter_data = 'all';
-                    this.link_show_data[step_report -1 ] = "กรองข้อมูล"
+                    this.filter_data = 'all';                
                 }
                 else
                 {
-                    this.filter_data = ProcessStep[step_report-1];
-                    this.link_show_data[step_report-1] = "ยกเลิกกรอง"
+                    this.filter_data = ProcessStep[step_report-1];                    
                 }
             },
             show_sub_unit(sub_unit){                
@@ -539,7 +523,7 @@
             evaluate(hm_id, editable)
             {
                 if(editable == 'edit')
-                    urltext = "{% url 'Trouble:eval' '99999' 'Unit' %}";
+                    urltext = "{% url 'Trouble:unit_evaluation' '99999' %}";
                 else
                     urltext = "{% url 'Trouble:view_eval' '99999' 'Unit' %}";
                 trouble_eval = urltext.replace("99999",hm_id);               

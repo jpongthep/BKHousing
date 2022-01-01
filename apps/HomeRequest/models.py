@@ -11,6 +11,7 @@ from apps.Utility.Constants import ( PERSON_STATUS,
                                      YEARROUND_PROCESSSTEP,
                                      HomeZone,
                                      CommuteType,
+                                     SPOUSEOFFICE,
                                      HomeRequestProcessStep,
                                      CoResidenceRelation,
                                      HomeRentPermission,
@@ -57,7 +58,10 @@ class HomeRequest(models.Model):
     SpouseName = models.CharField(max_length=100, null=True, blank=True, verbose_name="ชื่อคู่สมรส")
     SpousePID = models.CharField(max_length=13, null=True, blank=True, verbose_name="เลขประชาชนคู่สมรส")
     SpouseAFID = models.CharField(max_length=12, null=True, blank=True, verbose_name="เลขประจำตัว ทอ. (ถ้าเป็น)")
+    spouse_office = models.IntegerField(verbose_name="สถานที่ทำงานคู่สมรส", choices = SPOUSEOFFICE.choices, default = 0, null = True, blank = True)
     IsHRISReport = models.BooleanField(default = False, verbose_name = 'รายงานคู่สมรสและบุตรในประวัติราชการ')
+    num_children = models.IntegerField(verbose_name="จำนวนบุตร", default = 0, null=True, blank=True)
+    num_study_children = models.IntegerField(verbose_name="จน.บุตรที่อยู่ระหว่างศึกษา", default = 0, null=True, blank=True)
 
     # ยืนยันข้อมูล
     IsNotBuyHome = models.BooleanField(default = False, verbose_name = 'ไม่เป็นผู้เบิกค่าเช่าซื้อ')
@@ -93,6 +97,7 @@ class HomeRequest(models.Model):
     SpouseApproved = models.FileField(verbose_name='หนังสือรับรองของคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     DivorceRegistration = models.FileField(verbose_name='ทะเบียนหย่า (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
     SpouseDeathRegistration = models.FileField(verbose_name='มรณบัตรคู่สมรส (ถ้ามี)', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
+    more_evidence = models.FileField(verbose_name='เอกสารเพิ่มเติม', default = None, null = True, blank = True, upload_to = UploadFolderName, validators = [only_pdf])
 
     Comment = models.TextField(verbose_name="หมายเหตุ", null=True, blank = True)
 

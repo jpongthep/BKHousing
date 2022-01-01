@@ -7,7 +7,7 @@ from apps.HomeRequest.models import HomeRequest, CoResident
 from .views import AuthenUserTestMixin
 
 class af_person_data_detailview(AuthenUserTestMixin, DetailView):
-    allow_groups = ['RTAF_NO_HOME_USER', 'PERSON_UNIT_ADMIN','PERSON_ADMIN']
+    allow_groups = ['RTAF_NO_HOME_USER', 'PERSON_SUBUNIT_ADMIN', 'PERSON_UNIT_ADMIN','PERSON_ADMIN']
     template_name = "HomeRequest/modal_af_person.html"
     model = HomeRequest
 

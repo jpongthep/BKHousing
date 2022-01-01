@@ -473,17 +473,19 @@
             widow_divote = $("#id_hr-Status").val() == 3 || $("#id_hr-Status").val() == 4;
 
             $("#div_id_hr-IsHRISReport").toggle(married || widow_divote);
-            $("#div_id_hr-SpouseName").toggle(married);
-            $("#div_id_hr-SpousePID").toggle(married);
-            $("#div_id_hr-SpouseAFID").toggle(married);
-            $("#div_id_hr-IsNotRTAFHome").toggle(married);
+            $("#SpouseData").toggle(married);
+            // $("#div_id_hr-spouse_office").toggle(married);
+            $("#SpouseDataID").toggle(married);
+            // $("#div_id_hr-SpouseAFID").toggle(married);
+            // $("#div_id_hr-IsNotRTAFHome").toggle(married);
+            $("#div_id_hr-num_children").toggle(married || widow_divote);
+            $("#div_id_hr-num_study_children").toggle(married || widow_divote);
 
             $("#HomeRentSpouse").toggle(married);
             $(".SpouseEvidence").toggle(married);
             $(".widow_divote").toggle(widow_divote);
 
             $("#id_hr-IsShopHouseNeed").prop('disabled', ! (married || widow_divote));
-            
         }
 
         // ตรวจการกรอกข้อมูลวันเกิด
@@ -809,16 +811,18 @@
                 <div class="col-md-3">
                     {{ form.IsHRISReport |as_crispy_field  }}
                 </div>
-                <div class="col-md-3">
+                <div id = "SpouseData" class="col-md-3">
                     {{ form.SpouseName |as_crispy_field  }}
+                    {{ form.spouse_office |as_crispy_field  }}
                 </div>
-                <div class="col-md-2">
+                <div id = "SpouseDataID" class="col-md-2">
                     {{ form.SpousePID |as_crispy_field  }}
-                </div>
-                <div class="col-md-2">
                     {{ form.SpouseAFID |as_crispy_field  }}
                 </div>
-
+                <div class="col-md-2">
+                    {{ form.num_children |as_crispy_field  }}
+                    {{ form.num_study_children |as_crispy_field  }}
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-2">
@@ -843,10 +847,10 @@
         </div>
         <div class="card-body" id = "addressData">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     {{ form.Address |as_crispy_field }}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="mb-3">
                         <label for="id_hr-GooglePlusCodes1" class="form-label" id = "forGooglePlusCodes1">
                             Google Plus Codes
@@ -858,6 +862,9 @@
                     </div>
                     <input id="zipcode1" type="hidden">
                 </div>                
+                <div class="col-md-2">
+                    {{ form.work_commute |as_crispy_field }}
+                </div>
                 <div class="col-md-2">
                     {{ form.distance |as_crispy_field }}
                 </div>

@@ -338,7 +338,7 @@ class AFPersonListView(AuthenUserTestMixin,ListView):
 class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
     model = HomeRequest    
     template_name = "HomeRequest/listVue.html"
-    allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
+    allow_groups = ['PERSON_ADMIN', 'PERSON_SUBUNIT_ADMIN', 'PERSON_UNIT_ADMIN']
 
     def split_sub_unit(self):
         user_unit = self.request.user.CurrentUnit
@@ -375,17 +375,24 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
 
+        print('get_queryset')
+
+        queryset = HomeRequest.objects.filter(year_round__Year = get_current_year())
+
+        if self.request.user.CurrentUnit.re_cal_sub_unit:
+            self.split_sub_unit()
+
         if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
-                queryset = HomeRequest.objects.filter(Unit = self.request.user.CurrentUnit)  
-                if self.request.user.CurrentUnit.re_cal_sub_unit:
-                    self.split_sub_unit()
+                queryset = queryset.filter(Unit = self.request.user.CurrentUnit)              
+
+        if self.request.user.groups.filter(name = 'PERSON_SUBUNIT_ADMIN').exists():
+                queryset = queryset.filter(sub_unit = self.request.user.sub_unit ) 
         
         if 'unit_id' in self.kwargs:
             unit_id = self.kwargs['unit_id']
             if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
-                    queryset = HomeRequest.objects.filter(Unit_id = unit_id)
+                    queryset = queryset.filter(Unit_id = unit_id)
         
-        queryset = queryset.filter(year_round__Year = get_current_year())
         queryset = queryset.order_by("-year_round__Year","ProcessStep","Requester__Rank")
         return queryset 
     
@@ -394,9 +401,16 @@ class HomeRequestUnitListView(AuthenUserTestMixin, ListView):
 
         queryset = HomeRequest.objects.filter(year_round__Year = get_current_year())
 
-        if self.request.user.groups.filter(name='PERSON_UNIT_ADMIN').exists():
-                queryset = queryset.filter(Unit = self.request.user.CurrentUnit)                
-        
+        if self.request.user.groups.filter(Q(name='PERSON_UNIT_ADMIN') | Q(name = 'PERSON_SUBUNIT_ADMIN')).exists():
+            queryset = queryset.filter(Unit = self.request.user.CurrentUnit)                
+
+
+        if self.request.user.groups.filter(name = 'PERSON_SUBUNIT_ADMIN').exists():
+            # print('get_context_data : ',self.request.user.sub_unit)
+
+            queryset = queryset.filter(sub_unit = self.request.user.sub_unit ) 
+
+
         if 'unit_id' in self.kwargs:
             unit_id = self.kwargs['unit_id']
             if self.request.user.groups.filter(name='PERSON_ADMIN').exists():
@@ -456,13 +470,15 @@ class HomeRequestAdminListView(HomeRequestUnitListView):
 
 
 class UnitList4PersonAdmin(AuthenUserTestMixin, APIView):
-    allow_groups = ['PERSON_UNIT_ADMIN','PERSON_ADMIN']
+    allow_groups = ['PERSON_SUBUNIT_ADMIN', 'PERSON_UNIT_ADMIN','PERSON_ADMIN']
 
     def get(self, request, *args, **kwargs):        
         unit_id = kwargs["unit_id"] if kwargs.get("unit_id", None) is not None else request.user.Unit.id
 
         queryset = HomeRequest.objects.filter(Unit_id = unit_id).order_by("-ProcessStep","-PersonTroubleScore")
         queryset = queryset.filter(year_round__Year = get_current_year())
+        if self.request.user.groups.filter(name = 'PERSON_SUBUNIT_ADMIN').exists():
+            queryset = queryset.filter(sub_unit = self.request.user.sub_unit ) 
         serializer = HomeRequestSerializer(queryset, many=True)
         # print("serializer.data = ", serializer.data)
         return Response(serializer.data)
@@ -524,7 +540,7 @@ class HomeRequestUnitSummaryListView(AuthenUserTestMixin,ListView):
 
 
 class HomeRequestDetail(AuthenUserTestMixin, DetailView):
-    allow_groups = ['RTAF_NO_HOME_USER','PERSON_UNIT_ADMIN']
+    allow_groups = ['RTAF_NO_HOME_USER','PERSON_SUBUNIT_ADMIN', 'PERSON_UNIT_ADMIN']
     model = HomeRequest
     template_name = "HomeRequest/Detail.html"
 
@@ -563,7 +579,7 @@ def delete_hr(request, home_request_id):
                
 @login_required
 def update_process_step(request, home_request_id, process_step):
-    allow_groups = ['PERSON_ADMIN', 'PERSON_UNIT_ADMIN']
+    allow_groups = ['PERSON_ADMIN','PERSON_SUBUNIT_ADMIN', 'PERSON_UNIT_ADMIN']
     allow_access = False
     for ag in allow_groups:
         if request.user.groups.filter(name=ag).exists():

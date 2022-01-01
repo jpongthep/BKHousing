@@ -1,0 +1,94 @@
+{% extends '_minbase.html' %}
+
+{% load static %}
+
+{% block title %}
+    ARMIS ประเมินความเดือดร้อน {{QAList.0.filled_form.home_request_form.Requester.FullName }}
+{% endblock%}
+
+{% block header%}
+<h4>ประเมินความเดือดร้อน : <strong>  {{QAList.0.filled_form.home_request_form.Requester.FullName }}</strong> โดย {{QAList.0.filled_form.evaluater.FullName}}</h4>
+{% endblock header %}
+
+{% block scriptlink %}
+    <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function modal_hr_detail(hr_id)
+        {
+            urltext = "{% url 'HomeRequest:md' 99999 %}"
+            
+            new_urltext = urltext.replace("99999",hr_id)
+            console.log(new_urltext)
+            fetch_show_modal(new_urltext);
+        }
+    </script>
+{% endblock %}
+
+{% block style %}
+<style>
+    .odd_row {
+       background: #cccccc;
+    }
+    .even_row {
+       background: #ffffff;
+    }
+ </style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h4>
+				การประเมินความเดือดร้อนของ 
+                {{ QAList.0.filled_form.home_request_form.Requester.FullName }} 
+                {{ Troubleform.home_request_form.Requester.CurrentUnit }}
+                [ <a href = "#" onclick = "modal_hr_detail({{ QAList.0.filled_form.home_request_form.id }})"><i class="fab fa-wpforms text-success"></i></a> 
+                  <a href = "{% url 'HomeRequest:detail_doc' QAList.0.filled_form.home_request_form.id 1%}"><i class="fas fa-file-word text-primary"></i></a> 
+                ]
+			</h4>
+		</div>
+	</div>
+	<div class="row font-weight-bold text-center">
+		<div class="col-md-7 border-start border-bottom border-top border-dark">หัวข้อการประเมิน</div>
+		<div class="col-md-1 border-start border-bottom border-top border-dark">HRIS</div>
+		<div class="col-md-2 border-start border-bottom border-top border-dark">ผู้ขอกรอก</div>
+		<div class="col-md-2 border-start border-end border-bottom border-top border-dark">การประเมิน</div>
+	</div>
+    {% for QUnit, hris_data, hr_form_field in data %}
+	<div class="row {% cycle 'odd_row' 'even_row' %}">
+		<div class="col-md-7 border-start border-bottom border-dark  p-2">{{ forloop.counter }}. {{ QUnit.question.text }}</div>
+		<div class="col-md-1 border-start border-bottom border-dark  p-2">{{ hris_data |safe }}</div>
+		<div class="col-md-2 border-start border-bottom border-dark  p-2">{{ hr_form_field |safe }}</div>
+		<div class="col-md-2 border-start border-end border-bottom border-dark p-2">
+            <select class="form-control p-1"  id = "Question" name="{{ QUnit.question.id}}" >                
+                {% for tc in QUnit.question.choices_set.all %}
+                    {% if QUnit.choice_selected.id == tc.id %} 
+                        <option class = "mb-2" value={{ tc.id }} selected> {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)</option>
+                    {% else %}
+                        <option class = "mb-2" value={{ tc.id }}> {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)</option>
+                    {% endif %} 
+                {% endfor %}
+            </select>   
+		</div>
+	</div>
+    {% endfor %}
+	<div class="row even_row">
+		<div class="col-md-7 border-start border-bottom border-dark"></div>
+		<div class="col-md-1 border-start border-bottom border-dark"></div>
+		<div class="col-md-2 border-start border-bottom border-dark font-weight-bold text-center">{{ QAList.0.filled_form.CalculateScore }}</div>
+		<div class="col-md-2 border-start border-end border-bottom border-dark">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-10">		</div>
+		<div class="col-md-2">			 
+			<button type="button" class="btn btn-success">บันทึก</button>
+		</div>
+	</div>
+</div>
+{% endblock %}

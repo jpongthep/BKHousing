@@ -3,6 +3,7 @@ from datetime import date, timedelta
 import requests as rq
 import json
 
+
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -130,6 +131,44 @@ def CreateBlankFrom(set_form, home_request_form, evaluater, type = 'Self', date 
 
     
 @login_required  
+def UnitEvaluation(request,HomeRequstID):
+    home_request = HomeRequest.objects.get(id = HomeRequstID)        
+    set_form = SetForm.objects.get(code = 'F60')
+    filled_form = FilledForm.objects.filter(set_form = set_form,
+                                            home_request_form = home_request,
+                                            type = 'Unit')
+    if filled_form.exists():
+        Troubleform = filled_form[0]
+        print("Troubleform = ",Troubleform)
+        QAList = AnsweredForm.objects.filter(filled_form = Troubleform).order_by("question__id")
+    else:
+        blank_form = CreateBlankFrom(set_form, home_request, request.user, type = 'Unit')
+        QAList = AnsweredForm.objects.filter(filled_form = blank_form).order_by("question__id")
+    # # ตรวจสอบว่า กพ.ประเมินหรือยัง 
+    # person_filled_form = FilledForm.objects.filter(set_form = set_form,
+    #                                             home_request_form = home_request,
+    #                                             type = 'HR')
+    # if person_filled_form.exists():
+    #     person_filled_form[0].evaluater = request.user
+    #     PersonTroubleform = person_filled_form[0]     
+    # else:
+    #     PersonTroubleform = CreateBlankFrom(set_form, home_request, request.user, type = 'HR')
+     
+    # PersonQA = AnsweredForm.objects.filter(filled_form = PersonTroubleform).order_by("question__id")
+
+    hris_data = loadHRISData(request,home_request.Requester.PersonID)
+    hr_form_data = loadHomeRequestFormData(request,home_request)
+    print("hris_data = ",hris_data)
+    data = zip(QAList, hris_data, hr_form_data)
+    context = {
+        'data' : data,
+        'QAList' : QAList
+        }
+
+    return render(request,'Trouble/unit_eval.html',context)
+
+
+@login_required  
 def PersonEvaluation(request,HomeRequstID):
     home_request = HomeRequest.objects.get(id = HomeRequstID)        
     set_form = SetForm.objects.get(code = 'F60')
@@ -207,10 +246,13 @@ def loadHRISData(request, person_id):
         if ql.question.hris_api:
             if ql.question.hris_api == "MARRIED":
                 married_status = {"1" : "โสด", "2" : "สมรส", "3" : "หย่า", "4" : "ม่าย"}
+                if ql.question.hris_api not in "1234":
+                    hris_data[i] = "-"
+                    continue                
                 hris_data[i] = married_status[return_data[ql.question.hris_api]]
                 if return_data[ql.question.hris_api] == "2":
-                    hris_data[i] += "<br> " + return_data["SPOUSE_NAME"]
-                    hris_data[i] += "<br> " + return_data["SPOUSE_IDCARD"]
+                    hris_data[i] += "<br> " + str(return_data["SPOUSE_NAME"])
+                    hris_data[i] += "<br> " + str(return_data["SPOUSE_IDCARD"])
             elif ql.question.hris_api == "homerent":
                 homerent_data = FinanceData.objects.filter(PersonID =  person_id
                                                         ).filter(date__gte = date.today() - timedelta(days = 185)
@@ -223,8 +265,50 @@ def loadHRISData(request, person_id):
                     hris_data[i] = homerent_data[0].money
                 else:
                     hris_data[i] = "ไม่เบิก"
+            elif ql.question.hris_api == "START_DATE":
+                if return_data["START_DATE"]:
+                    today = datetime.date.today()
+                    try:
+                        start_date = datetime.datetime.strptime(return_data["START_DATE"], '%Y-%m-%d %H:%M:%S.%f')
+                        years = today.year - start_date.year
+                        if today.month < start_date.month or (today.month == start_date.month and today.day < start_date.day):
+                            years -= 1
+                        hris_data[i] = f"{str(return_data['START_DATE'])[:10]} ({years} ปี)"
+                    except:
+                        hris_data[i] = f"{return_data['START_DATE']}"
+                else:
+                    hris_data[i] = "-"
             else:
                 hris_data[i] = return_data[ql.question.hris_api]
         else:
             hris_data[i] = "-"
     return hris_data
+
+
+def loadHomeRequestFormData(request, hr_form):
+
+    hr_form_data = ['-'] * 11
+
+    set_form = SetForm.objects.get(code = 'F60')
+    question_list = QuestionList.objects.filter(set_form = set_form)
+
+    for i, ql in enumerate(question_list):
+        if ql.question.homerequest_field:
+            if ql.question.homerequest_field == "Salary+AddSalary":
+                hr_form_data[i] = hr_form.Salary 
+                hr_form_data[i] += hr_form.AddSalary if hr_form.AddSalary else 0
+            elif ql.question.homerequest_field == "num_coresidence":
+                hr_form_data[i] = hr_form.CoResident.all().count()
+            else:
+                field_object = HomeRequest._meta.get_field(ql.question.homerequest_field)
+                # print('field_object ' , field_object)
+                # hr_form_data[i] = field_object.value_from_object(hr_form)
+                try:
+                    hr_form_data[i] = getattr(hr_form, f"get_{field_object.attname}_display")
+                except:
+                    hr_form_data[i] = getattr(hr_form, field_object.attname)
+
+    return hr_form_data
+
+
+    

@@ -77,7 +77,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "UnitReciever":
-            kwargs["queryset"] = User.objects.filter(groups__name__in=['PERSON_UNIT_ADMIN'])
+            kwargs["queryset"] = User.objects.filter(groups__name__in=['PERSON_SUBUNIT_ADMIN','PERSON_UNIT_ADMIN'])
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_search_results(self, request, queryset, search_term):

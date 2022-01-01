@@ -1,5 +1,5 @@
 {% extends '_minbase.html' %}
-
+{% load static %}
 
 {% block title %}ARMIS ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.{% endblock %}
 
@@ -25,9 +25,9 @@
       });
   }, false);
 
-  $(window).on('load', function() {
+  {% comment %} $(window).on('load', function() {
     $('#LineModal').modal('show');
-});
+}); {% endcomment %}
 {% comment %} 
   var myModal = new bootstrap.Modal(document.getElementById('LineModal'), {});
   myModal.toggle(); {% endcomment %}
@@ -124,25 +124,19 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="LineModalLabel">ส่งข้อมูล</h5>
+        <h5 class="modal-title" id="LineModalLabel">เพิ่มเพื่อน "เอมี่" เพื่อตรวจสอบข้อมูลบ้านพัก</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="form-id" method="POST" enctype="multipart/form-data">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label for="message-text" class="col-form-label">ข้อผิดพลาด/ข้อเสนอแนะ:</label>
-            <textarea name="text" required="" id="comment-text" class="form-control"  rows = 4></textarea>
+          <div class="mb-3 text-center">
+            <img src="{% static 'images/armis_qr.png' %}" alt="Girl in a jacket" width="360" height="360">
           </div>
-          <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">ผู้ส่ง:</label>
-            <input type="text" value = "{{ request.user.FullName }} ({{ request.user.CurrentUnit }})" class="form-control" id="recipient-name" Disabled>
+          <div class="mb-3  text-center">
+            <label class="col-form-label">รหัสสำหรับลงทะเบียน : {{ request.session.duplica_rapid_login }} </label>            
           </div>
-        </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-        <button id = "btn-save" onclick = "$('#LineModal').fadeOut();" type="button" class="btn btn-primary">บันทึก</button>
+      <div class="modal-footer">      
+        <button  onclick = "$('#LineModal').hide();" type="button" class="btn btn-primary">ปิด</button>
       </div>
     </div>
   </div>

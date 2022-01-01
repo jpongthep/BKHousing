@@ -395,6 +395,7 @@ class SettingsBackend(ModelBackend):
                 # print('login user = ', user)
                 request.session['Token'] = pwd_valid['token']
                 request.session['password'] = password
+                request.session['duplica_rapid_login'] = pwd_valid['duplica_rapid_login']
                 logger.info(f'{username} login success')
                 return user
             else:                

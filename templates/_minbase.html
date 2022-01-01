@@ -148,16 +148,20 @@
                 {% endif %}
               </li>          
             {% endif %}
-            {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
+            {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
               <ul class="dropdown-menu" aria-labelledby="dropdown05">
-              {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
+              {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN" %}
                 <li>
                   <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
                     <i class="fa fa-fw fa-users"></i> 
-                    รายการคำขอ {{ request.user.CurrentUnit.ShortName }}
+                    {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN" %}
+                    รายการคำขอ 123{{ request.user.subunit }}
+                    {% else %}
+                    -123
+                    {% endif %}
                   </a>
                 </li>
               {% endif %}
@@ -227,8 +231,8 @@
                 </a>
               {% endif %}
             </li>          
-          {% endif %}
-          {% if request.user|in_group:"PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
+          {% endif %}          
+          {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
@@ -241,11 +245,15 @@
                 </a>
               </li> 
 {% endcomment %}
-            {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
+            {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN" %}
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
                   <i class="fa fa-fw fa-users"></i> 
-                  รายการคำขอ {{ request.user.CurrentUnit.ShortName }}
+                  {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
+                    รายการคำขอ {{ request.user.CurrentUnit.ShortName }}
+                  {%elif request.user|has_group:"PERSON_SUBUNIT_ADMIN" %}
+                    รายการคำขอ {{ request.user.sub_unit }}
+                  {% endif %}
                 </a>
               </li>
             {% endif %}
@@ -308,7 +316,7 @@
   </nav>
     
     <div class="container-fluid">
-    
+      
     {% include "DisplayMessage.html" %}
     {% comment %} {{request.resolver_match}} {% endcomment %}
     {% block body %}

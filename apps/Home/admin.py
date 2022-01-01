@@ -135,6 +135,15 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     search_fields = ['owner__first_name','owner__last_name','home__number','enter_command__year']
     inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]
 
+    def get_queryset(self, request):
+        qs = super(HomeOwnerAdmin, self).get_queryset(request)
+        if request.user.groups.filter(name = 'PERSON_UNIT_ADMIN').exists():
+            return qs.filter(owner__CurrentUnit = request.user.CurrentUnit)
+        elif request.user.groups.filter(name = 'PERSON_SUBUNIT_ADMIN').exists():
+            return qs.filter(owner__sub_unit = request.user.sub_unit)
+        else:
+            return qs
+
     def lastest_command(self, obj):
         from django.utils.html import format_html
         if obj.is_stay:
