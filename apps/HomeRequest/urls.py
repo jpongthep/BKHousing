@@ -30,6 +30,8 @@ from .views_admin import (ManualCreateHomeRequestView,
                         )
 
 from .views_modals import af_person_data_detailview
+
+from .views_notify import unit_daily_notify
 # from rest_framework import routers
 # from .views import UnitList4PersonAdminViewSet
 
@@ -55,6 +57,7 @@ urlpatterns = [
     # api สำหรับการตรวจสอบความก้าวหน้า ขั้นตอนขอบ้าน ทาง App มือถือ
     path('cps/<str:username>/', homerequest_detail), # check process step
     path('lnfy/', line_notify, name = 'line_notify'), # check process step
+    path('un_ntf/', unit_daily_notify, name = 'unit_notify'), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),

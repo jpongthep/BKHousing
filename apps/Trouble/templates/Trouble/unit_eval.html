@@ -59,36 +59,48 @@
 		<div class="col-md-2 border-start border-bottom border-top border-dark">ผู้ขอกรอก</div>
 		<div class="col-md-2 border-start border-end border-bottom border-top border-dark">การประเมิน</div>
 	</div>
-    {% for QUnit, hris_data, hr_form_field in data %}
+<form method = "POST" action = "{% url 'Trouble:eval' QAList.0.filled_form.home_request_form.id 'Unit'%}">
+    <input type = "hidden" name = "Troubleform" value = {{Troubleform.id}}>
+    {% csrf_token %}
+    {% for QAList, hris_data, hr_form_field in data %}
 	<div class="row {% cycle 'odd_row' 'even_row' %}">
-		<div class="col-md-7 border-start border-bottom border-dark  p-2">{{ forloop.counter }}. {{ QUnit.question.text }}</div>
+		<div class="col-md-7 border-start border-bottom border-dark  p-2">{{ forloop.counter }}. {{ QAList.question.text }}</div>
 		<div class="col-md-1 border-start border-bottom border-dark  p-2">{{ hris_data |safe }}</div>
 		<div class="col-md-2 border-start border-bottom border-dark  p-2">{{ hr_form_field |safe }}</div>
 		<div class="col-md-2 border-start border-end border-bottom border-dark p-2">
-            <select class="form-control p-1"  id = "Question" name="{{ QUnit.question.id}}" >                
-                {% for tc in QUnit.question.choices_set.all %}
-                    {% if QUnit.choice_selected.id == tc.id %} 
+        {% if not view_only %}
+            <select class="form-control p-1"  id = "Question{{ QAList.question.id}}" name="{{ QAList.id}}" >                
+                {% for tc in QAList.question.choices_set.all %}
+                    {% if QAList.choice_selected.id == tc.id %} 
                         <option class = "mb-2" value={{ tc.id }} selected> {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)</option>
                     {% else %}
                         <option class = "mb-2" value={{ tc.id }}> {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)</option>
                     {% endif %} 
                 {% endfor %}
             </select>   
+        {% else %}
+            {% for tc in QAList.question.choices_set.all %}
+                {% if QAList.choice_selected.id == tc.id %} 
+                    {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)
+                {% endif %} 
+            {% endfor %}
+        {% endif %}
 		</div>
 	</div>
     {% endfor %}
 	<div class="row even_row">
-		<div class="col-md-7 border-start border-bottom border-dark"></div>
+        <div class="col-md-7 border-start border-bottom border-dark"></div>
 		<div class="col-md-1 border-start border-bottom border-dark"></div>
-		<div class="col-md-2 border-start border-bottom border-dark font-weight-bold text-center">{{ QAList.0.filled_form.CalculateScore }}</div>
-		<div class="col-md-2 border-start border-end border-bottom border-dark">
-		</div>
+		<div class="col-md-2 border-start border-bottom border-dark font-weight-bold text-center"></div>
+		<div class="col-md-2 border-start border-end border-bottom border-dark">{{ QAList.0.filled_form.CalculateScore }} คะแนน
+        </div>
 	</div>
 	<div class="row">
-		<div class="col-md-10">		</div>
+        <div class="col-md-10"></div>
 		<div class="col-md-2">			 
-			<button type="button" class="btn btn-success">บันทึก</button>
+            <button type="submit" class="btn btn-success">บันทึก</button>
 		</div>
 	</div>
+</form>
 </div>
 {% endblock %}

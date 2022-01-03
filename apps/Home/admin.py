@@ -137,7 +137,9 @@ class HomeOwnerAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(HomeOwnerAdmin, self).get_queryset(request)
-        if request.user.groups.filter(name = 'PERSON_UNIT_ADMIN').exists():
+        if request.user.is_superuser:
+            return qs
+        elif request.user.groups.filter(name = 'PERSON_UNIT_ADMIN').exists():
             return qs.filter(owner__CurrentUnit = request.user.CurrentUnit)
         elif request.user.groups.filter(name = 'PERSON_SUBUNIT_ADMIN').exists():
             return qs.filter(owner__sub_unit = request.user.sub_unit)

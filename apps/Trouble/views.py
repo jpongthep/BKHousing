@@ -25,7 +25,7 @@ from .models import ( SetForm,
 @login_required
 def view_eval(request, HomeRequstID = 1, eval_type = 'Unit'):
     
-    # print(HomeRequstID, eval_type)
+    # # print(HomeRequstID, eval_type)
     home_request = HomeRequest.objects.get(id = HomeRequstID)
         
     set_form = SetForm.objects.get(code = 'F60')
@@ -49,6 +49,7 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
     if request.POST:
         print('request.POST = ',request.POST)
         for key, value in request.POST.items():
+            print(f'key = {key} value = {value}')
             if key != 'csrfmiddlewaretoken' and key != 'Troubleform':
                 answer_form = AnsweredForm.objects.get(id = int(key))
                 answer_form.choice_selected = Choices.objects.get(id = int(value))
@@ -59,7 +60,7 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
         
         TotalScore = filled_form.CalculateScore()
         filled_form.home_request_form.TroubleScore = TotalScore
-        # print('Type = ',Type)
+        # # print('Type = ',Type)
         if Type == 'Unit':
             filled_form.home_request_form.UnitTroubleScore = TotalScore
             filled_form.home_request_form.IsUnitEval = True
@@ -92,7 +93,7 @@ def Evaluation(request, HomeRequstID = 1, Type = 'Self'):
     
     QAList = AnsweredForm.objects.filter(filled_form = Troubleform)
 
-    # print('QAList', QAList)
+    # # print('QAList', QAList)
 
     context = {
         'Troubleform' : Troubleform,
@@ -131,7 +132,7 @@ def CreateBlankFrom(set_form, home_request_form, evaluater, type = 'Self', date 
 
     
 @login_required  
-def UnitEvaluation(request,HomeRequstID):
+def UnitEvaluation(request, HomeRequstID, view_only = 0):
     home_request = HomeRequest.objects.get(id = HomeRequstID)        
     set_form = SetForm.objects.get(code = 'F60')
     filled_form = FilledForm.objects.filter(set_form = set_form,
@@ -139,30 +140,21 @@ def UnitEvaluation(request,HomeRequstID):
                                             type = 'Unit')
     if filled_form.exists():
         Troubleform = filled_form[0]
-        print("Troubleform = ",Troubleform)
+        # print("Troubleform = ",Troubleform)
         QAList = AnsweredForm.objects.filter(filled_form = Troubleform).order_by("question__id")
     else:
         blank_form = CreateBlankFrom(set_form, home_request, request.user, type = 'Unit')
         QAList = AnsweredForm.objects.filter(filled_form = blank_form).order_by("question__id")
-    # # ตรวจสอบว่า กพ.ประเมินหรือยัง 
-    # person_filled_form = FilledForm.objects.filter(set_form = set_form,
-    #                                             home_request_form = home_request,
-    #                                             type = 'HR')
-    # if person_filled_form.exists():
-    #     person_filled_form[0].evaluater = request.user
-    #     PersonTroubleform = person_filled_form[0]     
-    # else:
-    #     PersonTroubleform = CreateBlankFrom(set_form, home_request, request.user, type = 'HR')
-     
-    # PersonQA = AnsweredForm.objects.filter(filled_form = PersonTroubleform).order_by("question__id")
 
     hris_data = loadHRISData(request,home_request.Requester.PersonID)
     hr_form_data = loadHomeRequestFormData(request,home_request)
-    print("hris_data = ",hris_data)
+    # print("hris_data = ",hris_data)
     data = zip(QAList, hris_data, hr_form_data)
     context = {
         'data' : data,
-        'QAList' : QAList
+        'Troubleform' : Troubleform,
+        'QAList' : QAList,
+        'view_only': view_only == 0
         }
 
     return render(request,'Trouble/unit_eval.html',context)
@@ -177,7 +169,7 @@ def PersonEvaluation(request,HomeRequstID):
                                             type = 'Unit')
     if filled_form.exists():
         Troubleform = filled_form[0]
-        print("Troubleform = ",Troubleform)
+        # print("Troubleform = ",Troubleform)
         QAList = AnsweredForm.objects.filter(filled_form = Troubleform).order_by("question__id")
     else:
         blank_form = CreateBlankFrom(set_form, home_request, request.user, type = 'Unit')
@@ -195,7 +187,7 @@ def PersonEvaluation(request,HomeRequstID):
     PersonQA = AnsweredForm.objects.filter(filled_form = PersonTroubleform).order_by("question__id")
 
     hris_data = loadHRISData(request,home_request.Requester.PersonID)
-    print("hris_data = ",hris_data)
+    # print("hris_data = ",hris_data)
     data = zip(QAList, hris_data,  PersonQA)
     context = {
         'data' : data,
@@ -204,6 +196,22 @@ def PersonEvaluation(request,HomeRequstID):
 
     return render(request,'Trouble/person_eval.html',context)
 
+@login_required  
+def SaveEvaluateForm(request,HomeRequstID,eval_type):
+    home_request = HomeRequest.objects.get(id = HomeRequstID)        
+    set_form = SetForm.objects.get(code = 'F60')
+    filled_form = FilledForm.objects.filter(set_form = set_form,
+                                            home_request_form = home_request,
+                                            type = eval_type)
+    if request.method == "POST":
+        print(request.POST)
+        for key, value in request.POST.items():
+            if key != 'csrfmiddlewaretoken' and key != 'Troubleform':
+                answer_form = AnsweredForm.objects.get(id = int(key))
+                answer_form.choice_selected = Choices.objects.get(id = int(value))
+                answer_form.save()
+    if eval_type == 'Unit':
+        return redirect('HomeRequest:list')
 
 def loadHRISData(request, person_id):
 
@@ -221,26 +229,26 @@ def loadHRISData(request, person_id):
             "token" : pwd_valid['token'],
             "national_id": person_id
         } 
-        print("data = ",data)
+        # print("data = ",data)
         r = rq.post(url = URL, data = data, verify=False)
     except Exception as e:
-        print("Request Error, ",e)
+        # print("Request Error, ",e)
         return hris_data
 
     return_data = json.loads(r.text)
-    # print('return_data = ',return_data)
+    # # print('return_data = ',return_data)
 
 
     if return_data['result'] == "Process-Error":
-        print("Process-Error")
+        # print("Process-Error")
         return hris_data
 
     if return_data['data'] == "ไม่มีข้อมูล":
-        print("ไม่มีข้อมูล")
+        # print("ไม่มีข้อมูล")
         return hris_data
 
     return_data = return_data['data'][0]
-    print(return_data)
+    # print(return_data)
 
     for i, ql in enumerate(question_list):
         if ql.question.hris_api:
@@ -298,10 +306,10 @@ def loadHomeRequestFormData(request, hr_form):
                 hr_form_data[i] = hr_form.Salary 
                 hr_form_data[i] += hr_form.AddSalary if hr_form.AddSalary else 0
             elif ql.question.homerequest_field == "num_coresidence":
-                hr_form_data[i] = hr_form.CoResident.all().count()
+                hr_form_data[i] = hr_form.CoResident.all().count() + 1
             else:
                 field_object = HomeRequest._meta.get_field(ql.question.homerequest_field)
-                # print('field_object ' , field_object)
+                # # print('field_object ' , field_object)
                 # hr_form_data[i] = field_object.value_from_object(hr_form)
                 try:
                     hr_form_data[i] = getattr(hr_form, f"get_{field_object.attname}_display")

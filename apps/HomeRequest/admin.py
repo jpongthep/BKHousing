@@ -10,7 +10,7 @@ from django_admin_listfilter_dropdown.filters import (
     DropdownFilter, ChoiceDropdownFilter, RelatedDropdownFilter
 )
 
-from .models import HomeRequest, CoResident
+from .models import HomeRequest, CoResident, HomeChange
 from apps.UserData.models import User
 
 
@@ -29,7 +29,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
                 )
     # date_hierarchy  = 'modified'
     list_display_links = ['FullName']
-    raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover')
+    raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover','recorder')
     ordering = ('-modified',)
     save_as = True
 
@@ -106,4 +106,19 @@ class HomeRequestAdmin(admin.ModelAdmin):
     #     }),
     # )
 
+class HomeChangeAdmin(admin.ModelAdmin):
+    search_fields = ['FullName','Unit__ShortName']
+    list_display = ['year_round', 'RequesterDateSend','modified','FullName', 'Unit','ProcessStep']
+    list_filter = (
+                    'year_round',
+                    ('ProcessStep', ChoiceDropdownFilter),
+                    ('Requester__CurrentUnit', RelatedDropdownFilter),
+                )
+    # date_hierarchy  = 'modified'
+    list_display_links = ['FullName']
+    raw_id_fields = ('Requester','current_home_owner', 'UnitReciever', 'UnitApprover','PersonReciever','PersonApprover','recorder')
+    ordering = ('-modified',)
+    save_as = True
+
+admin.site.register(HomeChange, HomeChangeAdmin)
 admin.site.register(HomeRequest, HomeRequestAdmin)
