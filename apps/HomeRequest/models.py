@@ -281,7 +281,7 @@ class HomeChange(models.Model):
    
     change_comment = models.TextField(verbose_name="สาเหตุของการเปลี่ยน/สับเปลี่ยน", null=True, blank = True)
     new_home = models.ForeignKey(HomeData, verbose_name="บ้านใหม่", on_delete = models.SET_NULL, null = True, related_name='new_home')
-    swap_home_owner =  models.ForeignKey(HomeOwner,verbose_name="เจ้าของบ้านพัก", on_delete=models.SET_NULL, related_name='swap_home_owner')
+    swap_home_owner =  models.ForeignKey(HomeOwner,verbose_name="เจ้าของบ้านพัก", on_delete=models.SET_NULL, related_name='swap_home_owner', null = True)
 
     specificed_need = models.CharField(verbose_name="ความต้องการเฉพาะเจาะจง", max_length = 50, default = '', null=True,blank = True)
     # ความต้องการบ้านประเภทต่าง ๆ 

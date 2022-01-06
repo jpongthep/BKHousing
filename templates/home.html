@@ -1,5 +1,6 @@
 {% extends '_minbase.html' %}
 {% load static %}
+{% load common_tags %}
 
 {% block title %}ARMIS ระบบสารสนเทศเพื่อการจัดการบ้านพักอาศัย ทอ.{% endblock %}
 
@@ -35,10 +36,38 @@
 
 {% endblock %}
 
+{% block NavButton %}
+  {% if request.resolver_match.url_name != "af_person"  %}
+    <li class="nav-item" style= "vertical-align:text-bottom;">
+        {% if request.user|has_group:"RTAF_NO_HOME_USER" %}
+          <a class="button-bg button-menu" href="{% url 'HomeRequest:af_person'%}">
+            คำขอบ้านพัก 
+          </a>
+        {% endif %}
+    </li>          
+  {% endif %}
+
+  {% if request.resolver_match.url_name != "detail_by_user"  %}
+    <li class="nav-item" style= "vertical-align:text-bottom;">
+      {% if request.user|has_group:"RTAF_HOME_USER" %}
+        <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
+          ข้อมูลบ้านพัก 
+        </a>
+      {% elif request.user|has_group:"RTAF_HOME_SPOUSE"%}
+        <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'spouse' %}">
+          ข้อมูลบ้านพัก 
+        </a>
+      {% endif %}
+    </li>          
+  {% endif %}            
+      
+{% endblock NavButton %}
+
 
 {% block header_right %}{{ request.user.FullName}}{% endblock %}
 
 {% block CardRow %}
+
     {% comment %} 
     <div class = "row">        
         {% include "project/card.html" with color="info" awesome="fa-home" number="175" text="บ้านรอจัดสรร"%}          

@@ -1,7 +1,28 @@
 {% extends '_minbase.html' %}
+{% load common_tags %}
 
 {% load static %}
 {% load thaidate %}
+
+{% block BurgerNavButton %}
+    <li class="nav-item" style= "vertical-align:text-bottom;">
+      {% if request.user|has_group:"RTAF_HOME_USER" %}
+        <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
+          ขอเปลี่ยนบ้านพัก 
+        </a>      
+      {% endif %}
+    </li>          
+{% endblock %}
+
+{% block NavButton %}
+    <li class="nav-item" style= "vertical-align:text-bottom;">
+      {% if request.user|has_group:"RTAF_HOME_USER" %}
+        <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
+          ขอเปลี่ยนบ้านพัก 
+        </a>      
+      {% endif %}
+    </li>          
+{% endblock %}
 
 {% block body %}<h4>ข้อมูลการพักอาศัย : {{ request.user.FullName }}</h4>{% endblock %}
 

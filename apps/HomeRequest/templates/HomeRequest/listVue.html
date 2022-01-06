@@ -170,7 +170,7 @@
                     <template v-for="(hm,i) in unit_data.HomeRequest" >
                     
                         <tr v-if="(filter_data == 'all' || hm.ProcessStep == filter_data) && show_sub_unit(hm.sub_unit) && check_fullname_search(hm.FullName,hm.sub_unit)"> 
-                            <td>[[ i + 1 ]] </td>
+                            <td>[[ i + 1 ]]</td>
                             <td>
                                 <i v-if="hm.ProcessStep != 'RequesterProcess'" class="fa fa-lock icon-size" v-bind:class="ProcessStepClass(hm.ProcessStep)" ></i>
                                 <i v-else class="fa fa-edit icon-size text-primary" ></i>
@@ -199,7 +199,7 @@
                                         <a href = "#" @click="evaluate(hm.id, 'edit');" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">
                                             [[ hm.UnitTroubleScore ]] 
                                         </a> &nbsp;
-                                        <button class="btn btn-outline-success btn-sm" @click.native.prevent="ConfirmChangeProcessStep(i, hm.id,'US')"><small>ส่งเรื่อง</small></button>                                
+                                        <button class="btn btn-outline-success btn-sm" @click.native.prevent="ConfirmChangeProcessStep(i, hm.id,'US')"><small>ส่งเรื่อง</small></button>
                                     </strong>
                                     <a  v-else href = "#" @click="evaluate(hm.id, 'edit');" :title = "[hm.UnitRecieverName, hm.UnitRecieverPhone, hm.UnitDateRecieved ]">
                                         <span class="fa-stack" style="vertical-align: top;">
@@ -227,9 +227,19 @@
                                         <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
                                     </a>
                                 </div>
+                                <div v-else-if="hm.ProcessStep == 'GetHouse'">      
+                                    <span >                         
+                                        <a href = "#" @click="evaluate(hm.id, 'view');" :title = "[hm.UnitApproverName, hm.UnitApproverPhone, hm.UnitDateApproved ]" class = "text-muted">
+                                            <strong>[[ hm.UnitTroubleScore ]] </strong>&nbsp;
+                                            <i class="fa fa-check text-success icon-size" ></i>
+                                        </a> 
+                                    </span>
+                                </div>
                             </td>
                             <td> <!-- อนุมัติ -->
-                                
+                                <div v-if="hm.ProcessStep == 'GetHouse'">
+                                    <i class="fas fa-home fa-2x text-primary"></i>
+                                </div>
                             </td>
                             <td> <!-- หมายเหตุ -->                            
                                 <div v-if="hm.cancel_request">
@@ -477,7 +487,7 @@
             filter_homerequest(step_report)
             {
                 ProcessStep = ['RequesterProcess','RequesterSended','UnitProcess',
-                               'UnitSended','PersonProcess','PersonApproved','GetHouse'
+                               'UnitSended','PersonProcess','GetHouse'
                             ];
                 console.log('this.filter_data ',this.filter_data);
                 

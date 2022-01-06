@@ -223,6 +223,14 @@
 								<div class="text-center">
 									<b>จนท.กำลังพล</b>
 									<br>
+									{% if request.user|in_group:"PERSON_SUBUNIT_ADMIN" %}
+										<i class="fas fa-check-circle text-primary"></i>
+									{% else %}
+										<i class="far fa-circle"></i>
+									{% endif %}
+									<label class="form-check-label" for="defaultCheck2">
+										กพ.หน่วยย่อย
+									</label>
 									{% if request.user|in_group:"PERSON_UNIT_ADMIN" %}
 										<i class="fas fa-check-circle text-primary"></i>
 									{% else %}
@@ -249,7 +257,10 @@
 										<i class="fas fa-check-circle text-primary"></i>
 									{% else %}
 										<i class="far fa-circle"></i>
-									{% endif %}								
+									{% endif %}				
+									<label class="form-check-label" for="defaultCheck2">
+										ผู้ใช้งานพิเศษ
+									</label>													
 								</div>
 							</div>							
 						</div>
