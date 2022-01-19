@@ -57,8 +57,9 @@ urlpatterns = [
     # api สำหรับการตรวจสอบความก้าวหน้า ขั้นตอนขอบ้าน ทาง App มือถือ
     path('cps/<str:username>/', homerequest_detail), # check process step
     path('lnfy/', line_notify, name = 'line_notify'), # check process step
-    path('un_ntf/', unit_daily_notify, name = 'unit_notify'), # check process step
+    path('un_ntf/<pk>', unit_daily_notify, name = 'unit_notify'), # check process step
     # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # HomeRequest:unit_notify
     
     path('ul', HomeRequestUnitSummaryListView.as_view(), name = 'unitlist'),
     path('<home_request_id>/<process_step>/ud',update_process_step, name = 'update_process_step'),

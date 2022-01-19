@@ -35,16 +35,19 @@ class HomeData(models.Model):
     comment = models.TextField(verbose_name='หมายเหตุ', null = True, blank = True)
     owner = models.ManyToManyField(User, through='HomeOwner')
 
-    def get_absolute_url(self):
-        return reverse('Home:detail', kwargs={"pk": hm_id})    
+    # def get_absolute_url(self):
+    #     return reverse('Home:detail', kwargs={"pk": hm_id})    
 
     def __str__(self):
-        HomeNumber = self.number if self.number != '-' else f'อ.{self.building_number}-{self.room_number}'
-        
-        if self.get_type_display() == 'ไม่ระบุ':
-            return f'{HomeNumber} {self.get_zone_display()}'
+        building_number = f"อ.{self.building_number}" if self.building_number != "-" else ""
+        room_number = f"{self.room_number}" if self.room_number != "-" else ""
+
+        if "แฟลต" in self.get_type_display():
+            return f"อ.{self.building_number}-{self.room_number}"                   
         else:
-            return f'{HomeNumber} {self.get_type_display()} {self.get_zone_display()}'
+            return f"{building_number} - {room_number}" if room_number else building_number
+            
+        
 
 class HomeOwner(models.Model):
     class Meta:

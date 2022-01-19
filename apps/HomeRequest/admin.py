@@ -122,3 +122,12 @@ class HomeChangeAdmin(admin.ModelAdmin):
 
 admin.site.register(HomeChange, HomeChangeAdmin)
 admin.site.register(HomeRequest, HomeRequestAdmin)
+
+
+#สำหรับการอ้างอิงใน User model
+class HomeRequestInline(admin.TabularInline):
+    model = HomeRequest
+    fk_name = "Requester"
+    fields = ('year_round', 'Position', 'Unit','Status','num_children','RequesterDateSend','ProcessStep')
+    ordering = ('-year_round',)
+    extra = 0

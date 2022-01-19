@@ -110,9 +110,9 @@
                         >
                             [[ card_static[index-1].text ]] <span class="badge" v-bind:class = "[card_static[index-1].badgecolor]">[[ num_report[index-1] ]]</span>
                         </button>
-                        <button @click="filter_homerequest('all')" type="button" class="btn btn-primary m-1" >
+                        {% comment %} <button @click="filter_homerequest('all')" type="button" class="btn btn-primary m-1" >
                             ทั้งหมด <span class="badge bg-secondary">6</span>
-                        </button>
+                        </button> {% endcomment %}
                     </div>
                     <div class="col-md-3">
 

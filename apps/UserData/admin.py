@@ -10,6 +10,7 @@ from django_admin_listfilter_dropdown.filters import (
 )
 
 from .models import User, Unit
+from apps.HomeRequest.admin import HomeRequestInline
 from apps.Home.admin import HomeOwnerInline
 
 @admin.register(Unit)
@@ -23,10 +24,13 @@ class UnitAdmin(admin.ModelAdmin):
     search_fields = ('ShortName', 'FullName')
     ordering = ["UnitGroup", "id"]
 
+    # https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request/35796330
+    change_form_template = "CustomAdmin/change_form.html"
+
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(UnitAdmin, self).get_fieldsets(request, obj)
 
-        print('self.media = ',self.media)
+        # print('self.media = ',self.media)
         return fieldsets
 
 @admin.register(User)
@@ -35,7 +39,7 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ['FullName']
     # date_hierarchy  = 'last_login'
     ordering = ('-last_login','CurrentUnit','Rank',)
-    inlines = [HomeOwnerInline]
+    inlines = [HomeOwnerInline,HomeRequestInline]
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', 

@@ -21,7 +21,7 @@ class Unit(models.Model):
     is_Bangkok = models.BooleanField(verbose_name = "กทม.และปริมณฑล", default = True)
     sub_unit_list  = models.TextField(verbose_name = "รายชื่อหน่วยย่อย", null = True, blank = True)
     re_cal_sub_unit = models.BooleanField(verbose_name = "คำนวณหน่วยย่อย", default = True)
-    line_notify_token = models.CharField(verbose_name = "line notify token", max_length = 43, null = True, blank = False)
+    line_notify_token = models.CharField(verbose_name = "line notify token", max_length = 43, null = True, blank = True)
 
     def __str__(self):
         return f'{self.ShortName}'

@@ -636,47 +636,28 @@ def line_notify(request):
     CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
     year_round = CurrentYearRound[0] 
 
+    Num_RP = Count('ProcessStep', filter = Q(ProcessStep = 'RP'))
     Num_RS = Count('ProcessStep', filter = Q(ProcessStep = 'RS'))
     Num_UP = Count('ProcessStep', filter = Q(ProcessStep = 'UP'))
     Num_US = Count('ProcessStep', filter = Q(ProcessStep = 'US'))
+    Num_GH = Count('ProcessStep', filter = Q(ProcessStep = 'GH'))
 
     homerequest = HomeRequest.objects.filter(year_round = year_round
-                                    ).filter(ProcessStep__in = ['RS','UP','US']   
-                                    ).values('Unit'                             
+                                    ).filter(ProcessStep__in = ['RP','RS','UP','US','GH']   
+                                    ).values('year_round'                             
                                     ).annotate(                                    
+                                        Num_RP = Num_RP,
                                         Num_RS = Num_RS,                                   
                                         Num_UP = Num_UP,
                                         Num_US = Num_US,
+                                        Num_GH = Num_GH,
                                         waited_doc = F('Num_RS') + F('Num_UP') + F('Num_US')                                        
-                                    ).values('Num_RS', 'Num_UP', 'Num_US', UnitName = F('Unit__ShortName')
-                                    ).exclude(Q(Num_RS = 0) & Q(Num_UP = 0) & Q(Num_US = 0)
+                                    ).values('Num_RP','Num_RS', 'Num_UP', 'Num_US', 'Num_GH', YearRound = F('year_round__Year')
+                                    ).exclude(Q(Num_RP = 0) & Q(Num_RS = 0) & Q(Num_UP = 0) & Q(Num_US = 0) & Q(Num_GH = 0)
                                     ).order_by("-Num_RS","-Num_UP","-Num_US","-waited_doc")
 
     data = list(homerequest)
     return JsonResponse(data, safe=False)
-    # print('homerequest = ',homerequest)
-    # hr_data = {'data': {'status': 'hr not found'}}
-    # dump = json.dumps(hr_data)            
-    # return HttpResponse(dump, content_type='application/json')    
-
-    try:
-        user = User.objects.get(username = username)     
-        CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
-        year_round = CurrentYearRound[0] 
-        homerequest = HomeRequest.objects.filter(year_round = year_round).filter(Requester = user)
-    except User.DoesNotExist:
-        dump = json.dumps({'status': 'username not found'})            
-        return HttpResponse(dump, content_type='application/json')
-
-    # print('homerequest',homerequest)
-    if not homerequest.exists():
-        dump = json.dumps({'status': 'hr not found'})            
-        return HttpResponse(dump, content_type='application/json')
-
-    if request.method == 'GET':
-        serializer = HomeRequestSerializer(homerequest[0])
-        return JsonResponse(serializer.data)
-
 
         
 from django.conf import settings

@@ -60,14 +60,18 @@ def get_current_year():
 class AuthenUserTestMixin(LoginRequiredMixin, UserPassesTestMixin):
     login_url = '/login' 
     allow_groups = []
-    navigate_units = ['กพ.ทอ.','ยศ.ทอ.', 'ทสส.ทอ.','ขส.ทอ.', 'ศซว.ทอ.', 'รร.นนก.']
+    # navigate_units = ['กพ.ทอ.','ยศ.ทอ.', 'ทสส.ทอ.','ขส.ทอ.', 'ศซว.ทอ.', 'รร.นนก.']
 
     def test_func(self):
-        if self.request.user.CurrentUnit.ShortName in self.navigate_units:
-            for ag in self.allow_groups:
-                if self.request.user.groups.filter(name=ag).exists():
-                    return True
+        # if self.request.user.CurrentUnit.ShortName in self.navigate_units:
+        #     for ag in self.allow_groups:
+        #         if self.request.user.groups.filter(name=ag).exists():
+        #             return True
         
+        for ag in self.allow_groups:
+            if self.request.user.groups.filter(name=ag).exists():
+                return True
+                
         if self.has_home_request():
             return True
 
@@ -642,5 +646,3 @@ def homerequest_detail(request, username):
     if request.method == 'GET':
         serializer = HomeRequestSerializer(homerequest[0])
         return JsonResponse(serializer.data)
-
-

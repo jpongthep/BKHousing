@@ -143,8 +143,8 @@ def UnitEvaluation(request, HomeRequstID, view_only = 0):
         # print("Troubleform = ",Troubleform)
         QAList = AnsweredForm.objects.filter(filled_form = Troubleform).order_by("question__id")
     else:
-        blank_form = CreateBlankFrom(set_form, home_request, request.user, type = 'Unit')
-        QAList = AnsweredForm.objects.filter(filled_form = blank_form).order_by("question__id")
+        Troubleform = CreateBlankFrom(set_form, home_request, request.user, type = 'Unit')
+        QAList = AnsweredForm.objects.filter(filled_form = Troubleform).order_by("question__id")
 
     hris_data = loadHRISData(request,home_request.Requester.PersonID)
     hr_form_data = loadHomeRequestFormData(request,home_request)

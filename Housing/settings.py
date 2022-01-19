@@ -163,7 +163,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 CRONJOBS = [
-    ('*/5 * * * *', 'Housing.views.daily_notify_message')
+    # ('*/5 * * * *', 'Housing.views.daily_notify_message')
+    ('30 0 * * 1-5', 'apps.HomeRequest.views_notify.unit_daily_notify'),
 ]
 
 

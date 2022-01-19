@@ -118,7 +118,7 @@ class HomeOwnerInline(admin.TabularInline):
 
 @admin.register(HomeOwner)
 class HomeOwnerAdmin(admin.ModelAdmin):
-    list_display = ['is_stay','owner_unit','owner','home','lastest_command', 'leave_command']
+    list_display = ['is_stay','owner_unit','owner','home','home_type','home_zone','lastest_command', 'leave_command']
     list_editable  = ['is_stay','leave_command']
     list_display_links = ['owner']
     ordering = ('-is_stay','owner__Rank',)
@@ -159,6 +159,14 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     def owner_unit(self, obj):
         return obj.owner.CurrentUnit
     owner_unit.short_description = 'สังกัด'
+
+    def home_type(self, obj):
+        return obj.home.get_type_display()
+    home_type.short_description = 'ประเภท'
+
+    def home_zone(self, obj):
+        return obj.home.zone
+    home_zone.short_description = 'โซนบ้านพัก'
 
     def get_inlines(self, request, obj):
         inlines = super(HomeOwnerAdmin, self).get_inlines(request, obj)

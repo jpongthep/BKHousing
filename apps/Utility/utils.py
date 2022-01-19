@@ -41,3 +41,19 @@ def decryp_file(file_data):
 
     decryp_data = f.decrypt(file_data)
     return decryp_data
+
+
+def thai_date(date, mode='basic'):
+    result = "d m y"
+    th_day = date.day
+    th_weekday = ['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'][date.weekday()]
+    th_month = ['ผิดพลาด', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'][date.month]
+    th_year = (date.year + 543) % 100
+    if mode == 'basic':
+        retult = f"{th_day} {th_month}{th_year}"
+        return retult
+    if mode == 'wd-short':
+        retult = f"{th_weekday} ที่ {th_day} {th_month}{th_year}"
+        return retult
+    return result
+    
