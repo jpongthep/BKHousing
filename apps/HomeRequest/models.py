@@ -17,15 +17,24 @@ from apps.Utility.Constants import ( PERSON_STATUS,
                                      CoResidenceRelation,
                                      HomeRentPermission,
                                      HomeRequestType)
-
+from apps.Command.models import Command
 from apps.Configurations.models import YearRound
 from apps.Home.models import HomeOwner, HomeData
 from apps.UserData.models import User, Unit as TheUnit
 
 
+class CurrentYearManager(models.Manager):
+    def get_queryset(self):
+        CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])[0]
+        return super().get_queryset().filter(year_round = CurrentYearRound)
+
+
 class HomeRequest(models.Model):
     class Meta:
         verbose_name_plural = "HomeRequest : คำร้องขอมีบ้านพัก"
+
+    current_year = CurrentYearManager()
+    objects = models.Manager() # The default manager.
 
     Requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Requester')
     year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='YearRound')
@@ -129,6 +138,11 @@ class HomeRequest(models.Model):
     PersonTroubleScore = models.IntegerField(verbose_name="คะแนนประเมิน กพ.", null=True,blank = True)
     #คะแนนประเมินล่าสุด
     TroubleScore = models.IntegerField(verbose_name="คะแนนประเมินล่าสุด", null=True,blank = True)
+
+    home_allocate = models.ForeignKey(HomeData, verbose_name = "บ้านที่ได้รับจัดสรร", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='home_allocate')
+    enter_command = models.ForeignKey(Command,verbose_name='คำสั่งเข้าพัก', on_delete=models.SET_NULL, related_name= "new_hr_enter_command", default = None,null = True, blank = True)
+    lastest_allocate =  models.BooleanField(verbose_name = 'จัดสรรล่าสุด', default = False)
+    moved_data =  models.BooleanField(verbose_name = 'ย้ายข้อมูลเข้าบ้านพักแล้ว', default = False)
 
     recorder = models.ForeignKey(User, on_delete = models.DO_NOTHING, related_name='recorder_admin',default = None, null=True,blank = True)
     specificed_need = models.CharField(verbose_name="ความต้องการเฉพาะเจาะจง", max_length = 50, default = '', null=True,blank = True)
@@ -253,7 +267,7 @@ class HomeChange(models.Model):
     class Meta:
         verbose_name_plural = "HomeChange : คำร้องขอเปลี่ยน/สับเปลี่ยนบ้านพัก"
 
-    Requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='home_change_requester')
+    Requester = models.ForeignKey(User,verbose_name="ผู้ขอ", on_delete=models.CASCADE, related_name='home_change_requester')
     request_type =  models.CharField(verbose_name="ประเภทคำขอ", max_length = 2, choices = HomeRequestType.choices,default = HomeRequestType.CHANGE , null=True, blank = True)
     current_home_owner = models.ForeignKey(HomeOwner,verbose_name="เจ้าของบ้านพัก", on_delete=models.CASCADE, related_name='current_home_owner')
     year_round = models.ForeignKey(YearRound, on_delete=models.SET_NULL, null = True, related_name='home_change_YearRound')
@@ -281,7 +295,7 @@ class HomeChange(models.Model):
    
     change_comment = models.TextField(verbose_name="สาเหตุของการเปลี่ยน/สับเปลี่ยน", null=True, blank = True)
     new_home = models.ForeignKey(HomeData, verbose_name="บ้านใหม่", on_delete = models.SET_NULL, null = True, related_name='new_home')
-    swap_home_owner =  models.ForeignKey(HomeOwner,verbose_name="เจ้าของบ้านพัก", on_delete=models.SET_NULL, related_name='swap_home_owner', null = True)
+    swap_home_owner =  models.ForeignKey(HomeOwner,verbose_name="เจ้าของบ้านพัก (กรณีสลับ)", on_delete=models.SET_NULL, related_name='swap_home_owner', null = True)
 
     specificed_need = models.CharField(verbose_name="ความต้องการเฉพาะเจาะจง", max_length = 50, default = '', null=True,blank = True)
     # ความต้องการบ้านประเภทต่าง ๆ 
@@ -324,7 +338,7 @@ class HomeChange(models.Model):
     # #คะแนนประเมินล่าสุด
     # TroubleScore = models.IntegerField(verbose_name="คะแนนประเมินล่าสุด", null=True,blank = True)
 
-    recorder = models.ForeignKey(User, on_delete = models.DO_NOTHING, related_name='home_change_recorder_admin',default = None, null=True,blank = True)
+    recorder = models.ForeignKey(User, verbose_name="ผู้บันทึก", on_delete = models.DO_NOTHING, related_name='home_change_recorder_admin',default = None, null=True,blank = True)
     foster_person = models.CharField(verbose_name="ผู้ฝาก", max_length = 50, default = '', null=True,blank = True)
     foster_date = models.DateField(verbose_name = "วันที่รับฝาก", default=date.today, null=True, blank=True)
     foster_reason = models.CharField(verbose_name="หมายเหตุผู้ฝาก", max_length = 100, default = '', null=True,blank = True)

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.Home.serializers import HomeSerializer
 from .models import HomeRequest
 
 
@@ -14,6 +15,8 @@ class HomeRequestSerializer(serializers.ModelSerializer):
     MobilePhone = serializers.CharField(source='Requester.OfficePhone',read_only=False,allow_null=True,default=None)
     Status = serializers.SerializerMethodField(source = 'get_Status_display') 
     ProcessStep = serializers.SerializerMethodField(source = 'get_ProcessStep_display') 
+    # home_allocate = serializers.CharField(source='home_allocate.__str__',read_only=False,allow_null=True,default=None)
+    home_allocate = HomeSerializer()    
     UnitRecieverName = serializers.CharField(source='UnitReciever.FullName',read_only=False,allow_null=True,default=None)
     UnitRecieverPhone = serializers.CharField(source='UnitReciever.OfficePhone',read_only=False,allow_null=True,default=None)
     UnitApproverName = serializers.CharField(source='UnitApprover.FullName',read_only=False,allow_null=True,default=None)
@@ -67,6 +70,7 @@ class HomeRequestSerializer(serializers.ModelSerializer):
                     "PersonApproverName",
                     "PersonApproverPhone",
                     "PersonDateApproved",
+                    "home_allocate",
 
                     "IsUnitEval",
                     "UnitTroubleScore",

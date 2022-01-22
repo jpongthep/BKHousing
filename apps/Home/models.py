@@ -106,19 +106,14 @@ class CoResident(models.Model):
 # ข้อมูลสัตว์เลี้ยง
 class PetData(models.Model):    
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='pet', default = None)
-    type = models.CharField(verbose_name="ชนิดสัตว์เลี้ยง", max_length = 5, default = "dog")
+    type = models.CharField(verbose_name="ชนิดสัตว์เลี้ยง", max_length = 5, default = "dog", choices = (('dog','หมา'),('cat','แมว')))
     name = models.CharField(verbose_name="ชื่อ", max_length = 50, null = False, blank = True, default = '')
     birth_year = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
-    sex = models.CharField(verbose_name="เพศ", max_length = 5,default = "male")
+    sex = models.CharField(verbose_name="เพศ", max_length = 5, default = "male", choices = (('male','ตัวผู้'),('fem','ตัวเมีย')))
     appearances = models.TextField(verbose_name="สี-รูปร่าง-ลักษณะ", null = True)
-    # relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
-    # occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
-    # salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
-    # is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
-    # education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
 
-    # def __str__(self):
-    #     return self.full_name
+    def __str__(self):
+        return f"{self.type} : {self.name}"
 
     # def get_absolute_url(self):
     #     hm_ownid = self.home_owner.id

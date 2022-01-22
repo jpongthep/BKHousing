@@ -39,17 +39,18 @@
 {% endblock %}
 
 {% block content %}
-
+<form method = "POST">
+{% csrf_token %}
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12">
 			<h4>
 				การประเมินความเดือดร้อนของ 
-                {{ QAList.0.filled_form.home_request_form.Requester.FullName }} 
-                {{ Troubleform.home_request_form.Requester.CurrentUnit }}
+                {{ QAList.0.filled_form.home_request_form.Requester.FullName }}                 
                 [ <a href = "#" onclick = "modal_hr_detail({{ QAList.0.filled_form.home_request_form.id }})"><i class="fab fa-wpforms text-success"></i></a> 
                   <a href = "{% url 'HomeRequest:detail_doc' QAList.0.filled_form.home_request_form.id 1%}"><i class="fas fa-file-word text-primary"></i></a> 
                 ]
+                <input type = "hidden" name = "PersonTroubleform_id"  value = "{{ PersonTroubleform_id }}">
 			</h4>
 		</div>
 	</div>
@@ -74,7 +75,7 @@
             {% endif %}
         </div>
 		<div class="col-md-2 border-start border-end border-bottom border-dark p-2">
-            <select class="form-control p-1"  id = "Question" name="{{ QPerson.question.id}}" >                
+            <select class="form-control p-1"  id = "Question" name="{{ QPerson.id}}" >                
                 {% for tc in QPerson.question.choices_set.all %}
                     {% if QPerson.choice_selected.id == tc.id %} 
                         <option class = "mb-2" value={{ tc.id }} selected> {{ tc.choice }}. {{ tc.text }} ({{ tc.score }} คะแนน)</option>
@@ -90,14 +91,15 @@
 		<div class="col-md-7 border-start border-bottom border-dark"></div>
 		<div class="col-md-1 border-start border-bottom border-dark"></div>
 		<div class="col-md-2 border-start border-bottom border-dark font-weight-bold text-center">{{ QAList.0.filled_form.CalculateScore }}</div>
-		<div class="col-md-2 border-start border-end border-bottom border-dark">
+		<div class="col-md-2 border-start border-end border-bottom border-dark">{{ person_evaluate_score }}
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-10">		</div>
 		<div class="col-md-2">			 
-			<button type="button" class="btn btn-success">บันทึก</button>
+			<input type="submit" class="btn btn-success" value = "บันทึก">
 		</div>
 	</div>
 </div>
+</form>
 {% endblock %}

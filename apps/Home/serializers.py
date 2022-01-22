@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.Payment.serializers import WaterPaymentSerializer, RentPaymentSerializer
 from apps.UserData.serializers import UserSerializer
 
-from .models import HomeData, HomeOwner
+from .models import HomeData, HomeOwner, CoResident
 
 
 
@@ -35,12 +35,21 @@ class HomeSerializer(serializers.ModelSerializer):
                     "enter_fee",
                 ]
 
+
+class CoResidentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoResident
+        fields = '__all__'
+
+
 class HomeOwnerSerializer(serializers.ModelSerializer):
 
     home = HomeSerializer()
     WaterPayment = WaterPaymentSerializer(many=True, read_only=True)
     RentPayment = RentPaymentSerializer(many=True, read_only=True)
     owner = UserSerializer()
+    co_resident = CoResidentSerializer(source='CoResident.all', many=True)
+    # payment = PaymentDescSerializer(source='payments_project_desc.all', many=True)  
     status = serializers.SerializerMethodField('return_status')
 
     def return_status(self, obj):
@@ -64,6 +73,7 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
                     'electric_meter',
                     'WaterPayment',
                     'RentPayment',
+                    'co_resident',
                     'status'
                 ]
 

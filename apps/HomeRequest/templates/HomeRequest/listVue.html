@@ -238,7 +238,7 @@
                             </td>
                             <td> <!-- อนุมัติ -->
                                 <div v-if="hm.ProcessStep == 'GetHouse'">
-                                    <i class="fas fa-home fa-2x text-primary"></i>
+                                    <a :title = "HomeData"><i class="fas fa-home fa-2x text-primary"></i></a>
                                 </div>
                             </td>
                             <td> <!-- หมายเหตุ -->                            
@@ -254,6 +254,9 @@
                                 </div>
                                 <div v-else-if="hm.ProcessStep === 'RequesterSended' || hm.ProcessStep ==='UnitProcess'">
                                     <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'RP')"><small>ส่งเรื่องกลับ</small></button>                                
+                                </div>
+                                <div v-else-if="hm.ProcessStep === 'GetHouse'">
+                                    <p style="font-size:0.7em;">[[ hm.home_allocate.type]] [[ hm.home_allocate.number ]] <br> [[ hm.home_allocate.zone ]]</p>
                                 </div>
                             </td>
                         </tr>
@@ -370,6 +373,7 @@
         mounted() {
             //this.unit_data_list_modal = new bootstrap.Modal(document.getElementById("unit_data_list_modal"), {});
             this.confirm_modal = new bootstrap.Modal(document.getElementById("confirm_modal"), {});
+            
             console.log("monted function");
             console.log("this.confirm_modal",this.confirm_modal);
             this.show_unit_data_list(1,{{ request.user.CurrentUnit.id}});

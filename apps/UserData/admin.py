@@ -25,7 +25,9 @@ class UnitAdmin(admin.ModelAdmin):
     ordering = ["UnitGroup", "id"]
 
     # https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request/35796330
+    # https://stackoverflow.com/questions/17919361/how-can-i-add-a-button-into-django-admin-change-list-view-page/17921946
     change_form_template = "CustomAdmin/change_form.html"
+    # change_list_template = "CustomAdmin/change_form.html"
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(UnitAdmin, self).get_fieldsets(request, obj)

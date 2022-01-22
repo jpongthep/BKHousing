@@ -1,13 +1,15 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
+from django.db import models
 from django.db.models import Case, When, Count, Sum, Min, Max, IntegerField
+from django.forms import TextInput, Textarea, Select
 
 from django_admin_listfilter_dropdown.filters import (
     DropdownFilter, ChoiceDropdownFilter, RelatedDropdownFilter
 )
 
 from  apps.Payment.models import WaterPayment, RentPayment
-from .models import HomeData, HomeOwner, CoResident, HomeOwnerSummary
+from .models import HomeData, HomeOwner, CoResident, HomeOwnerSummary, PetData, VehicalData
 
 
 
@@ -50,6 +52,21 @@ class HomeOwnerSummaryAdmin(admin.ModelAdmin):
 class CoResidentInline(admin.TabularInline):
     model = CoResident
     extra = 3
+
+class PetDataInline(admin.TabularInline):
+    model = PetData
+    extra = 2
+    formfield_overrides = {
+        models.CharField: {'widget': TextInput(attrs={'size':20})},
+        models.PositiveIntegerField: {'widget': TextInput(attrs={'size':'8'})},
+        models.DecimalField: {'widget': TextInput(attrs={'size':'8'})},
+        models.TextField: {'widget': Textarea(attrs={'rows' : 2, 'cols':30})},
+        models.ForeignKey: {'widget': Select(attrs={'style': 'width: 250px;'})},
+    } 
+
+class VehicalDataInline(admin.TabularInline):
+    model = VehicalData
+    extra = 2
 
 
 class BuildingFilter(SimpleListFilter):
@@ -121,8 +138,8 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     list_display = ['is_stay','owner_unit','owner','home','home_type','home_zone','lastest_command', 'leave_command']
     list_editable  = ['is_stay','leave_command']
     list_display_links = ['owner']
-    ordering = ('-is_stay','owner__Rank',)
-    raw_id_fields = ('owner','home')
+    ordering = ('-is_stay','owner__Rank')
+    raw_id_fields = ('owner','home','leave_command')
     list_filter = (
                     'is_stay',
                     ('enter_command',RelatedDropdownFilter),
@@ -133,7 +150,7 @@ class HomeOwnerAdmin(admin.ModelAdmin):
                     ('owner__CurrentUnit', RelatedDropdownFilter),
                   )
     search_fields = ['owner__first_name','owner__last_name','home__number','enter_command__year']
-    inlines = [CoResidentInline, RentPaymentInline, WaterPaymentInline]
+    inlines = [CoResidentInline, PetDataInline, VehicalDataInline, RentPaymentInline, WaterPaymentInline]
 
     def get_queryset(self, request):
         qs = super(HomeOwnerAdmin, self).get_queryset(request)

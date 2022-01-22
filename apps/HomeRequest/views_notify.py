@@ -182,3 +182,59 @@ def unit_daily_notify(request = 0, pk = 0):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
     
     # return HttpResponse(f"ส่ง Notify หน่วย {unit_list}", content_type='text/html; charset=utf-8')
+
+# @login_required
+# @csrf_exempt
+def unit_new_allocate_notify(request = 0, pk = 0):
+
+    if pk == 0:
+        unit_notify_token = Unit.objects.filter(line_notify_token__isnull = False)
+    else:
+        unit_notify_token = Unit.objects.filter(id = pk)
+
+    if not unit_notify_token.exists():
+        return HttpResponse("ไม่มีข้อมูล Notify Token", content_type='text/html; charset=utf-8')
+    
+    CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
+    year_round = CurrentYearRound[0] 
+
+    Num_GH = Count('ProcessStep', filter = Q(ProcessStep = 'GH'))
+
+    unit_list = []
+    for notify_unit in unit_notify_token:
+
+        homerequest = HomeRequest.objects.filter(Unit = notify_unit).filter(lastest_allocate = True)
+        unit_list.append(notify_unit.ShortName)
+        homerequest = homerequest.filter(year_round = year_round
+                                        ).filter(ProcessStep__in = ['GH']   
+                                        ).values('Unit','sub_unit'
+                                        ).annotate(                                    
+                                            Num_GH = Num_GH,                                       
+                                        ).values('Num_GH', UnitName = F('Unit__ShortName'), SubUnit = F('sub_unit')
+                                        ).exclude(Q(Num_GH = 0)
+                                        ).order_by("SubUnit")
+        if homerequest.exists():
+            th_date = thai_date(date.today(),"wd-short")
+            send_text = f"ประกาศจัดสรรบ้านพักหน่วย {homerequest[0]['UnitName']}\n{th_date}\n\n"
+            send_text += f""
+            message_GH = ""
+
+            for hm in homerequest:  
+
+                print(hm)
+                sub_unit = hm['SubUnit'].replace(hm['UnitName'], "ฯ") if hm['UnitName'] != hm['SubUnit'] else hm['UnitName']
+                
+                if hm['Num_GH'] > 0 :
+                    message_GH += f" - {sub_unit} {hm['Num_GH']} หลัง\n"
+            
+
+            send_text +=  message_GH
+            send_text += "\nข้าราชการสามารถตรวจสอบข้อมูลและ download แบบฟอร์มเพื่อการเข้าบ้านพักได้ที่ https://armis.rtaf.mi.th"
+            # send_line_notify(notify_unit.line_notify_token,send_text)
+            send_line_notify("ZHzsLE4ClkG0FT67R32ICR1whsUzXoKt800S9dUKUlU",send_text)
+        
+    if request:
+        messages.info(request,"ส่ง line notify เรียบร้อย")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    
+    # return HttpResponse(f"ส่ง Notify หน่วย {unit_list}", content_type='text/html; charset=utf-8')

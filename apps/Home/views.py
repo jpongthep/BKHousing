@@ -9,6 +9,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import HomeData, HomeOwner
+from apps.HomeRequest.models import HomeChange
+from apps.HomeRequest.forms_homechange import HomeChangeBlankForm
 from apps.UserData.models import User
 from apps.Payment.models import WaterPayment, RentPayment
 from .serializers import HomeOwnerSerializer
@@ -51,6 +53,9 @@ class HomeOwnerUserDetailView(LoginRequiredMixin, DetailView):
         water_payments = WaterPayment.objects.filter(home_owner = home_owner).order_by("-date")
         context['rent_payments'] = rent_payments
         context['water_payments'] = water_payments
+        context['home_change_form'] = HomeChangeBlankForm(
+                                            home_owner = HomeOwner.objects.get(id = home_owner), 
+                                            user = self.request.user)
 
         return context
 
@@ -61,22 +66,26 @@ class HomeOwnerDetailView(DetailView):
 
 @csrf_exempt
 def homeowner_api(request, username):
-    try:
-        user = User.objects.get(username = username)             
-        homeowner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
-    except User.DoesNotExist:
-        dump = json.dumps({'status': 'username not found'})            
-        return HttpResponse(dump, content_type='application/json')
-
-    # print('homerequest',homerequest)
-    if not homeowner.exists():
-        dump = json.dumps({'status': 'home not found'})            
-        return HttpResponse(dump, content_type='application/json')
+    message = 'only post method with secure code'
 
     if request.method == 'POST':
-        if request.POST.get("key", "123"):
+        body = json.loads(request.body)
+        if body["key"] == "123":
+            try:
+                user = User.objects.get(username = username)             
+                homeowner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
+            except User.DoesNotExist:
+                dump = json.dumps({'status': 'username not found'})            
+                return HttpResponse(dump, content_type='application/json')
+
+            if not homeowner.exists():
+                dump = json.dumps({'status': 'home not found'})            
+                return HttpResponse(dump, content_type='application/json')
             serializer = HomeOwnerSerializer(homeowner[0])
             return JsonResponse(serializer.data)
+        else:
+            message = f"wrong secure code {request.body}"
 
-    dump = json.dumps({'status': 'only post method'})            
+    dump = json.dumps({'status': message})            
     return HttpResponse(dump, content_type='application/json')
+

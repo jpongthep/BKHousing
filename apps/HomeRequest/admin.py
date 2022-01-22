@@ -12,7 +12,10 @@ from django_admin_listfilter_dropdown.filters import (
 
 from .models import HomeRequest, CoResident, HomeChange
 from apps.UserData.models import User
+from apps.Home.modules import MoveFromHomeRequest
+from apps.HomeRequest.views_notify import unit_new_allocate_notify
 
+                                     
 
 class CoResidentInline(admin.TabularInline):
     model = CoResident
@@ -120,9 +123,6 @@ class HomeChangeAdmin(admin.ModelAdmin):
     ordering = ('-modified',)
     save_as = True
 
-admin.site.register(HomeChange, HomeChangeAdmin)
-admin.site.register(HomeRequest, HomeRequestAdmin)
-
 
 #สำหรับการอ้างอิงใน User model
 class HomeRequestInline(admin.TabularInline):
@@ -131,3 +131,44 @@ class HomeRequestInline(admin.TabularInline):
     fields = ('year_round', 'Position', 'Unit','Status','num_children','RequesterDateSend','ProcessStep')
     ordering = ('-year_round',)
     extra = 0
+
+
+class HomeRequestAllocate(HomeRequest):
+    class Meta:
+        verbose_name_plural = "HomeRequestAllocate : จัดสรรบ้านให้คำขอใหม่"
+        proxy = True
+
+class HomeRequestAllocateAdmin(admin.ModelAdmin):
+    search_fields = ['FullName','Unit__ShortName']
+    list_display = ['year_round', 'FullName', 'Unit','ProcessStep','home_allocate','enter_command']
+    list_editable = ('home_allocate','enter_command')
+    list_filter = (
+                    ('ProcessStep', ChoiceDropdownFilter),
+                    ('Requester__CurrentUnit', RelatedDropdownFilter),
+                    ('enter_command', RelatedDropdownFilter),
+                )
+    # date_hierarchy  = 'modified'
+    list_display_links = ['FullName']
+    raw_id_fields = ('home_allocate','enter_command')
+    ordering = ('-modified',)
+    change_list_template = "HomeRequest/CustomAdmin/change_list_template.html"
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(Q(ProcessStep = 'PP') | Q(ProcessStep = 'PA')  | Q(ProcessStep = 'GH'))
+
+
+    actions = ['publish_allocate',]
+
+    inlines = [CoResidentInline,]
+
+    @admin.action(description='ประกาศการจัดสรรบ้านพัก')
+    def publish_allocate(self, request, queryset):
+        updated = queryset.update(ProcessStep = 'GH', lastest_allocate = True)
+        for qs in queryset:
+            MoveFromHomeRequest(qs)
+        unit_new_allocate_notify(request)
+        self.message_user(request, ngettext('ประกาศการจัดสรรบ้าน %d หลัง','ประกาศการจัดสรรบ้าน %d หลัง',updated,) % updated, messages.SUCCESS)
+
+admin.site.register(HomeChange, HomeChangeAdmin)
+admin.site.register(HomeRequest, HomeRequestAdmin)
+admin.site.register(HomeRequestAllocate, HomeRequestAllocateAdmin)

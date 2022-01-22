@@ -1,0 +1,141 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<!-- Modal -->
+
+
+<div class="modal fade" id="homechange_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title">ขอเปลี่ยนบ้านพัก</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <a @click="modal_tab='personal_data'" class="nav-link" v-bind:class="[modal_tab=='personal_data' ? 'active' : '']" href="#">ข้อมูลส่วนบุคคล <i class="fas fa-check text-success"></i></a>
+                </li>
+                <li class="nav-item">
+                  <a @click="modal_tab='home_data'"  class="nav-link" v-bind:class="[modal_tab=='home_data' ? 'active' : '']" href="#">ข้อมูลบ้านพัก <i class="fas fa-question text-warning"></i></a>
+                </li>
+                <li class="nav-item">
+                  <a @click="modal_tab='change_data'" class="nav-link" v-bind:class="[modal_tab=='change_data' ? 'active' : '']"  href="#">เหตุผลและความจำเป็น <i class="fas fa-question text-warning"></i></a>
+                </li>
+                <li class="nav-item">
+                  <a @click="modal_tab='other_data'" class="nav-link" v-bind:class="[modal_tab=='change_data' ? 'active' : '']" href="#">ข้อมูลประกอบอื่น ๆ <i class="fas fa-question text-warning"></i></a>
+                </li>
+              </ul>
+            <form method = "POST" action = "" >
+                {% csrf_token %}
+                <div class="modal-body">
+                    {% comment %} {{ home_change_form|crispy }}  {% endcomment %}
+                <template v-if="modal_tab=='personal_data'">
+                    <div class = "row">
+                        <div class = "col-3">                            
+                            {{ home_change_form.Requester|as_crispy_field }}
+                        </div>                         
+
+                        <div class = "col-3">                            
+                            {{ home_change_form.current_home_owner|as_crispy_field }}
+                        </div>
+                        <div class = "col-3">                            
+                            {{ home_change_form.request_type|as_crispy_field  }}                     
+                        </div>
+                        <div class = "col-3">                            
+                            {{ home_change_form.sub_unit|as_crispy_field  }}                     
+                        </div>
+                    </div>
+                    <div class = "row">
+                        <div class = "col-3">                            
+                            {{ home_change_form.Status|as_crispy_field }}
+                        </div>                         
+                        <div class = "col-3">                            
+                            {{ home_change_form.SpouseName|as_crispy_field }}
+                        </div>                         
+                        <div class = "col-3">                            
+                            {{ home_change_form.SpousePID|as_crispy_field }}
+                        </div>
+                        <div class = "col-3">                            
+                            {{ home_change_form.spouse_office|as_crispy_field }}                        
+                        </div>
+                    </div>
+                </template>
+                <template v-if="modal_tab=='home_data'">
+                    <div class = "row">
+                        <div class = "col-3">                            
+                            {{ home_change_form.new_home|as_crispy_field }}
+                        </div>
+                        <div class = "col-3">                            
+                            {{ home_change_form.swap_home_owner|as_crispy_field }}
+                        </div>                         
+                        <div class = "col-1">                            
+                            {{ home_change_form.action_month }}
+                        </div>
+                        <div class = "col-2">                            
+                            {{ home_change_form.class_type }}                        
+                        </div>
+                        <div class = "col-2">                            
+                            {{ home_change_form.course_type }}                        
+                        </div>
+                        <div class = "col-2">                            
+                            {{ home_change_form.strategic_plan }}                                            
+                            {{ home_change_form.budget_year }}                        
+                        </div>
+                        
+                    </div> 
+                </template>
+                <template v-if="modal_tab=='change_data'">
+                    <div class = "row">
+                        <div class = "col-8">                            
+                            {{ home_change_form.change_comment|as_crispy_field }}
+                        </div>          
+                        <div class = "col-4">                            
+                            {{ home_change_form.specificed_need|as_crispy_field }}
+                            {{ home_change_form.specificed_need|as_crispy_field }}
+                        </div>          
+                    </div>        
+                </template>
+                <template v-if="modal_tab=='other_data'">       
+                    <div class = "row">                             
+                        <div class = "col-2">                                                
+                            <button class="btn btn-success position-relative mr-3" type="button" data-dismiss="modal">ข้อมูลผู้พักอาศัยร่วม 
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    4
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>             
+                        </div>                                                     
+                        <div class = "col-2">                                                
+                            <button class="btn btn-primary position-relative mr-3" type="button" data-dismiss="modal">ข้อมูลยานพาหนะ 
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    2
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>                                                                                                         
+                        </div>
+                        <div class = "col-2">                                                
+                            <button class="btn btn-warning position-relative mr-3" type="button" data-dismiss="modal">ข้อมูลสัตว์เลี้ยง 
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    2
+                                    <span class="visually-hidden">unread messages</span>
+                                </span>
+                            </button>                                                                         
+                                                          
+                        </div>
+                    </row>
+                </template>
+                                 
+                    
+                </div>
+                <div class="modal-footer">
+                    ผู้บันทึก : {{ home_change_form.recorder|as_crispy_field }}  
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">ยกเลิก</button>                    
+                    <button type="submit" class="btn btn-success" value="Submit">บันทึกคำขอ</button>
+                    <button type="submit" class="btn btn-primary" value="Submit">ส่งคำขอ</button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

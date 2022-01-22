@@ -41,6 +41,7 @@ from .models import HomeRequest, CoResident
 from .forms import HomeRequestForm, CoResidentFormSet
 from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep,PERSON_STATUS, 
                                     HomeRentPermission, FINANCE_CODE)
+
 from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm

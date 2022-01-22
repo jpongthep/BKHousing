@@ -77,6 +77,7 @@ class FilledForm(models.Model):
                                                 ).aggregate(Sum('sum'))['sum__sum']
         if total_score:
             self.total_score =  total_score
+            self.home_request_form.TroubleScore = total_score
         else:
             self.total_score =  0
         self.save()

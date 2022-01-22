@@ -4,6 +4,27 @@
 {% load static %}
 {% load thaidate %}
 
+
+{% block scriptlink %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.26/vue.cjs.js" integrity="sha512-2e2aXOh4/FgkCAUyurkjk0Uw4m1gPcExFwb1Ai4Ajjg97se/FEWfrLG1na4mq8cgOzouc8qLIqsh0EGksPGdqQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>      <!-- Only imported for this example --> {% endcomment %}
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-vue/2.21.2/bootstrap-vue.min.js" integrity="sha512-Z0dNfC81uEXC2iTTXtE0rM18I3ATkwn1m8Lxe0onw/uPEEkCmVZd+H8GTeYGkAZv50yvoSR5N3hoy/Do2hNSkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-vue/2.21.2/bootstrap-vue-icons.min.js" integrity="sha512-5czZ3eLMCVT2wJXRhx0yLN2TZzA2iuncwX2s3P1MTv3X8GHxfKRtcoaTkzEzM0g38iXyuYlES8kbfXNYe7zeTA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>       {% endcomment %}
+
+{% endblock %}
+
+{% block script %}
+<style>
+	.modal-xl {
+		max-width: 90vw;
+	}
+</style>
+
+{% endblock %}
+
+
 {% block BurgerNavButton %}
     <li class="nav-item" style= "vertical-align:text-bottom;">
       {% if request.user|has_group:"RTAF_HOME_USER" %}
@@ -16,11 +37,7 @@
 
 {% block NavButton %}
     <li class="nav-item" style= "vertical-align:text-bottom;">
-      {% if request.user|has_group:"RTAF_HOME_USER" %}
-        <a class="button-bg button-menu" href="{% url 'HomeData:detail_by_user' 'owner' %}">
-          ขอเปลี่ยนบ้านพัก 
-        </a>      
-      {% endif %}
+      
     </li>          
 {% endblock %}
 
@@ -28,87 +45,96 @@
 
 {% block content %}
 
-<div class="container">
-		<div class="main-body">
-			<div class="row">
-				<div class="col-lg-4">
-					<div class="card">
-						<div class="card-body">
-							<div class="d-flex flex-column align-items-center text-center">
-								<div class="mt-3">		
-									<h5>บ้านพัก</h5>
-									<h6>{{ object.0.home }}</h6>
-									<p class="text-secondary mb-1">คำสั่งเข้าพักที่ : {{ object.0.enter_command }} ลง {{ object.0.enter_command.date_sign |thaidate:"D d M y" }}</p>
-									<p class="text-secondary mb-1">อยู่ได้ถึงวันที่ : {{ object.0.enter_command.date_due|thaidate:"d M y" }}</p>
-								</div>
-							</div>
 
-							<hr class="my3-4">
-                            <div class="d-flex flex-column align-items-center text-center">								
-								<div class="mt-3">
-									<h5>ผู้พักอาศัยร่วม</h5>
-                                </div>
-                            </div>
-							<ul class="list-group list-group-flush">
-								{% for co_res in object.0.CoResident.all %}
-								<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-									<h6 class="mb-0"><i class="fas fa-id-card text-primary"></i> {{ co_res.full_name }} ({{ co_res.person_id }})</h6>
-									<span class="text-secondary">{{ co_res.get_relation_display }} {{ co_res.age }}</span>
-								</li>
-								{% endfor %}
-                              
-							</ul>                            
+<div class="container" id = "MainAPP">
+	<div class="main-body">
+		<div class="row">
+			<div class="col-lg-4">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex flex-column align-items-center text-center">
+							
+							<div class="mt-3">		
+								<h5>บ้านพัก</h5>
+								<h6>{{ object.0.home }}</h6>
+								<p class="text-secondary mb-1">คำสั่งเข้าพักที่ : {{ object.0.enter_command }} ลง {{ object.0.enter_command.date_sign |thaidate:"D d M y" }}</p>
+								<p class="text-secondary mb-1">อยู่ได้ถึงวันที่ : {{ object.0.enter_command.date_due|thaidate:"d M y" }}</p>
+							</div>
+							<div>
+								{% if request.user|has_group:"RTAF_HOME_USER" %}
+									<a @click="homechange_modal();" class="button-bg button-menu" href="#">
+									ขอเปลี่ยนบ้านพัก 
+									</a>      
+								{% endif %}
+							</div>
 						</div>
-					</div>
-				</div>				
-				<div class="col-lg-4">
-					<div class="card">
-						<div class="card-body">							
-							<div class="row mb-3">
-                                
-                                <div class="d-flex flex-column align-items-center text-center">								
-                                    <div class="mt-3">
-                                        <h5>ข้อมูลค่าน้ำประปา </h5>
-                                    </div>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    {% for wp in water_payments %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><i class="fas fa-tint text-primary"></i> {{ wp.date|thaidate:"M y" }}</h6>
-                                        <span class="text-secondary">มิเตอร์ {{ wp.meter }} ({{ wp.units }} หน่วย)</span>
-                                        <span class="text-secondary">{{ wp.bill }} บาท</span>
-                                    </li>
-                                    {% endfor %}                                    
-                                </ul>     
-							</div>							
+
+						<hr class="my3-4">
+						<div class="d-flex flex-column align-items-center text-center">								
+							<div class="mt-3">
+								<h5>ผู้พักอาศัยร่วม</h5>
+							</div>
 						</div>
+						<ul class="list-group list-group-flush">
+							{% for co_res in object.0.CoResident.all %}
+							<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+								<h6 class="mb-0"><i class="fas fa-id-card text-primary"></i> {{ co_res.full_name }} ({{ co_res.person_id }})</h6>
+								<span class="text-secondary">{{ co_res.get_relation_display }} {{ co_res.age }}</span>
+							</li>
+							{% endfor %}
+							
+						</ul>                            
 					</div>
 				</div>
-				<div class="col-lg-4">
-					<div class="card">
-						<div class="card-body">							
-							<div class="row mb-3">
-                                
-                                <div class="d-flex flex-column align-items-center text-center">								
-                                    <div class="mt-3">
-                                        <h5>ข้อมูลค่าบำรุงบ้านพัก </h5>
-                                    </div>
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    {% for rp in rent_payments %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                                        <h6 class="mb-0"><i class="fas fa-home text-primary"></i> {{ rp.date|thaidate:"M y" }}</h6>
-                                        <span class="text-secondary">{{ rp.montly_bill }} บาท</span>
-                                    </li>
-                                    {% endfor %}                                    
-                                </ul>     							
-							</div>							
-						</div>
+			</div>				
+			<div class="col-lg-4">
+				<div class="card">
+					<div class="card-body">							
+						<div class="row mb-3">
+							
+							<div class="d-flex flex-column align-items-center text-center">								
+								<div class="mt-3">
+									<h5>ข้อมูลค่าน้ำประปา </h5>
+								</div>
+							</div>
+							<ul class="list-group list-group-flush">
+								{% for wp in water_payments %}
+								<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+									<h6 class="mb-0"><i class="fas fa-tint text-primary"></i> {{ wp.date|thaidate:"M y" }}</h6>
+									<span class="text-secondary">มิเตอร์ {{ wp.meter }} ({{ wp.units }} หน่วย)</span>
+									<span class="text-secondary">{{ wp.bill }} บาท</span>
+								</li>
+								{% endfor %}                                    
+							</ul>     
+						</div>							
 					</div>
 				</div>
 			</div>
-			<div class="row mt-2">
-				<div class="col-lg-4">
+			<div class="col-lg-4">
+				<div class="card">
+					<div class="card-body">							
+						<div class="row mb-3">
+							
+							<div class="d-flex flex-column align-items-center text-center">								
+								<div class="mt-3">
+									<h5>ข้อมูลค่าบำรุงบ้านพัก </h5>
+								</div>
+							</div>
+							<ul class="list-group list-group-flush">
+								{% for rp in rent_payments %}
+								<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+									<h6 class="mb-0"><i class="fas fa-home text-primary"></i> {{ rp.date|thaidate:"M y" }}</h6>
+									<span class="text-secondary">{{ rp.montly_bill }} บาท</span>
+								</li>
+								{% endfor %}                                    
+							</ul>     							
+						</div>							
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mt-2">
+			<div class="col-lg-4">
 				<div class="card">
 						<div class="card-body">
 							<div class="d-flex flex-column align-items-center text-center">								
@@ -130,10 +156,73 @@
 								
 							</ul>  
 						</div>
-					</div>
 				</div>
 			</div>
 		</div>
+		{% include "Home/components/homechange_modal.html" %}
 	</div>
+	
+	
+
+	
+
+
+</div>
 {% endblock %}
 
+{% block buttom_script %}
+<script>
+
+	
+const MainAPP = {
+    el: "#MainAPP",
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            modal_tab : "personal_data",
+            dismissSecs: 20,
+            dismissCountDown: 0,
+            showDismissibleAlert: false,
+            message : "message text",
+            message_type : "info"
+        }
+    },    
+    mounted() {     
+          
+            
+    },
+    methods: {
+        countDownChanged : function(dismissCountDown) 
+        {
+            this.dismissCountDown = dismissCountDown
+        },
+        showAlert : function(message_type,message) 
+        {
+            this.message = message;                        
+            this.message_type = message_type;                        
+            this.dismissCountDown = this.dismissSecs;
+        },        
+		homechange_modal :function(){  
+                var modalWrap = document.getElementById("homechange_modal");
+                
+                var modal = new bootstrap.Modal(modalWrap);
+				 console.log("modal");
+                modal.show();				
+	    },
+        // เรียงอัตโนมัติ ตามลำดับที่ปรากฎ
+        show_value: function()
+        {
+            
+        },
+        numberWithCommas: function(x) {   
+            x = Math.round(x*100)/100;         
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    },
+    computed: {
+    } 
+};
+// Vue.createApp(MainAPP).mount('#MainAPP')
+new Vue(MainAPP);
+</script>
+{% endblock buttom_script %}

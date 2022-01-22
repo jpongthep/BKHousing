@@ -8,6 +8,10 @@
 
 {% block scriptlink %}
     <script src="{% static 'my_script/modal-with-custom-action.js'%}"></script>
+    {% if object_list.0.ProcessStep == 'GH' %}
+        <script src="https://unpkg.com/vue@next"></script>
+    {% endif %}
+
 {% endblock %}
 
 
@@ -206,8 +210,10 @@
 
 
 {% block content%}
-    {% if has_request and  object_list.0.ProcessStep != 'RC' %}  
+    {% if has_request and  object_list.0.ProcessStep not in 'RC,GH' %}  
         {% include "HomeRequest/process_step.html" with object=object_list.0 %}
+    {% elif object_list.0.ProcessStep == 'GH' %}
+        {% include "HomeRequest/get_house.html" with object=object_list.0 %}
     {% endif %}
     <div>
         <div>      
@@ -218,7 +224,7 @@
         {% if not object_list %}
             <h3>ไม่มีประวัติคำขอบ้านพักในระบบ</h3>
         {% else %}
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped mt-5">
                     <col width="40">
                     <col width="40">
                     <col width="40">
@@ -283,4 +289,46 @@
     </div>
   </div>
 </div>
+
+
 {% endblock modal %}
+
+
+{% block buttom_script %}
+{% if object_list.0.ProcessStep == 'GH' %}
+        
+<script>
+    const MainAPP = {
+        delimiters: ['[[', ']]'],
+        data() {
+            return {
+                test_counter: 0,
+                data : {}
+            }
+        },
+        mounted() {            
+            fetch('/hm/pongthep/hm_own_api', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json, text/plain, */*',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"key": "123"})
+              }).then(response => response.json())
+                .then(data => {
+                    this.data = data;
+                });  
+            console.log(this.data);
+        },
+        methods : {
+            data_confirm :function (){      
+                confirm_modal = new bootstrap.Modal(document.getElementById("data_confirm_modal"), {backdrop: 'static', keyboard: false});
+                confirm_modal.show(); 
+            }
+        }
+    }
+        
+    Vue.createApp(MainAPP).mount('#MainAPP')
+</script>
+{% endif %}
+{% endblock buttom_script %}

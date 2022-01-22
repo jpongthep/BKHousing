@@ -13,7 +13,7 @@ from apps.HomeRequest.models import HomeRequest
 from apps.UserData.AFAuthentications import checkRTAFPassdword
 from apps.Payment.models import FinanceData
 
-from apps.Utility.Constants import FINANCE_CODE
+from apps.Utility.Constants import FINANCE_CODE, HomeRequestProcessStep
 
 from .models import ( SetForm, 
                       Question, 
@@ -162,8 +162,28 @@ def UnitEvaluation(request, HomeRequstID, view_only = 0):
 
 @login_required  
 def PersonEvaluation(request,HomeRequstID):
-    home_request = HomeRequest.objects.get(id = HomeRequstID)        
+    if request.method == "POST":
+        filled_form_id = int(request.POST["PersonTroubleform_id"])
+        print('filled_form_id = ',filled_form_id)
+        filled_form = FilledForm.objects.get(id = filled_form_id)
+        
+        for k, v in request.POST.items():
+            print("key = ", k,"value = ", v)
+            if k.isnumeric():
+                answer_form = AnsweredForm.objects.get(id = int(k))
+                answer_form.choice_selected = Choices.objects.get(id = int(v))
+                answer_form.save()
+        totalscore = filled_form.CalculateScore()
+        filled_form.home_request_form.PersonTroubleScore = totalscore
+        filled_form.home_request_form.IsPersonEval = True
+        filled_form.home_request_form.ProcessStep = HomeRequestProcessStep.PERSON_ACCEPTED
+
+        filled_form.home_request_form.save()
+        print('totalscore = ',totalscore)
+        messages.success(request,"บันทึกผลคะแนนเรียบร้อย")
+
     set_form = SetForm.objects.get(code = 'F60')
+    home_request = HomeRequest.objects.get(id = HomeRequstID)        
     filled_form = FilledForm.objects.filter(set_form = set_form,
                                             home_request_form = home_request,
                                             type = 'Unit')
@@ -191,7 +211,9 @@ def PersonEvaluation(request,HomeRequstID):
     data = zip(QAList, hris_data,  PersonQA)
     context = {
         'data' : data,
-        'QAList' : QAList
+        'QAList' : QAList,
+        'PersonTroubleform_id' : PersonTroubleform.id,
+        'person_evaluate_score' : PersonTroubleform.total_score
         }
 
     return render(request,'Trouble/person_eval.html',context)

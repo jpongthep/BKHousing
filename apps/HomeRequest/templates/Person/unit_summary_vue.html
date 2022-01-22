@@ -249,7 +249,9 @@
                                     <a href = "#" :title = "[hm.PersonApproverName, hm.PersonApproverPhone, hm.PersonDateApproved ]"><i class="fa fa-check text-success icon-size" ></i></a>
                                 </div>               
                                 <div v-if="hm.IsPersonEval">
-                                    [[ hm.PersonTroubleScore ]]
+                                    <a href = "#" @click="evaluate(hm.id)" class="fa-stack" style="vertical-align: top;" >
+                                        [[ hm.PersonTroubleScore ]]
+                                    </a>
                                 </div>
                                 <div v-else-if="hm.ProcessStep === 'PersonProcess' ">
                                     <a href = "#" @click="evaluate(hm.id)" class="fa-stack" style="vertical-align: top;" >
@@ -262,10 +264,10 @@
                                 
                             </td>
                             <td>
-                                <div v-if="hm.ProcessStep === 'PersonProcess' ">
-                                    <span :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
+                                <div v-if="! hm.IsPersonEval">
+                                    <span v-if="hm.ProcessStep === 'PersonProcess' ||  hm.ProcessStep === 'PersonApproved' " :title = "[hm.PersonRecieverName, hm.PersonRecieverPhone, hm.PersonDateRecieved ]">                                
                                         <small>รอประเมิน</small>
-                                    </span>
+                                    </span>                                    
                                 </div>
                             </td>
                         </tr>
