@@ -303,25 +303,22 @@
         data() {
             return {
                 test_counter: 0,
+                nav_tab : "co-resident", // "vehical", "pet"
                 data : {}
             }
         },
         mounted() {            
-            fetch('/hm/pongthep/hm_own_api', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'application/json, text/plain, */*',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({"key": "123"})
-              }).then(response => response.json())
-                .then(data => {
-                    this.data = data;
-                });  
-            console.log(this.data);
+            
         },
         methods : {
-            data_confirm :function (){      
+            load_data :function (){      
+                fetch('/hm/hm_own_new_api', {
+                    method: 'GET'
+                  }).then(response => response.json())
+                    .then(data => {
+                        this.data = data[0];
+                    });  
+                console.log(this.data);
                 confirm_modal = new bootstrap.Modal(document.getElementById("data_confirm_modal"), {backdrop: 'static', keyboard: false});
                 confirm_modal.show(); 
             }

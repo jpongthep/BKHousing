@@ -182,7 +182,7 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     home_type.short_description = 'ประเภท'
 
     def home_zone(self, obj):
-        return obj.home.zone
+        return obj.home.get_zone_display()
     home_zone.short_description = 'โซนบ้านพัก'
 
     def get_inlines(self, request, obj):

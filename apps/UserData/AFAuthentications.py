@@ -227,8 +227,8 @@ def UpdateRTAFData(request, current_user,person_data):
     #     first_name = fullname[0]
     #     last_name = " ".join(fullname[1:])
 
-    print("first_name = ",first_name)
-    print("last_name = ",last_name)
+    # print("first_name = ",first_name)
+    # print("last_name = ",last_name)
 
     data = {
         "token" : person_data['token'],
@@ -282,7 +282,7 @@ def UpdateRTAFData(request, current_user,person_data):
 
         if current_user.Position:
             match = next((x for x in sub_unit_list if x in current_user.Position), False)
-            print("#",current_user.Position, match)
+            # print("#",current_user.Position, match)
             if match:
                 current_user.sub_unit = match
 
@@ -306,6 +306,7 @@ def UpdateRTAFData(request, current_user,person_data):
 
     # ไม่พบข้อมูล
     if return_data['result'] != "Process-Complete":
+        print(return_data)
         messages.error(request, "ไม่พบข้อมูลจาก HRIS")
         return None
 

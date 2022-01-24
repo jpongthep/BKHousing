@@ -3,8 +3,17 @@ from rest_framework import serializers
 from apps.Payment.serializers import WaterPaymentSerializer, RentPaymentSerializer
 from apps.UserData.serializers import UserSerializer
 
-from .models import HomeData, HomeOwner, CoResident
+from .models import HomeData, HomeOwner, CoResident, PetData, VehicalData
 
+class ExpandSerializer(serializers.ModelSerializer):
+
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super(ExpandSerializer, self).get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
 
 
 class HomeSerializer(serializers.ModelSerializer):
@@ -36,9 +45,26 @@ class HomeSerializer(serializers.ModelSerializer):
                 ]
 
 
-class CoResidentSerializer(serializers.ModelSerializer):
+class CoResidentSerializer(ExpandSerializer):
+    relation_display = serializers.SerializerMethodField('get_relation')
+
+    def get_relation(self,obj):
+        return obj.get_relation_display()
+
     class Meta:
         model = CoResident
+            
+        fields = '__all__'
+        extra_fields = ['relation_display']
+
+class VehicalDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VehicalData
+        fields = '__all__'
+
+class PetDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetData
         fields = '__all__'
 
 
@@ -49,11 +75,14 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
     RentPayment = RentPaymentSerializer(many=True, read_only=True)
     owner = UserSerializer()
     co_resident = CoResidentSerializer(source='CoResident.all', many=True)
+    vehical_data = VehicalDataSerializer(source='HomeParker.all', many=True)
+    pet_data = PetDataSerializer(source='pet.all', many=True)
     # payment = PaymentDescSerializer(source='payments_project_desc.all', many=True)  
     status = serializers.SerializerMethodField('return_status')
 
     def return_status(self, obj):
         return "ok"
+
     class Meta:
         model = HomeOwner
         fields = [
@@ -74,6 +103,8 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
                     'WaterPayment',
                     'RentPayment',
                     'co_resident',
+                    'vehical_data',
+                    'pet_data',
                     'status'
                 ]
 

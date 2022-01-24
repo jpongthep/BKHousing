@@ -12,6 +12,7 @@ from django_admin_listfilter_dropdown.filters import (
 
 from .models import HomeRequest, CoResident, HomeChange
 from apps.UserData.models import User
+from apps.Home.models import HomeOwner
 from apps.Home.modules import MoveFromHomeRequest
 from apps.HomeRequest.views_notify import unit_new_allocate_notify
 
@@ -163,6 +164,26 @@ class HomeRequestAllocateAdmin(admin.ModelAdmin):
 
     @admin.action(description='ประกาศการจัดสรรบ้านพัก')
     def publish_allocate(self, request, queryset):
+        has_error = 0
+        for qs in queryset:
+            user = qs.Requester
+            home_owner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
+            if home_owner.exists():
+                messages.warning(request,f"{qs.Requester.FullName} ยังมีรายชื่อในบ้านพัก ไม่สามารถย้ายเข้าหลังใหม่ได้")
+                has_error += 1
+            if not qs.home_allocate:
+                messages.warning(request,f"ยังไม่บันทึกการจัดสรรบ้านของ {qs.Requester.FullName}")
+                has_error += 1
+            if not qs.enter_command:
+                messages.warning(request,f"ยังไม่บันทึกคำสั่งบ้านของ {qs.Requester.FullName}")
+                has_error += 1
+
+            
+        
+        if has_error > 0:
+            messages.error(request,f"ไม่สามารถประกาศผลการจัดสรรได้ ตรวจสอบ / บันทึกข้อมูลก่อนประกาศ")
+            return
+
         updated = queryset.update(ProcessStep = 'GH', lastest_allocate = True)
         for qs in queryset:
             MoveFromHomeRequest(qs)

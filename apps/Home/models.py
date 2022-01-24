@@ -83,7 +83,7 @@ class CoResident(models.Model):
     person_id = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     full_name = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
     birth_day = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
-    relation =  models.CharField(verbose_name="ความสัมพันธ์", max_length = 4, choices = CoResidenceRelation.choices)
+    relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 4, choices = CoResidenceRelation.choices)
     occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
     salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
     is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
