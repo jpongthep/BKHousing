@@ -394,9 +394,10 @@ class SettingsBackend(ModelBackend):
                     user.set_password(password)
                     user.save()
                 # print('login user = ', user)
+                if 'duplica_rapid_login' in pwd_valid:
+                    request.session['password'] = password
+                    request.session['duplica_rapid_login'] = pwd_valid['duplica_rapid_login']
                 request.session['Token'] = pwd_valid['token']
-                request.session['password'] = password
-                request.session['duplica_rapid_login'] = pwd_valid['duplica_rapid_login']
                 logger.info(f'{username} login success')
                 return user
             else:                
@@ -416,7 +417,8 @@ class SettingsBackend(ModelBackend):
                 logger.info(f'{username} first login but disable HRIS')
                 return None
             else:
-                auth_user = getUserByRTAFemail(request, username, ReturnData['token'])
+                auth_user = getCadet@UserByRTAFemail(request, username, ReturnData['token'])
+                auth_user.save()
                 auth_user.set_password(password)
                 auth_user.save()
                 logger.info(f'{username} first login success')

@@ -42,6 +42,7 @@ from .forms import HomeRequestForm, CoResidentFormSet
 from apps.Utility.Constants import (YEARROUND_PROCESSSTEP, HomeRequestProcessStep,PERSON_STATUS, 
                                     HomeRentPermission, FINANCE_CODE)
 
+from apps.Home.forms import CoResidentForm as HomeDataCoResidentForm, PetDataForm, VehicalDataForm
 from apps.UserData.models import Unit
 from apps.Configurations.models import YearRound
 from apps.UserData.forms import UserCurrentDataForm
@@ -337,6 +338,9 @@ class AFPersonListView(AuthenUserTestMixin,ListView):
     def get_context_data(self, **kwargs):        
         context = super().get_context_data(**kwargs)
         context['has_request'] = super().has_home_request(**kwargs)
+        context['CoResidentForm'] = HomeDataCoResidentForm()
+        context['PetForm'] = PetDataForm()
+        context['VehicalForm'] = VehicalDataForm()
         return context        
 
 

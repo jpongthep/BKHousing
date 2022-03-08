@@ -51,7 +51,7 @@ class User(AbstractUser):
     current_spouse_pid = models.CharField(max_length=13, null=True, blank=True, verbose_name="PID คู่สมรส")
 
     # ที่อยู่ปัจจุบัน
-    Address = models.CharField(max_length = 100, null=True, blank=True, verbose_name="ที่อยู่")
+    Address = models.CharField(max_length = 200, null=True, blank=True, verbose_name="ที่อยู่")
     Province = models.CharField(max_length = 50, null=True, blank=True, verbose_name="จังหวัด")
      
      # การบรรจุครั้งแรก อาจนำไปใส่ไว่้ใน User เนื่องจากข้อมูลชุดนี้ไม่เปลี่ยนแปลงตลอดอายุราชการ

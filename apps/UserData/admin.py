@@ -39,7 +39,7 @@ class UnitAdmin(admin.ModelAdmin):
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'CurrentUnit','sub_unit', 'FullName','MobilePhone', 'OfficePhone','last_login')
     list_display_links = ['FullName']
-    # date_hierarchy  = 'last_login'
+    list_per_page = 20
     ordering = ('-last_login','CurrentUnit','Rank',)
     inlines = [HomeOwnerInline,HomeRequestInline]
     fieldsets = (

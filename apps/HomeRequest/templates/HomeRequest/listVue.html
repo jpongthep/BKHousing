@@ -255,8 +255,8 @@
                                 <div v-else-if="hm.ProcessStep === 'RequesterSended' || hm.ProcessStep ==='UnitProcess'">
                                     <button class="btn btn-outline-danger btn-sm" @click="ConfirmChangeProcessStep(i, hm.id,'RP')"><small>ส่งเรื่องกลับ</small></button>                                
                                 </div>
-                                <div v-else-if="hm.ProcessStep === 'GetHouse'">
-                                    <p style="font-size:0.7em;">[[ hm.home_allocate.type]] [[ hm.home_allocate.number ]] <br> [[ hm.home_allocate.zone ]]</p>
+                                <div class = "text-center" v-else-if="hm.ProcessStep === 'GetHouse'">                                  
+                                    <p v-if="hm.home_allocate" style="font-size:0.7em;">[[ hm.home_allocate.type]] เขต [[ hm.home_allocate.zone ]] <br>[[ hm.home_allocate.number ]]</p>
                                 </div>
                             </td>
                         </tr>

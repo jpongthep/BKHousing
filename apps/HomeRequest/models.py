@@ -142,7 +142,9 @@ class HomeRequest(models.Model):
     home_allocate = models.ForeignKey(HomeData, verbose_name = "บ้านที่ได้รับจัดสรร", null = True, blank = True, default = None, on_delete=models.SET_NULL, related_name='home_allocate')
     enter_command = models.ForeignKey(Command,verbose_name='คำสั่งเข้าพัก', on_delete=models.SET_NULL, related_name= "new_hr_enter_command", default = None,null = True, blank = True)
     lastest_allocate =  models.BooleanField(verbose_name = 'จัดสรรล่าสุด', default = False)
+    published =  models.BooleanField(verbose_name = 'ประกาศคำสั่งแล้ว', default = False)
     moved_data =  models.BooleanField(verbose_name = 'ย้ายข้อมูลเข้าบ้านพักแล้ว', default = False)
+    make_contract = models.BooleanField(verbose_name = 'ทำสัญญาแล้วเข้าบ้านพักแล้ว', default = False)
 
     recorder = models.ForeignKey(User, on_delete = models.DO_NOTHING, related_name='recorder_admin',default = None, null=True,blank = True)
     specificed_need = models.CharField(verbose_name="ความต้องการเฉพาะเจาะจง", max_length = 50, default = '', null=True,blank = True)
@@ -212,7 +214,7 @@ class HomeRequest(models.Model):
 
     @property
     def still_active(self):
-        return self.ProcessStep not in ['RC','RF']
+        return self.ProcessStep not in ['RC','RF','GH']
     
     def process_value(self):
         step = ['RP','RS','UP','US','PP','PA','GH']

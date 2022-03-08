@@ -40,13 +40,44 @@ class HomeData(models.Model):
 
     def __str__(self):
         building_number = f"อ.{self.building_number}" if self.building_number != "-" else ""
-        room_number = f"{self.room_number}" if self.room_number != "-" else ""
-
-        if "แฟลต" in self.get_type_display():
-            return f"อ.{self.building_number}-{self.room_number}"                   
+        room_number = f"{self.room_number}" if self.room_number != "-" else ""        
+        ZoneName = {
+                        '1' : 'เขต 1', 
+                        '2' : 'เขต 2', 
+                        '3' : 'เขต 3',
+                        '6T' : 'เขต 6 รถไฟ', 
+                        '6S' : 'เขต 6 สีกัน', 
+                        '7S' : 'เขต 7 ลาดเป็ด', 
+                        'BS' : 'บางซื่อ'}
+        if self.zone in ZoneName:
+            ZoneName = ZoneName[self.zone]
         else:
-            return f"{building_number} - {room_number}" if room_number else building_number
-            
+            ZoneName = f"--{self.zone}--"
+
+        if "ฟ" in self.get_type_display():
+            return f"{self.get_type_display()} {self.building_number} ห้อง {self.room_number} {ZoneName} บ้านเลขที่ {self.number}"
+        elif "ร" in self.get_type_display():
+            return f"{self.get_type_display()}{self.building_number} ห้อง {self.room_number} {ZoneName} บ้านเลขที่ {self.number}"
+        elif "ป" in self.get_type_display():
+            return f"{self.get_type_display()} {self.building_number} ห้อง {self.room_number} {ZoneName} บ้านเลขที่ {self.number}"
+        elif self.type == "HO5":
+            return f"{self.get_type_display()} {self.building_number}{self.room_number} {ZoneName}"
+        else:
+            return f"{self.get_type_display()}{self.building_number} {ZoneName} บ้านเลขที่ {self.number}"
+    
+
+# ชื่อบ้าน 
+# พ.
+# น.3077 เขต 3  บ้านเลขที่ 171/2507
+# ร.1258 ห้อง 2 เขต 1 บ้านเลขที่ 171/3095 
+
+# ร.
+# ฟส.(โสด)
+# ฟส.
+# ฟป.8 ห้อง 523 เขต 6 สีกัน  บ้านเลขที่ 533/1793 
+# ฟป.(โสด) 8 ห้อง 206 เขต 3  บ้านเลขที่ 171/2818
+
+# ป.1            
         
 
 class HomeOwner(models.Model):
@@ -79,6 +110,10 @@ class HomeOwner(models.Model):
 
 # ผู้ที่พักอาศัยอยู่ร่วมกัน
 class CoResident(models.Model):
+    class Meta:
+        constraints = [
+                UniqueConstraint(fields=['home_owner_id', 'person_id'], name='home_owner_id_person_id')
+            ]
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='CoResident')
     person_id = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     full_name = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
@@ -107,8 +142,8 @@ class CoResident(models.Model):
 class PetData(models.Model):    
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='pet', default = None)
     type = models.CharField(verbose_name="ชนิดสัตว์เลี้ยง", max_length = 5, default = "dog", choices = (('dog','หมา'),('cat','แมว')))
-    name = models.CharField(verbose_name="ชื่อ", max_length = 50, null = False, blank = True, default = '')
-    birth_year = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
+    name = models.CharField(verbose_name="ชื่อ", max_length = 50, null = False, blank = False,)
+    birth_year = models.IntegerField(verbose_name="ปีเกิด", null = True, blank = True)
     sex = models.CharField(verbose_name="เพศ", max_length = 5, default = "male", choices = (('male','ตัวผู้'),('fem','ตัวเมีย')))
     appearances = models.TextField(verbose_name="สี-รูปร่าง-ลักษณะ", null = True)
 
@@ -129,25 +164,14 @@ class VehicalData(models.Model):
     home_parker = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='HomeParker', null = True)
     plate = models.CharField(verbose_name="เลขทะเบียนรถ", max_length = 10, null = True)
     province = models.CharField(verbose_name="จังหวัด", max_length = 10, null = True)
-    type = models.IntegerField(verbose_name="ประเภท", null = True)
+    type = models.IntegerField(verbose_name="ประเภท", choices = ((1,"จักรยานยนต์"),(2,"เก๋ง"),(3,"SUV"),(4,"กะบะ"),(5,"อื่น ๆ")),null = True)
     brand = models.CharField(verbose_name="ยี่ห้อ", max_length = 15, null = True)
     color = models.CharField(verbose_name="สี", max_length = 10, null = True)
-    registration = models.FileField(verbose_name="สำเนาทะเบียนรถ", null = True)
+    registration = models.FileField(verbose_name="สำเนาทะเบียนรถ", null = True, blank = True)
 
+    def __str__(self):
+        return f"{self.brand} : {self.plate} {self.color}"
 
-    # birth_day = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
-    # relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 20)
-    # occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
-    # salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
-    # is_airforce = models.BooleanField(verbose_name = "เป็น ขรก.ทอ.", default = False)
-    # education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
-
-    # def __str__(self):
-    #     return self.full_name
-
-    # def get_absolute_url(self):
-    #     hm_ownid = self.home_owner.id
-    #     return reverse('Home:detail', kwargs={"pk": hm_ownid})    
 
 class HomeOwnerSummary(HomeOwner):
     class Meta:

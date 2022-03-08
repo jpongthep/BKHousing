@@ -166,7 +166,7 @@ class ManualHomeRequestForm(forms.ModelForm):
         model = HomeRequest
         fields = ['Requester','year_round', 'FullName', 'Position', 'Unit', 'Address', 'Salary',
                 'RentPermission', 'RentalCost','Status', 'IsHRISReport', 'IsNotBuyHome', 
-                'IsNotOwnHome', 'ContinueHouse', 'IsMoveFromOtherUnit', 'IsUnitEval','UnitTroubleScore',
+                'IsNotOwnHome', 'ContinueHouse', 'IsMoveFromOtherUnit', 'IsUnitEval','UnitTroubleScore','IsPersonEval','PersonTroubleScore',
                 'ImportanceDuty','OtherTrouble', 'Comment', 'request_type', 'IsHomeNeed', 'IsFlatNeed', 'IsShopHouseNeed', 
                 'ZoneRequestPriority1','ZoneRequestPriority2',
                 'specificed_need', 'foster_person', 'foster_date', 'foster_reason', 'have_document', 

@@ -205,3 +205,18 @@ WHERE
 			WHERE is_stay
 		);
 
+DELIMITER $$
+CREATE FUNCTION  HomeDataID(_Zone CHAR(5), _Type CHAR(5), _BuildingID CHAR(5), _RoomNumber CHAR(5)) RETURNS INT 
+DETERMINISTIC
+BEGIN
+    DECLARE _home_id INT;
+	SELECT id into _home_id FROM Home_homedata WHERE Zone =  _Zone AND Type = _Type AND  building_number = _BuildingID AND room_number = _RoomNumber;
+    RETURN _home_id;
+END$$
+DELIMITER ;
+
+SELECT HomeDataID('3','FNF','1','1315');
+
+UPDATE HomeRequest_homerequest set enter_command_id = 190, home_allocate_id = HomeDataID('3','FNF','1','1315')  WHERE  year_round_id = 2 AND Requester_id in (SELECT id from UserData_user WHERE PersonID = "3901100797340")
+
+SELECT RequesterDateSend = now() From HomeRequest_homerequest WHERE ProcessStep = 'GH' AND ISNULL(RequesterDateSend);

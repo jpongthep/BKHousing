@@ -180,7 +180,7 @@ def PersonEvaluation(request,HomeRequstID):
 
         filled_form.home_request_form.save()
         print('totalscore = ',totalscore)
-        messages.success(request,"บันทึกผลคะแนนเรียบร้อย")
+        messages.success(request,f"บันทึกผลการประเมิน {filled_form.home_request_form.Requester.FullName} {totalscore} คะแนนเรียบร้อย")
 
     set_form = SetForm.objects.get(code = 'F60')
     home_request = HomeRequest.objects.get(id = HomeRequstID)        

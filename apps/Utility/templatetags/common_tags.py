@@ -20,13 +20,14 @@ def has_group(user, group_name):
 
 @register.filter(name='in_group')
 def in_group(user, groups_name):
-    # GroupListText = groups_name.split(", ")
+    GroupListText = groups_name.split(", ")
     GroupListText = [x.strip() for x in groups_name.split(',')]
     # print("GroupTextList = ",GroupListText)
     for GroupText in GroupListText:
         try:
             group = Group.objects.get(name=GroupText)
         except:
+            # print("here")
             return False
             
         if group in user.groups.all():

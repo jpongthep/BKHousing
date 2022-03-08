@@ -141,14 +141,17 @@ class HomeRequestAllocate(HomeRequest):
 
 class HomeRequestAllocateAdmin(admin.ModelAdmin):
     search_fields = ['FullName','Unit__ShortName']
-    list_display = ['year_round', 'FullName', 'Unit','ProcessStep','home_allocate','enter_command']
+    list_display = ['year_round', 'FullName', 'Unit','request_type','home_allocate','enter_command','published','make_contract']
     list_editable = ('home_allocate','enter_command')
     list_filter = (
                     ('ProcessStep', ChoiceDropdownFilter),
                     ('Requester__CurrentUnit', RelatedDropdownFilter),
                     ('enter_command', RelatedDropdownFilter),
+                    'published',
+                    'make_contract'
                 )
     # date_hierarchy  = 'modified'
+    list_per_page = 100
     list_display_links = ['FullName']
     raw_id_fields = ('home_allocate','enter_command')
     ordering = ('-modified',)
@@ -167,28 +170,44 @@ class HomeRequestAllocateAdmin(admin.ModelAdmin):
         has_error = 0
         for qs in queryset:
             user = qs.Requester
-            home_owner = HomeOwner.objects.filter(owner = user).filter(is_stay = True)
-            if home_owner.exists():
-                messages.warning(request,f"{qs.Requester.FullName} ยังมีรายชื่อในบ้านพัก ไม่สามารถย้ายเข้าหลังใหม่ได้")
-                has_error += 1
+
+            # if qs.published:
+            #     messages.warning(request,f"ประกาศ {qs.Requester.FullName} ซ้ำ ข้ามการประกาศ")
+            #     continue 
+
+            
             if not qs.home_allocate:
                 messages.warning(request,f"ยังไม่บันทึกการจัดสรรบ้านของ {qs.Requester.FullName}")
                 has_error += 1
+            
             if not qs.enter_command:
                 messages.warning(request,f"ยังไม่บันทึกคำสั่งบ้านของ {qs.Requester.FullName}")
-                has_error += 1
-
+                has_error += 1        
             
+            if has_error > 0:
+                break
+
+            home_owner = HomeOwner.objects.filter(owner = user                                         
+                                         ).filter(is_stay = True)
+
+            if home_owner.exists():
+                home_owner[0].is_stay = False
+                home_owner[0].save()
+                messages.warning(request,f"ย้าย {qs.Requester.FullName} ออกจากบ้านพักหลังเดิม และย้ายเข้าหลังใหม่แล้ว")
+                # has_error += 1
         
         if has_error > 0:
             messages.error(request,f"ไม่สามารถประกาศผลการจัดสรรได้ ตรวจสอบ / บันทึกข้อมูลก่อนประกาศ")
             return
 
-        updated = queryset.update(ProcessStep = 'GH', lastest_allocate = True)
+        # if not qs.published:
+        updated = queryset.update(ProcessStep = 'GH', lastest_allocate = True, published = True)
         for qs in queryset:
             MoveFromHomeRequest(qs)
-        unit_new_allocate_notify(request)
+        # unit_new_allocate_notify(request)
         self.message_user(request, ngettext('ประกาศการจัดสรรบ้าน %d หลัง','ประกาศการจัดสรรบ้าน %d หลัง',updated,) % updated, messages.SUCCESS)
+
+
 
 admin.site.register(HomeChange, HomeChangeAdmin)
 admin.site.register(HomeRequest, HomeRequestAdmin)

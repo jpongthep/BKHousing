@@ -91,7 +91,9 @@ def armis_admin_notify():
 # @login_required
 # @csrf_exempt
 def unit_daily_notify(request = 0, pk = 0):
-
+    if request:
+        # messages.info(request,"ส่ง line notify เรียบร้อย")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))    
     if pk == 0:
         unit_notify_token = Unit.objects.filter(line_notify_token__isnull = False)
     else:

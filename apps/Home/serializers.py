@@ -17,24 +17,16 @@ class ExpandSerializer(serializers.ModelSerializer):
 
 
 class HomeSerializer(serializers.ModelSerializer):
-    type = serializers.SerializerMethodField(source = 'get_type_display') 
-    zone = serializers.SerializerMethodField(source = 'get_zone_display') 
-    status  = serializers.SerializerMethodField(source = 'get_status_display') 
-    
-    def get_type(self,obj):
-        return obj.get_type_display()
-
-    def get_zone(self,obj):
-        return obj.get_zone_display()
-    
-    def get_status(self,obj):
-        return obj.get_status_display()
+    type = serializers.CharField(source='get_type_display')
+    zone_display = serializers.CharField(source='get_zone_display')
+    status = serializers.CharField(source='get_status_display')
         
     class Meta:
         model = HomeData
         fields = [
                     "type",
                     "zone",
+                    "zone_display",
                     "location_name",
                     "building_number",
                     "room_number",
@@ -46,21 +38,19 @@ class HomeSerializer(serializers.ModelSerializer):
 
 
 class CoResidentSerializer(ExpandSerializer):
-    relation_display = serializers.SerializerMethodField('get_relation')
-
-    def get_relation(self,obj):
-        return obj.get_relation_display()
-
+    relation_display = serializers.CharField(source='get_relation_display', read_only=True)
+    education_display = serializers.CharField(source='get_education_display', read_only=True)
     class Meta:
         model = CoResident
-            
         fields = '__all__'
-        extra_fields = ['relation_display']
+        extra_fields = ['relation_display', 'education_display']
 
 class VehicalDataSerializer(serializers.ModelSerializer):
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
     class Meta:
         model = VehicalData
         fields = '__all__'
+        extra_fields = ['type_display',]
 
 class PetDataSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,7 +67,6 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
     co_resident = CoResidentSerializer(source='CoResident.all', many=True)
     vehical_data = VehicalDataSerializer(source='HomeParker.all', many=True)
     pet_data = PetDataSerializer(source='pet.all', many=True)
-    # payment = PaymentDescSerializer(source='payments_project_desc.all', many=True)  
     status = serializers.SerializerMethodField('return_status')
 
     def return_status(self, obj):
@@ -86,6 +75,7 @@ class HomeOwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = HomeOwner
         fields = [
+                    'id',
                     'owner',
                     'home',
                     'is_stay',

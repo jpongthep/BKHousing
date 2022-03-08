@@ -189,7 +189,7 @@ def TestDocument(request, home_request_id,detail_doc = 0):
     dic = {
             'Sex': self_call,
             'Rank': Rank,
-            'FullName':FullName ,
+            'FullName':FullName,
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
             'ADDR':home_request.Address,
@@ -524,7 +524,7 @@ def Excel4PersonAdmin(request):
     last_insert = 0
     
     queryset = HomeRequest.objects.filter(year_round__Year = get_current_year()
-                                ).order_by("-UnitTroubleScore")                      
+                                ).order_by("-modified")                      
                                 
     sheets = workbook.sheetnames
     sheet = workbook[sheets[0]]
@@ -570,8 +570,7 @@ def Excel4PersonAdmin(request):
         sheet[f"L{first_row+i}"] = "ข้าพเจ้าไม่เป็นผู้เบิกค่าเช่าซื้อ" if data.IsNotBuyHome else "-"
         sheet[f"M{first_row+i}"] = "ข้าพเจ้าและคู่สมรสไม่มีกรรมสิทธิ์ รัศมี 20 กม." if data.IsNotOwnHome else "-"
         sheet[f"N{first_row+i}"] = "-"
-        sheet[f"O{first_row+i}"] = "-"
-        sheet[f"O{first_row+i}"] = "-"
+        sheet[f"O{first_row+i}"] = data.Comment if data.Comment else "-"
         sheet[f"P{first_row+i}"] = home_type
         sheet[f"Q{first_row+i}"] = str(data.get_ZoneRequestPriority1_display()) if data.ZoneRequestPriority1 else "-"
         sheet[f"R{first_row+i}"] = "-"
@@ -579,9 +578,9 @@ def Excel4PersonAdmin(request):
         sheet[f"T{first_row+i}"] = data.foster_person if data.foster_person else "-"
         sheet[f"U{first_row+i}"] = "-"
         sheet[f"V{first_row+i}"] = "-"
-        sheet[f"W{first_row+i}"] = "-"
-        sheet[f"X{first_row+i}"] = "-"
-        sheet[f"Y{first_row+i}"] = "-"
+        sheet[f"W{first_row+i}"] = "มี" if data.have_document else "ไม่มี"
+        sheet[f"X{first_row+i}"] = data.document_number if data.document_number else "-"
+        sheet[f"Y{first_row+i}"] = str(data.document_date) if data.document_date else "-"
         sheet[f"Z{first_row+i}"] = "-"
         sheet[f"AA{first_row+i}"] = str(data.UnitTroubleScore) if data.UnitTroubleScore else "-"
         sheet[f"AD{first_row+i}"] = str(data.get_request_type_display()) if data.request_type else "-"
@@ -600,6 +599,7 @@ def Excel4PersonAdmin(request):
         sheet[f"AV{first_row+i}"] = "-"
         sheet[f"AW{first_row+i}"] = "-"
         sheet[f"AX{first_row+i}"] = "-"
+        sheet[f"AY{first_row+i}"] = str(data.modified)
 
 
         last_insert += 1

@@ -8,12 +8,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import Group
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.Home.models import HomeOwner
+
 #My module
 from .models import HomeRequest, CoResident
 from .serializers import ManualHomeRequestSerializer
@@ -61,7 +63,11 @@ class ManualCreateHomeRequestView(AuthenUserTestMixin, CreateView):
     template_name = "Person/CreateManualHomeRequest.html"
 
     def get(self, request, *args, **kwargs):
-            user = User.objects.get(PersonID = self.kwargs['person_id'])
+            try:
+                user = User.objects.get(PersonID = self.kwargs['person_id'])
+                user.groups.add(Group.objects.get(name='RTAF_NO_HOME_USER'))                
+            except:
+                return render(request, "Person/person_id_not_found.html", {"person_id" : self.kwargs['person_id']})
 
             user_form = UserCurrentDataForm(instance = user, prefix = 'user')
             CurrentYearRound = YearRound.objects.filter(CurrentStep__in = ['RS','UP','PP'])
@@ -180,4 +186,12 @@ def check_create_hr(request, person_id):
 
 
     
+def SetNoHomeToHomeRequest():
+    no_home_user_group = Group.objects.get(name='RTAF_NO_HOME_USER')
+    for hm  in HomeRequest.current_year.all():
+        requester = hm.Requester
+        requester.groups.add(no_home_user_group)  
+        requester.save()
+
+            
 

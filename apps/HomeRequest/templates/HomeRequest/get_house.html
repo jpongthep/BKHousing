@@ -1,145 +1,247 @@
 {% load thaidate %}
+{% load crispy_forms_tags %}
 
 <section  id = "MainAPP">
     {% csrf_token %}
         <div class="container-fluid">            
             <div class="row">
-                <div class="col-3 text-center">
-                    <i class="fa fa-home fa-7x text-primary"></i>
-                    <h3>ได้รับการจัดสรรบ้านพัก</h3>
+                <div class="col-2 text-center">
+                    <i class="fa fa-home fa-5x text-primary"></i>
+                    <h3>ได้รับการจัดสรร</h3>
                 </div>
-                <div class="col">
+                <div class="col-4">
                     <div class="mt-4">		
-                        <h5>บ้านพัก</h5>
-                        <p class="text-secondary mb-1">บ้านที่จัดสรร : {{ object.home_allocate.get_type_display }}, {{ object.home_allocate }},  {{ object.home_allocate.get_zone_display }}</p>
+                        <p class="text-secondary mb-1">บ้านที่จัดสรร : {{ object.home_allocate }}</p>
                         <p class="text-secondary mb-1">คำสั่งเข้าพักที่ : {{ object.enter_command }} ลง {{ object.enter_command.date_sign |thaidate:"D d M y" }}</p>
-                        <p class="text-secondary mb-1">อยู่ได้ถึงวันที่ : {{ object.enter_command.date_due|thaidate:"d M y" }}</p>
                         <p class="text-secondary mb-1">คำสั่งบ้านพัก : <a href="{{ object.enter_command.file.url }}" target = "blank" alt="คำสั่ง">download</a></p>
                     </div>
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                     <div class="mt-3">		
-                        <h5>ขั้นตอนการเข้าบ้านพัก</h5>
-                        <p class="text-secondary mb-1">1. ยืนยัน + เพิ่มเติมข้อมูล <a @click="load_data()" href="#" class = "btn btn-danger btn-sm">ดำเนินการ</a></p> 
-                        <p class="text-secondary mb-1">2. ทำสัญญาเข้าบ้าน รับกุญแจที่ แผนกบ้านพักอาศัย กอง ? สน.ผบ.ดม.</p>
-                        <p class="text-secondary mb-1">3. ทำสัญญาค่าน้ำ </p>
+                        <h5>ขั้นตอนการรับบ้านพักอาศัย</h5>
+                        <ol  class="text-secondary">
+                            <li class="mb-1">ยืนยัน + เพิ่มเติมข้อมูลรถยนต์และสัตว์เลี้ยง &nbsp; <a @click="open_modal()" href="#" class = "btn btn-info btn-sm">ดำเนินการ</a></li>
+                            <li class="mb-1">รายงานตัวที่ กรปภ.สน.ผบ.ดม. ภายใน 15 วัน นับตั้งแต่วันที่ออกคำสั่ง</li>
+                            <li v-if="['1','2','3'].includes(data.home.zone)" class="mb-1">ติดต่อ ผคศ.1 กรปภ.สน.ผบ.ดม. 2-5705, 2-6360</li>
+                            <li v-else-if="['6T','6S'].includes(data.home.zone)"  class="mb-1">ติดต่อ ผคศ.2 กรปภ.สน.ผบ.ดม.สำนักงานอยู่ที่ ฟส.2 ห้อง 114 เขต 6 สีกัน 2-8738</li>
+                            <li><a href="{% url 'HomeData:ContractFormDocument' object.home_allocate_id %}" target="_blank">ดาวโหลดสัญญา</a></li>
+                        </ol>
                     </div>
                 </div>
               </div>
         </div>
 
         <div class="modal fade" id="data_confirm_modal" tabindex="-1" aria-labelledby="data_confirm_modalLabel" aria-hidden="true">
-            <div class="modal-dialog  modal-dialog-centered" style="width:1400px;max-width: 95%;" role="document">
+            <div class="modal-dialog  modal-dialog-centered" style="width:1500px;max-width: 98%;" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title" id="data_confirm_modalLabel">ยืนยันข้อมูล</h5>
+                        <h5 class="modal-title text-white" id="data_confirm_modalLabel">ยืนยันข้อมูล</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">  
-                        [[ data ]]
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-3">ชื่อ-นามสกุล: [[ data.owner.FullName ]]</div>
+                            <div class="col-3">ตำแหน่ง: [[ data.owner.Position ]]</div>
+                            <div class="col-3">เลขประจำตัวข้าราชการ: [[ data.owner.AFID ]]</div>
+                            <div class="col-2">สถานภาพ: [[ data.owner.current_status ]]</div>
+                        </div>                                                   
+                        <div class="row">
+                            <div class="col-3">email : [[ data.owner.RTAFEMail]]</div>
+                            <div class="col-3">เบอร์ที่ทำงาน: [[ data.owner.OfficePhone ]]</div>
+                            <div class="col-3">มือถือ: [[ data.owner.MobilePhone ]]  </div>
+                            <div class="col-2"></div>
+                        </div>              
+                                           
                         <div>		
-                            <div class="row">	
-                            <ul class="nav nav-tabs mt-2">
-                                <li class="nav-item">
-                                  <a class="nav-link" @click="nav_tab='co-resident'" active aria-current="page" href="#">ผู้พักอาศัย</a>
-                                </li>
-                                <li class="nav-item">
-                                  <a class="nav-link" @click="nav_tab='vehical'"  href="#">ยานพาหนะ</a>
-                                </li>
-                                <li class="nav-item">
-                                  <a class="nav-link" @click="nav_tab='pet'" href="#">สัตว์เลี้ยง</a>
-                                </li>
-                              </ul>		
+                            <div class="row mt-2">	
+                                <ul class="nav nav-pills mt-2">
+                                    <li class="nav-item">
+                                    <a class="nav-link" @click="nav_tab='co-resident'" v-bind:class = "{active : nav_tab=='co-resident'}" href="#">ผู้พักอาศัย</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="nav-link" @click="nav_tab='vehical'" v-bind:class = "{active : nav_tab=='vehical'}" href="#">ยานพาหนะ</a>
+                                    </li>
+                                    <li class="nav-item">
+                                    <a class="nav-link" @click="nav_tab='pet'" v-bind:class = "{active : nav_tab=='pet'}" href="#">สัตว์เลี้ยง</a>
+                                    </li>
+                                </ul>		
                             </div>	
-                            <div v-if="nav_tab=='co-resident'" class="row border">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">ชื่อ-นามสกุล</div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">ความสัมพันธ์</div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">PID</div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">วันเกิด </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">อาชีพ</div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">รายได้</div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">การศึกษา</div>                                                        
-                            </div>    		
-                            <div v-if="nav_tab=='co-resident'" v-for="cs in data.co_resident" class="row">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">
-                                    [[ cs.full_name ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">
-                                    [[ cs.relation ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ cs.person_id ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ cs.birth_day ]] 
-                                </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">
-                                    [[ cs.occupation ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">
-                                    [[ cs.salary ]]
-                                </div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">
-                                    [[ cs.education ]] 
-                                </div>                                                        
-                            </div>	                    				
-                            <div v-if="nav_tab=='vehical'" class="row border">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">เลขทะเบียน</div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">จังหวัด</div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">ประเภท </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">ยี่ห้อ </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">สี</div>                                                        
-                                <div class="col-md-4 col-lg-3 col-xl-2">สำเนา</div>                                                        
-                            </div>    		
-                            <div v-if="nav_tab=='vehical'" v-for="veh in data.vehical_data" class="row">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">
-                                    [[ veh.plate ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">
-                                    [[ veh.province ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ veh.type ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ veh.brand ]] 
-                                </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">
-                                    [[ veh.color ]] 
-                                </div>                                                       
-                                <div class="col-md-4 col-lg-3 col-xl-2">
-                                    [[ veh.registration ]] 
-                                </div>                                                       
-                            </div>	                    				
-                            <div v-if="nav_tab=='pet'" class="row border">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">ประเภทสัตว์เลี้ยง</div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">ชื่อ</div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">เพศ </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">วันเกิด </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">ลักษณะ</div>                                                        
-                            </div>    		
-                            <div v-if="nav_tab=='pet'" v-for="pet in data.pet_data" class="row">                                
-                                <div class="col-md-4 col-lg-3 col-xl-2 mt-1">
-                                    [[ pet.type ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-2 col-xl-1">
-                                    [[ pet.name ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ pet.sex ]] 
-                                </div>
-                                <div class="col-md-3 col-lg-3 col-xl-2">
-                                    [[ pet.birth_day ]] 
-                                </div>
-                                <div class="col-md-4 col-lg-3 col-xl-2">
-                                    [[ pet.appearances ]] 
-                                </div>                                                       
-                            </div>	                    				
+                            <div v-if="nav_tab=='co-resident'" class="row border  border-bottom-0">
+                                <div class="col-2">ชื่อ-นามสกุล</div>
+                                <div class="col-1">ความสัมพันธ์</div>
+                                <div class="col-2">PID</div>
+                                <div class="col-2">วันเกิด </div>
+                                <div class="col-2">อาชีพ</div>
+                                <div class="col-1">รายได้</div>
+                                <div class="col-1">การศึกษา</div>                                                        
+                                <div class="col-1">Action</div>
+                            </div>  
+                            <template v-if="nav_tab=='co-resident'" > 		
+                                <div v-for="(cs,index) in data.co_resident" class="row  border border-top-0 border-bottom-0 pt-1">                                
+                                    <div class="col-2">
+                                        [[ cs.full_name ]] 
+                                    </div>
+                                    <div class="col-1">                                        
+                                        [[ {"1-SP":"คู่สมรส","2-CH":"บุตร","3-FA":"บิดา","4-MO":"มารดา","5-BS":"พี่น้อง","6-RE":"ญาติ","7-IH":"ผู้อาศัย"}[cs.relation] ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ cs.person_id ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ cs.birth_day ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ cs.occupation ]] 
+                                    </div>
+                                    <div class="col-1">
+                                        [[ cs.salary ]]
+                                    </div>
+                                    <div class="col-1">
+                                        [[ {0:"Nursery",1:"อนุบาล",2:"ประถมต้น",3:"ประถมปลาย",4:"มัธยมต้น",5:"มัธยมปลาย",6:"อุดมศึกษา",7:"บัณฑิตศึกษา",8:"ปวช.หรือเทียบเท่า",9:"ปวส.หรือเทียบเท่า",10:"อนุปริญญาหรือเทียบเท่า"}[cs.education] ]] 
+                                    </div>                                                        
+                                    <div class="col-1">
+                                        <button class = "btn btn-outline-danger btn-sm" @click="delete_data('ผู้อาศัยร่วม',cs.full_name, index,cs.id)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>	  
+                                <div class="row mt-2 pt-2  border border-top-0 bg-light">                                
+                                    <div class="col-2">
+                                        {{ CoResidentForm.full_name|as_crispy_field }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ CoResidentForm.relation |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ CoResidentForm.person_id |as_crispy_field  }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ CoResidentForm.birth_day |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ CoResidentForm.occupation |as_crispy_field }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ CoResidentForm.salary |as_crispy_field }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ CoResidentForm.education |as_crispy_field }}                                    
+                                    </div>                                                        
+                                    <div class="col-1 mt-4">
+                                        <button class = "btn btn-outline-primary btn-sm"  @click="add_data('ผู้อาศัยร่วม');"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                    </div>                                     
+                                </div>	  
+                            </template>            
+                            <template v-if="nav_tab=='vehical'" >       				
+                                <div  class="row border border-bottom-0">                                
+                                    <div class="col-2">เลขทะเบียน</div>
+                                    <div class="col-1">จังหวัด</div>
+                                    <div class="col-2">ประเภท </div>
+                                    <div class="col-2">ยี่ห้อ </div>
+                                    <div class="col-2">สี</div>                                                        
+                                    {% comment %} <div class="col-2">สำเนา</div>     {% endcomment %}
+                                    <div class="col-1">Action</div>                                                                            
+                                </div>    	
+                                <div  v-for="(veh, index) in data.vehical_data" class="row  border border-top-0 border-bottom-0">                                
+                                    <div class="col-2">
+                                        [[ veh.plate ]] 
+                                    </div>
+                                    <div class="col-1">
+                                        [[ veh.province ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ {1:"จักรยานยนต์",2:"เก๋ง",3:"SUV",4:"กะบะ",5:"อื่น ๆ"}[veh.type]  ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ veh.brand ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ veh.color ]] 
+                                    </div>                                                       
+                                    {% comment %} <div class="col-2">                                        
+                                        <a v-if="veh.registration" v-bind:href = "veh.registration"  target = "_blank">เล่มทะเบียน</a>                                        
+                                    </div>      {% endcomment %}
+                                    <div class="col-1">
+                                        <button class = "btn btn-outline-danger btn-sm" @click="delete_data('ยานพาหนะ',veh.plate,index,veh.id)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    </div>
+                                                                                                                       
+                                </div>	   
+                                <div class="row mt-2 pt-2  border border-top-0 bg-light">                                
+                                    <div class="col-2">
+                                        {{ VehicalForm.plate |as_crispy_field }}
+                                    </div>
+                                    <div class="col-1">
+                                        {{ VehicalForm.province  |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ VehicalForm.type  |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ VehicalForm.brand  |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ VehicalForm.color  |as_crispy_field }}
+                                    </div>                                                        
+                                    {% comment %} <div class="col-2">
+                                        {{ VehicalForm.registration  |as_crispy_field }}
+                                    </div>   {% endcomment %}
+                                    <div class="col-1 mt-4">
+                                        <button class = "btn btn-outline-primary btn-sm"  @click="add_data('ยานพาหนะ')"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                    </div>                                                        
+                                </div>                 				
+                            </template> 
+                            <template v-if="nav_tab=='pet'" >   
+                                <div  class="row border">                                
+                                    <div class="col-2">ประเภทสัตว์เลี้ยง</div>
+                                    <div class="col-2">ชื่อ</div>
+                                    <div class="col-2">เพศ </div>
+                                    <div class="col-2">วันเกิด </div>
+                                    <div class="col-3">ลักษณะ</div>      
+                                    <div class="col-1">Action</div>                                                  
+                                </div>    		
+                                <div v-for="(pet,index) in data.pet_data" class="row">                                
+                                    <div class="col-2">
+                                        [[ {"dog":"หมา","cat":"แมว"}[pet.type] ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ pet.name ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ pet.sex == "male" ? "ผู้" : "เมีย" ]] 
+                                    </div>
+                                    <div class="col-2">
+                                        [[ pet.birth_year ]] 
+                                    </div>
+                                    <div class="col-3">
+                                        [[ pet.appearances ]] 
+                                    </div>      
+                                    <div class="col-1">
+                                        <button class = "btn btn-outline-danger btn-sm" @click="delete_data('สัตว์เลี้ยง',pet.name, index,pet.id)"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                    </div>                                                 
+                                </div>	 
+                                <div   class="row mt-2 pt-2  border border-top-0 bg-light">                                
+                                    <div class="col-2">
+                                        {{ PetForm.type |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ PetForm.name |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ PetForm.sex |as_crispy_field }}
+                                    </div>
+                                    <div class="col-2">
+                                        {{ PetForm.birth_year |as_crispy_field }}
+                                    </div>
+                                    <div class="col-3">
+                                        {{ PetForm.appearances |as_crispy_field }}
+                                    </div>   
+                                    <div class="col-1 mt-4">
+                                        <button class = "btn btn-outline-primary btn-sm"  @click="add_data('สัตว์เลี้ยง');"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                    </div>                                                       
+                                </div>	 
+                            </template>                    				
                         
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" @click="ChangeProcessStep" class="btn btn-primary">บันทึก</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>                        
                     </div>
                 </div>
             </div>

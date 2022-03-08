@@ -195,6 +195,11 @@
 
     }
 
+    .modal-body{
+        height: 60vh;
+        overflow-y: auto;
+    }
+
     .moreDetail{
         display: none;       
     }
@@ -304,23 +309,148 @@
             return {
                 test_counter: 0,
                 nav_tab : "co-resident", // "vehical", "pet"
-                data : {}
+                data : { 
+                        "owner": {}, 
+                        "home": {}, 
+                        "co_resident": [], 
+                        "vehical_data": [], 
+                        "pet_data": []
+                },
+                co_resident : {},
+                vehical : {},
+                pet : {},
             }
         },
-        mounted() {            
-            
+        mounted() {      
+            fetch('/hm/hm_own_new_api', {
+                method: 'GET'
+              }).then(response => response.json())
+                .then(data => {
+                    this.data = data[0];                    
+                });           
         },
         methods : {
-            load_data :function (){      
-                fetch('/hm/hm_own_new_api', {
-                    method: 'GET'
-                  }).then(response => response.json())
-                    .then(data => {
-                        this.data = data[0];
-                    });  
-                console.log(this.data);
+            open_modal :function (){      
                 confirm_modal = new bootstrap.Modal(document.getElementById("data_confirm_modal"), {backdrop: 'static', keyboard: false});
                 confirm_modal.show(); 
+            },
+            add_data : function(type){
+                let api_url = "";
+                let action_data = [];
+                let new_data;                
+                let sended_data;  
+                let payload;              
+                
+                switch(type)
+                {
+                    case "ผู้อาศัยร่วม" :   api_url = '/hm/cs_api';
+                                        action_data = this.data.co_resident;
+                                        new_data = this.co_resident;
+                                        new_data.home_owner = this.data.id;
+                                        sended_data = JSON.stringify(new_data);
+                                        break;
+
+                    case "ยานพาหนะ" :   api_url = '/hm/vd_api';
+                                        
+                                        action_data = this.data.vehical_data;
+                                        new_data = this.vehical;                           
+                                        new_data.home_parker = this.data.id;
+
+                                        let csrfmiddlewaretoken = document.querySelectorAll('input[name$="csrfmiddlewaretoken"]')[0].value;
+                                        //let file_Data = document.querySelector('input[type="file"]').files[0];
+
+                                        console.log("this.vehical = ",this.vehical)
+                                        console.log("this.data.id = ",this.data.id)
+                                        // console.log("file_Data = ",file_Data)
+                                        sended_data = new FormData();
+                                        sended_data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+                                        sended_data.append("plate",this.vehical.plate)
+                                        sended_data.append("province",this.vehical.province)
+                                        sended_data.append("type",this.vehical.type)
+                                        sended_data.append("brand",this.vehical.brand)
+                                        sended_data.append("color",this.vehical.color)
+                                        // sended_data.append("registration",file_Data)
+                                        sended_data.append("home_parker",this.data.id)
+
+                                        break;
+
+                    case "สัตว์เลี้ยง" : api_url = '/hm/pd_api';
+                                        action_data = this.data.pet_data;
+                                        new_data = this.pet;
+                                        new_data.home_owner = this.data.id;
+                                        sended_data = JSON.stringify(new_data);
+                                        break;
+                }
+                
+                if (type != "ยานพาหนะ")
+                    payload = {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            "X-CSRFToken": "{{ csrf_token }}" },
+                        body: sended_data
+                    };
+                else if (type == "ยานพาหนะ")
+                    payload = {
+                        method: 'POST',                        
+                        body: sended_data
+                    };
+                    
+                if(confirm("ยืนยันการเพิ่มข้อมูล " + type))
+                {               
+                    
+                    console.log("sended_data = ", sended_data); 
+                    fetch(api_url , payload).then(function(response){ 
+                                console.log(response);
+                                if(response.ok)
+                                {
+                                    action_data.push(JSON.parse(JSON.stringify(new_data)));
+                                    this.co_resident = {};
+                                    this.vehical = {};
+                                    this.pet = {};
+                                }
+                                else
+                                    alert("เกิดข้อขัดข้อง ไม่สามารถเพิ่มข้อมูลได้");                                
+                        });
+                    
+                }
+            },
+            delete_data : function(type, message, index, pk){
+                let api_url = "";
+                let action_data;
+                switch(type)
+                {
+                    case "ผู้อาศัยร่วม" :   api_url = '/hm/cs_api/';
+                                        action_data = this.data.co_resident;                                        
+                                        break;
+                    case "ยานพาหนะ" :   api_url = '/hm/vd_api/';
+                                        action_data = this.data.vehical_data;                                        
+                                        break;
+                    case "สัตว์เลี้ยง" : api_url = '/hm/pd_api/';
+                                        action_data = this.data.pet_data;                                        
+                                        break;
+                }
+                
+                if(confirm("ยืนยันการลบข้อมูล " + type +" "+ message))
+                {
+                    // console.log(type, index, pk);
+                    
+                    fetch(api_url + pk, {
+                        method: 'DELETE',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            "X-CSRFToken": "{{ csrf_token }}" }                                                       
+                      }).then(function(response){ 
+                                if(response.ok)                                
+                                    action_data.splice(index,1);                                                                 
+                                else
+                                    alert("เกิดข้อขัดข้อง ไม่สามารถลบข้อมูลได้");                                
+                        });
+                    
+                }
+
             }
         }
     }

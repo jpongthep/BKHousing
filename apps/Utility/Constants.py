@@ -99,13 +99,13 @@ CHOICE_Rank = (
 #34 5 = น.5 F = ครอบครัว SF = โสดหญิง  SM = โสดชาย
 class HomeDataType(models.TextChoices):
     NA = '-', _('ไม่ระบุ')            # NA = '-', _('ไม่ระบุ')
-    HG = 'HG', _('น.')           # HG = 'HG', _('นายพล')
-    HO5 = 'HO5', _('น.5')         # HO5 = 'HO5', _('น.5 หลัง (เรือนแถว)')
+    HG = 'HG', _('พ.')           # HG = 'HG', _('นายพล')
+    HO5 = 'HO5', _('น.')         # HO5 = 'HO5', _('น.5 หลัง (เรือนแถว)')
     HOF = 'HOF', _('น.')             # HOF = 'HOF', _('น.บ้านเดี่ยว')    
-    RNF = 'RNF', _('ป')             # RNF = 'RNF', _('เรือนแถวประทวน')    
+    RNF = 'RNF', _('ป.')             # RNF = 'RNF', _('เรือนแถวประทวน')    
     FNF = 'FNF', _('ฟป.')            # FNF = 'FNF', _('แฟลตประทวน')
-    FNSF = 'FNSF', _('ฟป. (โสด ญ.)')         # FNSF = 'FNSF', _('แฟลตประทวน (โสด ญ.)')
-    FNSM = 'FNSM', _('ฟป. (โสด)')            # FNSM = 'FNSM', _('แฟลตประทวน (โสด)')
+    FNSF = 'FNSF', _('ฟป.(โสด ญ.)')         # FNSF = 'FNSF', _('แฟลตประทวน (โสด ญ.)')
+    FNSM = 'FNSM', _('ฟป.(โสด)')            # FNSM = 'FNSM', _('แฟลตประทวน (โสด)')
     FOF = 'FOF', _('ฟส.')           # FOF = 'FOF', _('แฟลตสัญญาบัตร')
     FOSF = 'FOSF', _('ฟส.(โสด ญ.)')         # FOSF = 'FOSF', _('แฟลตสัญญาบัตร(โสด ญ.)')
     FOSM = 'FOSM', _('ฟส.(โสด)')            # FOSM = 'FOSM', _('แฟลตสัญญาบัตร(โสด)')
@@ -147,6 +147,7 @@ class FINANCE_CODE(models.IntegerChoices):
 
 class HomeDataGrade(models.TextChoices):    
     NO = '?', _('?')
+    A_Plus = 'A+', _('A+')
     A = 'A', _('A')
     A_Minus = 'A-', _('A-')
     B_Plus = 'B+', _('B+')

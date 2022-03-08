@@ -93,7 +93,7 @@ class HomeDataAdmin(admin.ModelAdmin):
                     BuildingFilter,
                     ('status',ChoiceDropdownFilter),
                     )
-    search_fields = ['type', 'building_number','number']
+    search_fields = ['type', 'building_number','room_number', 'number']
     list_per_page = 30
     list_display = ['__str__', 'building_number','room_number', 'status']
     list_display_links = ['__str__']
