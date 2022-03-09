@@ -20,7 +20,8 @@ class CoResidentForm(forms.ModelForm):
         }
 
     def __init__(self,  *args, **kwargs):
-        super(CoResidentForm, self).__init__(*args, **kwargs)                
+        super(CoResidentForm, self).__init__(*args, **kwargs)     
+        self.fields['birth_day'].label = "วันเกิด (ค.ศ.)"           
         for name, field in self.fields.items():
             field.widget.attrs.update({'v-model': "co_resident." + name})        
 

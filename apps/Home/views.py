@@ -2,6 +2,7 @@ import os
 from datetime import date, timedelta
 import json
 from io import StringIO, BytesIO
+import logging
 
 from django.shortcuts import render
 from django.views.generic import DetailView
@@ -14,6 +15,10 @@ from django.views.decorators.csrf import csrf_exempt
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.shared import Inches, Cm
+from docx.text.paragraph import Paragraph
+from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER
+
 
 from .models import HomeData, HomeOwner
 from apps.HomeRequest.models import HomeChange
@@ -24,7 +29,7 @@ from apps.UserData.models import User
 from apps.Payment.models import WaterPayment, RentPayment
 from .serializers import HomeOwnerSerializer
 
-
+logger = logging.getLogger('MainLog')
 
 class HomeDetailView(DetailView):
     model = HomeData
@@ -99,7 +104,15 @@ def homeowner_api(request, username):
     dump = json.dumps({'status': message})            
     return HttpResponse(dump, content_type='application/json')
 
-
+def insert_paragraph_after(paragraph, text=None, style=None):
+    new_p = OxmlElement("w:p")
+    paragraph._p.addnext(new_p)
+    new_para = Paragraph(new_p, paragraph._parent)
+    if text:
+        new_para.add_run(text)
+    if style is not None:
+        new_para.style = style
+    return new_para
 
 def ContractFormDocument(request, home_data_id):
     # testdoc = static('documents/test_doc.docx')
@@ -111,7 +124,14 @@ def ContractFormDocument(request, home_data_id):
     #     docx_title= f"Draft-{home_request.Requester.AFID}.docx"
     # else:
 
-    testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/contract_form.docx')
+    if home_owner.home.get_type_display() == 'ฟป.' and home_owner.home.zone == '1':
+        if home_owner.home.building_number == '1':
+            testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/contract_form_b1.docx')
+        elif home_owner.home.building_number == '17':
+            testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/contract_form_b17.docx')
+    else:
+        testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/contract_form.docx')
+
     docx_title= f"contract_form_{home_owner.owner.username}.docx"
     document = Document(testdoc)
 
@@ -139,16 +159,12 @@ def ContractFormDocument(request, home_data_id):
         home_type = "แฟลต"
         is_ShopHouse = "X" 
 
-
-    
-
     Zone1 = "X" if home_owner.home.zone == '1'else " "
     Zone2 = "X" if home_owner.home.zone == '2'else " "
     Zone3 = "X" if home_owner.home.zone == '3'else " "
     Zone6T = "X" if home_owner.home.zone == '6T'else " "
     Zone6S = "X" if home_owner.home.zone == '6S' else " "
     
-
     the_day = date.today()
     Day = the_day.day if the_day != None else the_day.day
     Month = full_month_text[the_day.month] if the_day != None else full_month_text[the_day.day]
@@ -227,14 +243,9 @@ def ContractFormDocument(request, home_data_id):
             'date_sign' : date_sign,
             'command_name' : home_owner.enter_command.name,
             'pet_data' : pet_data,
-            'cores1' : "ด",
-            'cores2' : "ด",
-            'cores3' : "ด",
-            'cores4' : "น",
-            'cores5' : "น",
-            'cores6' : "ย",
+            'cores' : "",            
+            'coresdata' : "",            
             }
-    # print(dic)
 
     table = document.tables[0]
     # row0 = t.rows[0] # for example
@@ -242,11 +253,21 @@ def ContractFormDocument(request, home_data_id):
     # row0._tr.addnext(row1._tr)
     table.cell(1, 0).text = "1"
     table.cell(1, 1).text = dic["FullName"]
+    table.cell(1, 2).text = dic["HomeZone"]
+    table.cell(1, 3).text = home_owner.home.get_type_display() + " " + str(home_owner.home.building_number)
+    table.cell(1, 4).text = str(home_owner.home.room_number)
+    # table.cell(1, 5).text = str(home_owner.home.monthly_fee)
     table.rows[1].style = document.styles['NormalText']
 
     coresident_table = document.tables[1]
-    cores = ""
-    for (i, cs) in enumerate(home_owner.CoResident.all()):        
+    cores = []
+    for (i, cs) in enumerate(home_owner.CoResident.all()):
+        try:
+            cs_person_id = f"{cs.person_id[0]}-{cs.person_id[1:5]}-{cs.person_id[6:10]}-{cs.person_id[11:12]}-{cs.person_id[12]}",
+        except:
+            cs_person_id = "....................."
+        cores.append(ArabicToThai(f"\t{i+1}. {cs.full_name} เลขประจำตัวประชาชน {cs_person_id[0]}  อายุ {cs.age()} ปี  ความสัมพันธ์ {cs.get_relation_display()}"))
+        
         coresident_table.cell(1 + i, 0).text = cs.full_name
         if cs.birth_day:
             birth_day = cs.birth_day.day
@@ -257,12 +278,14 @@ def ContractFormDocument(request, home_data_id):
             coresident_table.cell(1 + i, 1).text = ArabicToThai(birth_date)
             
         coresident_table.cell(1 + i, 2).text = cs.get_relation_display()
+        coresident_table.cell(1 + i, 5).text = ArabicToThai(cs_person_id[0])
+        coresident_table.cell(1 + i, 5).style = document.styles['NormalText']
         # coresident_table.cell(1 + i, 3).style = document.styles['NormalText']
-        coresident_table.rows[1 + i].style = document.styles['NormalText']
+        # coresident_table.rows[1 + i].style = document.styles['NormalText']
 
-        dic["cores" + str(i+1)] = f"{i+1}. {cs.full_name}  หมายเลขประจำตัวประชาชน {cs.person_id}  อายุ {cs.age()} ปี  เกี่ยวข้องเป็น {cs.get_relation_display()}"
+
     
-
+    # print(dic)
     
     vehical_table = document.tables[2]
     for (i, vh) in enumerate(home_owner.HomeParker.all()):
@@ -275,24 +298,30 @@ def ContractFormDocument(request, home_data_id):
         vehical_table.rows[1 + i].style = document.styles['NormalText']
     
 
-
     for para in document.paragraphs:
-        # print('para = ',para)
+        # print('para = ',para.text)
         for key, value in dic.items():
             if key in para.text:
-                inline = para.runs
-                # print('inline = ',inline)
-                # Loop added to work with runs (strings with same style)
-                for i in range(len(inline)):
-                    if key in inline[i].text:
-                        if value: # ถ้ามีการกรอกข้อมูล
-                            Value = ArabicToThai(value) if key != 'GPC' else value
-                        else: # ถ้าไม่มีการกรอกข้อมูล
-                            Value = ""
-                        text = inline[i].text.replace(key, Value)
-                        inline[i].text = text
+                if key == "cores":
+                    for cs in cores[::-1]:
+                        new_para = insert_paragraph_after(para,cs)
+                        tab_stops = new_para.paragraph_format.tab_stops
+                        tab_stop = tab_stops.add_tab_stop(Cm(1.25), WD_TAB_ALIGNMENT.LEFT)
+                    # tab_stop = tab_stops.add_tab_stop(Cm(10))
+                else:
+                    inline = para.runs                
+                    for i in range(len(inline)):
+                        # print('inline = ',inline[i].text)
+                        if key in inline[i].text:
+                            if value: # ถ้ามีการกรอกข้อมูล
+                                Value = ArabicToThai(value) if key != 'GPC' else value
+                            else: # ถ้าไม่มีการกรอกข้อมูล
+                                Value = ""
+                            text = inline[i].text.replace(key, Value)
+                            inline[i].text = text
+                        
 
-    
+    logger.info(f'{request.user.username} download contract form')
     # Prepare document for download        
     # -----------------------------
     f = BytesIO()

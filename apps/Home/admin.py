@@ -138,7 +138,7 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     list_display = ['is_stay','owner_unit','owner','home','home_type','home_zone','lastest_command', 'leave_command']
     list_editable  = ['is_stay','leave_command']
     list_display_links = ['owner']
-    ordering = ('-is_stay','owner__Rank')
+    ordering = ('modified','-enter_command__year','-enter_command__number')
     raw_id_fields = ('owner','home','leave_command')
     list_filter = (
                     'is_stay',

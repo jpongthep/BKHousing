@@ -97,7 +97,8 @@ class HomeOwner(models.Model):
     water_meter_insurance = models.IntegerField(verbose_name="ค่าประกันมิเตอร์น้ำ", null = True, blank = True, default = 800)
     water_meter = models.IntegerField(verbose_name="เลขมิเตอร์น้ำแรกเข้า", null = True, blank = True, default = 0)
     electric_meter = models.IntegerField(verbose_name="เลขมิเตอร์ไฟแรกเข้า", null = True, blank = True, default = 0)
-
+    
+    modified = models.DateTimeField(auto_now=True)
     # def get_absolute_url(self):
     #     return reverse('HomeData:owner_detail', kwargs={"pk": id}) 
 

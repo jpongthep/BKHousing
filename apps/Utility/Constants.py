@@ -110,7 +110,7 @@ class HomeDataType(models.TextChoices):
     FOSF = 'FOSF', _('ฟส.(โสด ญ.)')         # FOSF = 'FOSF', _('แฟลตสัญญาบัตร(โสด ญ.)')
     FOSM = 'FOSM', _('ฟส.(โสด)')            # FOSM = 'FOSM', _('แฟลตสัญญาบัตร(โสด)')
     RF = 'RF', _('ร.')          # RF = 'RF', _('เรือนแถวสัญญาบัตร')
-    FMIX = 'FM', _('ฟ.ผสม')           # FMIX = 'FM', _('แฟลตผสม')
+    FMIX = 'FM', _('ฟ.')           # FMIX = 'FM', _('แฟลตผสม')
     
 class HomeZone(models.TextChoices):
     Z1 = '1', _('เขต 1 : ท่าดินแดง')

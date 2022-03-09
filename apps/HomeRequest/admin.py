@@ -33,7 +33,7 @@ class HomeRequestAdmin(admin.ModelAdmin):
                 )
     # date_hierarchy  = 'modified'
     list_display_links = ['FullName']
-    raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover','recorder')
+    raw_id_fields = ('Requester','UnitReciever', 'UnitApprover','PersonReciever','PersonApprover','recorder','home_allocate')
     ordering = ('-modified',)
     save_as = True
 
