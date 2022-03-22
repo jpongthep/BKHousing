@@ -224,6 +224,7 @@
         <div>      
         {% if not has_request %}  
         <a class = "btn btn-info  mb-3 shadow" href = "{% url 'HomeRequest:create'%}" >สร้างรายงานคำขอบ้านพัก</a>
+        <a class = "btn btn-success  ml-3 mb-3 shadow" href = "{% url 'HomeRequest:create_vue'%}" >สร้างรายงานคำขอบ้านพัก Vue</a>
         {% endif %}
 
         {% if not object_list %}

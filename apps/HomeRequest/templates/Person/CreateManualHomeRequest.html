@@ -163,10 +163,11 @@
                     {{ form.ProcessStep|as_crispy_field }}
                 </div> 
                 <div class="col-md-2">                      
-                    {{ form.Requester |as_crispy_field  }}
+                    {{ form.PersonDateRecieved |as_crispy_field  }}
+                    {{ form.Requester.as_hidden   }}
                 </div> 
                 <div class="col-md-2">                      
-                    {{ form.year_round |as_crispy_field  }}
+                    {{ form.year_round.as_hidden   }}
                 </div> 
             </div>
         </div>      

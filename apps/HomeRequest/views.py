@@ -127,7 +127,8 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                             'SpouseName' : request.user.current_spouse_name,
                             'SpousePID' : request.user.current_spouse_pid,
                             'IsHRISReport' : request.user.current_spouse_pid,
-                            'Address' : request.user.Address
+                            'Address' : request.user.Address,
+                            'Comment' : "เจ้าตัวกรอกผ่านระบบเอง"
                         }       
 
         # เช็คข้อมูลการเบิก คชบ.ของตนเอง ในช่วง 6 เดือนล่าสุด
@@ -229,6 +230,87 @@ class CreateHomeRequestView(AuthenUserTestMixin, CreateView):
                                        user_current_data_form = user_current_data_form
                                        )
         )
+
+class CreateHomeRequestVueView(AuthenUserTestMixin, CreateView):
+    allow_groups = ['RTAF_NO_HOME_USER']
+    model = HomeRequest
+    form_class = HomeRequestForm
+    template_name = "HomeRequest/CreateHomeRequestVue.html"
+    
+    def get(self, request, *args, **kwargs):
+        
+        hr_id = super().has_home_request()
+        if hr_id:
+            print('Create get -> hr_id')
+            return redirect('HomeRequest:update', pk = hr_id)
+
+        self.object = None
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
+        logger.info(f'{request.user.username} view HomeRequest Form')
+        initial_value = {
+                            'Rank': request.user.Rank,
+                            'FullName': request.user.FullName,
+                            'Position': request.user.Position,
+                            'Unit': request.user.CurrentUnit,
+                            'MobilePhone' : request.user.MobilePhone,
+                            'OfficePhone' : request.user.OfficePhone,
+                            'Unit' : request.user.CurrentUnit,
+                            'sub_unit' : request.user.sub_unit,
+                            'Salary' : request.user.current_salary,
+                            'Status' : request.user.current_status,
+                            'SpouseName' : request.user.current_spouse_name,
+                            'SpousePID' : request.user.current_spouse_pid,
+                            'IsHRISReport' : request.user.current_spouse_pid,
+                            'Address' : request.user.Address,
+                            'Comment' : "เจ้าตัวกรอกผ่านระบบเอง"
+                        }       
+
+        # เช็คข้อมูลการเบิก คชบ.ของตนเอง ในช่วง 6 เดือนล่าสุด
+        homerent_data = FinanceData.objects.filter(PersonID =  request.user.PersonID
+                                          ).filter(date__gte = date.today() - timedelta(days = 185)
+                                          ).filter(code = FINANCE_CODE.HOMERENT
+                                          ).filter(money__gt = 0
+                                          ).order_by("money")
+            
+        # print('homerent_data',homerent_data)
+        if(homerent_data.exists()):
+            initial_value['RentPermission'] = HomeRentPermission.used
+            initial_value['have_rent'] = True
+            initial_value['RentalCost'] = homerent_data[0].money
+        else:
+            initial_value['RentPermission'] = HomeRentPermission.no_permission
+
+        # ถ้ามีสถานภาพสมรส
+        if(request.user.current_status in [PERSON_STATUS.MARRIES_TOGETHER, PERSON_STATUS.MARRIES_SEPARATE]):
+            # เช็คข้อมูลการเบิก คชบ.ของคู่สมรส ในช่วง 6 เดือนล่าสุด
+            homerent_data = FinanceData.objects.filter(PersonID =  request.user.current_spouse_pid
+                                          ).filter(date__gte = date.today() - timedelta(days = 185)
+                                          ).filter(code = FINANCE_CODE.HOMERENT
+                                          ).filter(money__gt = 0
+                                          ).order_by("money")
+            if(homerent_data.exists()):
+                initial_value['have_rent_spouse'] = True
+                initial_value['RentalCostSpouse'] = homerent_data[0].money
+
+
+        form = self.form_class(initial = initial_value, prefix='hr')
+
+        co_resident_formset = CoResidentFormSet()
+
+        initial_value = {
+                            'OfficePhone' : request.user.OfficePhone,
+                            'MobilePhone' : request.user.MobilePhone,
+                            'RTAFEMail': request.user.username + '@rtaf.mi.th',
+                        }        
+        user_current_data_form =  UserCurrentDataForm(initial = initial_value, prefix='userdata')
+        return self.render_to_response(
+                                self.get_context_data(form=form,
+                                                      co_resident_formset=co_resident_formset,
+                                                      user_current_data_form = user_current_data_form
+                                                        ))    
+
+
 
 
 class UpdateHomeRequestView(AuthenUserTestMixin, UpdateView):

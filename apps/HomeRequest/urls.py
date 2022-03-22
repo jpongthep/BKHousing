@@ -1,6 +1,7 @@
 from django.urls import path, include
 
 from .views import (CreateHomeRequestView, 
+                    CreateHomeRequestVueView,
                     UpdateHomeRequestView,
                     HomeRequestUnitListView,
                     HomeRequestAdminListView,
@@ -41,6 +42,7 @@ from .views_notify import unit_daily_notify
 app_name = 'HomeRequest'
 urlpatterns = [
     path('cr/', CreateHomeRequestView.as_view(), name = 'create'),
+    path('cr_v/', CreateHomeRequestVueView.as_view(), name = 'create_vue'),
     path('ml_sv/', ManualHomeRequestAPIView.as_view(), name = 'manual_save'),
     path('ml_ck/<person_id>/', check_create_hr, name = 'check_create'),
     path('ml/<person_id>/', ManualCreateHomeRequestView.as_view(), name = 'manual'),

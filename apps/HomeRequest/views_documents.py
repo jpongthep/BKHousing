@@ -170,9 +170,6 @@ def TestDocument(request, home_request_id,detail_doc = 0):
     zone_order_list = [zone for zone in zone_order_list if zone != ""]
     zone_order = ", ".join(zone_order_list)
 
-    Rank = "{}".format(home_request.Requester.get_Rank_display())
-    if "ว่าที่" in Rank:
-        Rank = Rank[7:]
     FullName = home_request.FullName
     if "ว่าที่" in FullName:
         FullName = FullName[7:]
@@ -188,7 +185,7 @@ def TestDocument(request, home_request_id,detail_doc = 0):
 
     dic = {
             'Sex': self_call,
-            'Rank': Rank,
+            'Rank': home_request.Requester.Title,
             'FullName':FullName,
             'PersonID':home_request.Requester.PersonID,
             'Position':home_request.Position,
@@ -519,12 +516,13 @@ def Excel4PersonAdmin(request):
     xls_title= f"RequestTotal.xlsx"
 
     # sheet = workbook.active
-
     # Write what you want into a specific cell
+
     last_insert = 0
     
     queryset = HomeRequest.objects.filter(year_round__Year = get_current_year()
-                                ).order_by("-modified")                      
+                                 ).filter(ProcessStep__in = ['PA','PP','GH']
+                                 ).order_by("-PersonDateRecieved")
                                 
     sheets = workbook.sheetnames
     sheet = workbook[sheets[0]]
@@ -548,6 +546,7 @@ def Excel4PersonAdmin(request):
         Income = "{:,}".format(Salary + AddSalary)
         RentalCost = "{:,}".format(RentalCost) if RentalCost != "-" else "-"
 
+        home_type = "ไม่ระบุ"
         if data.IsHomeNeed : 
             home_type = "บ้านพัก"
         elif data.IsFlatNeed : 
@@ -583,9 +582,11 @@ def Excel4PersonAdmin(request):
         sheet[f"Y{first_row+i}"] = str(data.document_date) if data.document_date else "-"
         sheet[f"Z{first_row+i}"] = "-"
         sheet[f"AA{first_row+i}"] = str(data.UnitTroubleScore) if data.UnitTroubleScore else "-"
+        sheet[f"AB{first_row+i}"] = data.get_work_commute_display() if data.work_commute else "-"
+        sheet[f"AC{first_row+i}"] = str(data.PersonTroubleScore) if data.PersonTroubleScore else "-"
         sheet[f"AD{first_row+i}"] = str(data.get_request_type_display()) if data.request_type else "-"
         sheet[f"AK{first_row+i}"] = str(data.get_Status_display()) if data.Status else "-"
-        sheet[f"AL{first_row+i}"] = "มีรายงาน" if data.IsHRISReport else "ไม่มีรายงาน"
+        sheet[f"AL{first_row+i}"] = data.num_children # "มีรายงาน" if data.IsHRISReport else "ไม่มีรายงาน"
         sheet[f"AM{first_row+i}"] = str(data.Salary) if data.Salary else "-"
         
         sheet[f"AN{first_row+i}"] = str(data.Requester.PlacementCommandDate) if data.Requester.PlacementCommandDate else "-"
@@ -599,7 +600,8 @@ def Excel4PersonAdmin(request):
         sheet[f"AV{first_row+i}"] = "-"
         sheet[f"AW{first_row+i}"] = "-"
         sheet[f"AX{first_row+i}"] = "-"
-        sheet[f"AY{first_row+i}"] = str(data.modified)
+        sheet[f"AY{first_row+i}"] = str(data.PersonDateRecieved)
+        sheet[f"AZ{first_row+i}"] = str(data.get_ProcessStep_display())
 
 
         last_insert += 1

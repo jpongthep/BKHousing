@@ -95,7 +95,9 @@ class HomeDataAdmin(admin.ModelAdmin):
                     )
     search_fields = ['type', 'building_number','room_number', 'number']
     list_per_page = 30
-    list_display = ['__str__', 'building_number','room_number', 'status']
+    list_display = ['__str__', 'building_number','room_number', 'electric_meter_number','electric_meter_amp','electric_meter_line','status']
+    list_editable = ['electric_meter_number','electric_meter_amp','electric_meter_line',]
+
     list_display_links = ['__str__']
     # save_as = True
 
@@ -138,7 +140,7 @@ class HomeOwnerAdmin(admin.ModelAdmin):
     list_display = ['is_stay','owner_unit','owner','home','home_type','home_zone','lastest_command', 'leave_command']
     list_editable  = ['is_stay','leave_command']
     list_display_links = ['owner']
-    ordering = ('modified','-enter_command__year','-enter_command__number')
+    ordering = ('-enter_command__year','-enter_command__number')
     raw_id_fields = ('owner','home','leave_command')
     list_filter = (
                     'is_stay',

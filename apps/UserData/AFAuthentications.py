@@ -388,11 +388,18 @@ class SettingsBackend(ModelBackend):
             user = User.objects.get(username=username)
             pwd_valid = checkRTAFPassdword(request, username,password)
             if pwd_valid:
-                if UseHRIS : UpdateRTAFData(request, user,pwd_valid)
+                if UseHRIS : 
+                    try:
+                        UpdateRTAFData(request, user,pwd_valid)
+                    except:
+                        messages.warning(request, "ไม่สามารถดึงข้อมูลจาก HRIS (admin : 2-8641)")
                 # print("login_mode = ",pwd_valid["login_mode"])
-                if pwd_valid["login_mode"] == "AD-Login":                    
-                    user.set_password(password)
-                    user.save()
+                if pwd_valid["login_mode"] == "AD-Login":
+                    try:
+                        user.set_password(password)
+                        user.save()
+                    except:
+                        messages.warning(request, "ไม่สามารถดึงข้อมูลจาก HRIS (admin : 2-8641)")
                 # print('login user = ', user)
                 if 'duplica_rapid_login' in pwd_valid:
                     request.session['password'] = password
@@ -417,10 +424,15 @@ class SettingsBackend(ModelBackend):
                 logger.info(f'{username} first login but disable HRIS')
                 return None
             else:
-                auth_user = getCadet@UserByRTAFemail(request, username, ReturnData['token'])
-                auth_user.save()
-                auth_user.set_password(password)
-                auth_user.save()
+                try:
+                    auth_user = getUserByRTAFemail(request, username, ReturnData['token'])
+                    auth_user.save()
+                    auth_user.set_password(password)
+                    auth_user.save()
+                except:
+                    logger.error(f'{username} first login FAIL')
+                    messages.error(request, "การติดต่อ HRIS ขัดข้อง ไม่สามารถ Login ได้ (ติดต่อ admin : 2-8641)")
+                    return None
                 logger.info(f'{username} first login success')
                 return auth_user
 

@@ -220,3 +220,22 @@ SELECT HomeDataID('3','FNF','1','1315');
 UPDATE HomeRequest_homerequest set enter_command_id = 190, home_allocate_id = HomeDataID('3','FNF','1','1315')  WHERE  year_round_id = 2 AND Requester_id in (SELECT id from UserData_user WHERE PersonID = "3901100797340")
 
 SELECT RequesterDateSend = now() From HomeRequest_homerequest WHERE ProcessStep = 'GH' AND ISNULL(RequesterDateSend);
+
+ DATE_FORMAT(birth_day,CONCAT(YEAR(birth_day)-543,'-%m-%d')) 
+
+ select birth_day, DATE_FORMAT(birth_day,CONCAT(YEAR(birth_day)-543,'-%m-%d')) from Home_coresident where birth_day >  '2480-1-1' and birth_day <  '2567-1-1';
+
+ UPDATE Home_coresident SET birth_day =  DATE_FORMAT(birth_day,CONCAT(YEAR(birth_day)-543,'-%m-%d')) WHERE birth_day >  '2480-1-1' and birth_day <  '2567-1-1';
+
+ SELECT count(id) FROM UserData_user WHERE last_login >  '2022-3-6';
+
+ SELECT count(home_owner_id) FROM Home_coresident;
+ SELECT count(home_parker_id) FROM Home_vehicaldata;
+จากวันที่ 6 มี.ค.65
+มีผู้ Login เข้าใช้งานระบบ 357 คน
+มีการกรอกข้อมูลผู้พักอาศัยร่วม 323 คน
+มีการกรอกข้อมูลรถยนต์ 315 คัน
+มีการกรอกข้อมูลสัตว์เลี้ยง 4 ตัว
+
+SELECT count(id) FROM UserData_user WHERE last_login >  '2022-3-6' AND id in (SELECT Requester_id from HomeRequest_homerequest WHERE enter_command_id = 190);
+

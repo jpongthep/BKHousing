@@ -12,6 +12,7 @@ class ManualHomeRequestSerializer(serializers.ModelSerializer):
 
 class HomeRequestSerializer(serializers.ModelSerializer):
     UnitName = serializers.CharField(source='Requester.CurrentUnit.ShortName',read_only=False,allow_null=True,default=None)
+    person_id = serializers.CharField(source='Requester.PersonID',read_only=False,allow_null=True,default=None)
     MobilePhone = serializers.CharField(source='Requester.OfficePhone',read_only=False,allow_null=True,default=None)
     Status = serializers.SerializerMethodField(source = 'get_Status_display') 
     ProcessStep = serializers.SerializerMethodField(source = 'get_ProcessStep_display') 
@@ -42,7 +43,8 @@ class HomeRequestSerializer(serializers.ModelSerializer):
         model = HomeRequest
         fields = [
                     "id", 
-                    "FullName", 
+                    "FullName",
+                    "person_id",
                     "sub_unit",
                     "UnitName", 
                     "MobilePhone", 

@@ -1,3 +1,4 @@
+from email import message
 import logging
 from datetime import date, timedelta
 
@@ -9,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group
+from django.contrib import messages
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -51,6 +53,16 @@ class ManualUpdateHomeRequestView(AuthenUserTestMixin, UpdateView):
             context = {'form': form, 'user_form' : user_form}
             return render(request, self.template_name, context)
 
+    def form_valid(self, form):            
+        hr = form.save(commit=False)
+        hr.recorder = self.request.user
+        hr.ProcessStep = HomeRequestProcessStep.PERSON_PROCESS
+        hr.PersonDateRecieved = date.today()
+        if not hr.Comment : 
+            hr.Comment = "กรอกโดยตรงจาก จนท.กพ.ทอ."
+        hr.save()
+        messages.success(self.request,f"บันทึกข้อมูล {hr.Requester.FullName} เรียบร้อย")
+        return super().form_valid(form)
     def get_success_url(self):        
         return reverse('HomeRequest:unitlist')
 
@@ -100,7 +112,7 @@ class ManualCreateHomeRequestView(AuthenUserTestMixin, CreateView):
                     'Address' : Address,
                     'request_type' : request_type,
                     'ProcessStep' : HomeRequestProcessStep.PERSON_PROCESS,
-                    'Comment' : "กรอกโดยตรงจาก จนท.กพ.ทอ."
+                    'PersonDateRecieved': date.today()
                 }    
             # เช็คข้อมูลการเบิก คชบ.ของตนเอง ในช่วง 6 เดือนล่าสุด
             homerent_data = FinanceData.objects.filter(PersonID = user.PersonID
@@ -136,7 +148,12 @@ class ManualCreateHomeRequestView(AuthenUserTestMixin, CreateView):
         if home_request.is_valid():
             hr = home_request.save(commit=False)
             hr.recorder = self.request.user
+            hr.ProcessStep = HomeRequestProcessStep.PERSON_PROCESS
+            hr.PersonDateRecieved = date.today()
+            if not hr.Comment : 
+                hr.Comment = "กรอกโดยตรงจาก จนท.กพ.ทอ."
             hr.save()
+            messages.success(self.request,f"บันทึกข้อมูล {hr.Requester.FullName} เรียบร้อย")
         else:
             print('form error =',home_request.errors)
         
@@ -178,9 +195,12 @@ def check_create_hr(request, person_id):
     home_request = HomeRequest.objects.filter(year_round__Year = get_current_year()
                                      ).filter(Requester__PersonID = person_id)
     if home_request.exists():
+        print("มีคำขอบ้านแล้ว")
         return JsonResponse({"status": "exists", "hr_id" : home_request[0].id })
     else:
         result = AddUserByPersonID(request, person_id)
+        print(f"เพิ่ม User {person_id} แล้ว")
+        print(result)
     
         return JsonResponse({"status": "new", "user" : result})
 

@@ -79,6 +79,30 @@ class User(AbstractUser):
             return 'ชาย'
 
     @property
+    def Title(self):        
+        RankDisplay = str(self.get_Rank_display())
+        if RankDisplay == '':
+            return  '??'
+            
+        if "ว่าที่" in RankDisplay:
+            RankDisplay = RankDisplay[6:]
+        elif "กห." in RankDisplay:
+            if "หญิง" in RankDisplay:
+                RankDisplay = "น.ส."
+            else:
+                RankDisplay = "นาย"
+        elif "พนง." in RankDisplay:
+            if "หญิง" in RankDisplay:
+                RankDisplay = "น.ส."
+            else:
+                RankDisplay = "นาย"
+
+        RankDisplay = RankDisplay.replace("(พ)", "")    
+        
+        return RankDisplay
+        
+
+    @property
     def FullName(self):        
         RankDisplay = str(self.get_Rank_display())
         if RankDisplay == '':

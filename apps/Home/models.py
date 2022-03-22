@@ -32,6 +32,9 @@ class HomeData(models.Model):
     grade = models.CharField(verbose_name="เกรด", max_length = 2, choices = HomeDataGrade.choices, default = HomeDataGrade.NO)
     monthly_fee = models.IntegerField(verbose_name='ค่าบำรุงรายเดือน', null = True, blank = True)
     enter_fee = models.IntegerField(verbose_name='ค่าบำรุงแรกเข้า', null = True, blank = True)
+    electric_meter_number = models.CharField(verbose_name="เครื่องวัดหน่วยไฟฟ้า ", max_length = 15, default = "", null = True, blank = True)
+    electric_meter_amp = models.IntegerField(verbose_name='ขนาดแอมแปร์', default = 30, null = True, blank = True)
+    electric_meter_line = models.IntegerField(verbose_name='จำนวนสาย', default = 2, null = True, blank = True)
     comment = models.TextField(verbose_name='หมายเหตุ', null = True, blank = True)
     owner = models.ManyToManyField(User, through='HomeOwner')
 
@@ -98,7 +101,7 @@ class HomeOwner(models.Model):
     water_meter = models.IntegerField(verbose_name="เลขมิเตอร์น้ำแรกเข้า", null = True, blank = True, default = 0)
     electric_meter = models.IntegerField(verbose_name="เลขมิเตอร์ไฟแรกเข้า", null = True, blank = True, default = 0)
     
-    modified = models.DateTimeField(auto_now=True)
+    # modified = models.DateTimeField(auto_now=True)
     # def get_absolute_url(self):
     #     return reverse('HomeData:owner_detail', kwargs={"pk": id}) 
 
@@ -118,7 +121,7 @@ class CoResident(models.Model):
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='CoResident')
     person_id = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     full_name = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
-    birth_day = models.DateField(verbose_name="วันเกิด", null = True, blank = True)
+    birth_day = models.DateField(verbose_name="วันเกิด (ค.ศ.)", null = True, blank = True)
     relation = models.CharField(verbose_name="ความสัมพันธ์", max_length = 4, choices = CoResidenceRelation.choices)
     occupation = models.CharField(verbose_name="อาชีพ", max_length = 20, null = True, blank = True)
     salary = models.IntegerField(verbose_name="รายได้", null = True, blank = True, default = 0)
@@ -144,7 +147,7 @@ class PetData(models.Model):
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='pet', default = None)
     type = models.CharField(verbose_name="ชนิดสัตว์เลี้ยง", max_length = 5, default = "dog", choices = (('dog','หมา'),('cat','แมว')))
     name = models.CharField(verbose_name="ชื่อ", max_length = 50, null = False, blank = False,)
-    birth_year = models.IntegerField(verbose_name="ปีเกิด", null = True, blank = True)
+    birth_year = models.IntegerField(verbose_name="ปีเกิด (ค.ศ.)", null = True, blank = True)
     sex = models.CharField(verbose_name="เพศ", max_length = 5, default = "male", choices = (('male','ตัวผู้'),('fem','ตัวเมีย')))
     appearances = models.TextField(verbose_name="สี-รูปร่าง-ลักษณะ", null = True)
 
@@ -164,7 +167,7 @@ class VehicalData(models.Model):
         
     home_parker = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='HomeParker', null = True)
     plate = models.CharField(verbose_name="เลขทะเบียนรถ", max_length = 10, null = True)
-    province = models.CharField(verbose_name="จังหวัด", max_length = 10, null = True)
+    province = models.CharField(verbose_name="จังหวัด", max_length = 15, null = True)
     type = models.IntegerField(verbose_name="ประเภท", choices = ((1,"จักรยานยนต์"),(2,"เก๋ง"),(3,"SUV"),(4,"กะบะ"),(5,"อื่น ๆ")),null = True)
     brand = models.CharField(verbose_name="ยี่ห้อ", max_length = 15, null = True)
     color = models.CharField(verbose_name="สี", max_length = 10, null = True)

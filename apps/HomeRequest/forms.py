@@ -45,7 +45,8 @@ class HomeRequestForm(forms.ModelForm):
                 'IsHomeNeed','IsFlatNeed','IsShopHouseNeed',
                 'ZoneRequestPriority1','ZoneRequestPriority2','ZoneRequestPriority3','ZoneRequestPriority4','ZoneRequestPriority5','ZoneRequestPriority6',
                 'HouseRegistration', 'MarriageRegistration', 'SpouseApproved', 'DivorceRegistration','SpouseDeathRegistration',
-                ]        
+                'Comment'
+                ]
 
         widgets = {
             'FullName': forms.TextInput(attrs = {'placeholder': 'น.อ.ทัพฟ้าไทย ใส่ใจการงาน'}),
@@ -170,7 +171,7 @@ class ManualHomeRequestForm(forms.ModelForm):
                 'ImportanceDuty','OtherTrouble', 'Comment', 'request_type', 'IsHomeNeed', 'IsFlatNeed', 'IsShopHouseNeed', 
                 'ZoneRequestPriority1','ZoneRequestPriority2',
                 'specificed_need', 'foster_person', 'foster_date', 'foster_reason', 'have_document', 
-                'document_number', 'document_date','ProcessStep'
+                'document_number', 'document_date','ProcessStep','PersonDateRecieved'
                 ]
         widgets = {
             'Requester': forms.TextInput(attrs = {'class': 'd-none'}),
@@ -179,6 +180,7 @@ class ManualHomeRequestForm(forms.ModelForm):
             'Comment': forms.Textarea(attrs={'rows' : 2}),
             'foster_date': forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
             'document_date': forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
+            'PersonDateRecieved': forms.DateInput(format=('%Y-%m-%d'),attrs={'type': 'date'}),
         }
 
 

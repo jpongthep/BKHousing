@@ -259,6 +259,12 @@
                                         <i class="fas fa-question text-danger fa-stack-1x check-size" style="margin-top: 10px;margin-left: 10px;"></i>
                                     </a>
                                 </div>
+                                
+                                    <a href = "#" @click="full_edit(hm.id)" class="fa-stack" style="vertical-align: top;" >
+                                        <i class="far fa-user text-warning "></i>
+                                        <i class="fas fa-edit text-danger fa-stack-1x check-size" style="margin-top: 5px;margin-left: 10px;"></i>
+                                    </a>
+                                
                             </td>
                             <td>
                                 
@@ -570,6 +576,12 @@
             evaluate(hm_id)
             {
                 urltext = "{% url 'Trouble:person_evaluation' '99999' %}";
+                person_evaluation_url = urltext.replace("99999",hm_id)                
+                window.open(person_evaluation_url ,'_blank');
+            },
+            full_edit(hm_id)
+            {
+                urltext = "{% url 'HomeRequest:manual_update' '99999' %}";
                 person_evaluation_url = urltext.replace("99999",hm_id)                
                 window.open(person_evaluation_url ,'_blank');
             }

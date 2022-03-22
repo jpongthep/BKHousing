@@ -63,12 +63,12 @@ def TokenExpire(request,result):
     
 def AddUserByPersonID(request, person_id):
 
-
     check_exist = User.objects.filter(PersonID = person_id)
     if check_exist.exists():
         print("already exists")
         return "already exists"
-
+    else:
+        print(check_exist)
 
     URL = "https://otp.rtaf.mi.th/api/gateway/rtaf/hris_api_1/RTAFHousePerson"
 

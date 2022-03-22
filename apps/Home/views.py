@@ -124,7 +124,7 @@ def ContractFormDocument(request, home_data_id):
     #     docx_title= f"Draft-{home_request.Requester.AFID}.docx"
     # else:
 
-    if home_owner.home.get_type_display() == 'ฟป.' and home_owner.home.zone == '1':
+    if home_owner.home.get_type_display() == 'ฟป.' and home_owner.home.zone == '3':
         if home_owner.home.building_number == '1':
             testdoc =  os.path.join(settings.TEMPLATES[0]['DIRS'][0],'documents/contract_form_b1.docx')
         elif home_owner.home.building_number == '17':
@@ -199,7 +199,7 @@ def ContractFormDocument(request, home_data_id):
     HomeZone = home_owner.home.get_zone_display()
     num_cat = home_owner.pet.filter(type = 'cat').count()
     num_dog = home_owner.pet.filter(type = 'dog').count()
-    pet_data = ""
+    pet_data = "ไม่มี"
     i = 1
     if num_dog > 0:
         pet_data = f"{i}. เลี้ยงหมา จำนวน {num_dog} ตัว\t" 
@@ -215,7 +215,7 @@ def ContractFormDocument(request, home_data_id):
             'Rank': Rank,
             'FullName':FullName ,
             'AirforceID' : f"{AFID[0:10]}",
-            'PersonID': f"{PersonID[0]}-{PersonID[1:5]}-{PersonID[6:10]}-{PersonID[11:12]}-{PersonID[12]}",
+            'PersonID': f"{PersonID[0]}-{PersonID[1:5]}-{PersonID[5:10]}-{PersonID[10:12]}-{PersonID[12]}",
             'RTAFEmail' : home_owner.owner.username + "@rtaf.mi.th",
             'Position': Position,
             'birth_date' : birth_date,
@@ -263,7 +263,7 @@ def ContractFormDocument(request, home_data_id):
     cores = []
     for (i, cs) in enumerate(home_owner.CoResident.all()):
         try:
-            cs_person_id = f"{cs.person_id[0]}-{cs.person_id[1:5]}-{cs.person_id[6:10]}-{cs.person_id[11:12]}-{cs.person_id[12]}",
+            cs_person_id = f"{cs.person_id[0]}-{cs.person_id[1:5]}-{cs.person_id[5:10]}-{cs.person_id[10:12]}-{cs.person_id[12]}",            
         except:
             cs_person_id = "....................."
         cores.append(ArabicToThai(f"\t{i+1}. {cs.full_name} เลขประจำตัวประชาชน {cs_person_id[0]}  อายุ {cs.age()} ปี  ความสัมพันธ์ {cs.get_relation_display()}"))

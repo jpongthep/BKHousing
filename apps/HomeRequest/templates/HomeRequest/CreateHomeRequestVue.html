@@ -1,0 +1,393 @@
+{% extends '_minbase.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}ARMIS แบบฟอร์มขอบ้านพัก{% endblock %}
+
+{% block header %}แบบฟอร์มขอบ้านพัก{% endblock %}
+
+{% block scriptlink %}
+    
+{% endblock %}
+
+{% block script %}
+<script>
+    
+    function validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+    
+    function checkID(id) {
+        if (id.length != 13) return false;
+
+        if(isNaN(parseFloat(id)))             return false;
+
+        for (i = 0, sum = 0; i < 12; i++)
+            sum += parseFloat(id.charAt(i)) * (13 - i);
+
+        if ((11 - sum % 11) % 10 != parseFloat(id.charAt(12)))
+            return false;
+
+        return true;
+    }
+
+    console.log('%cหยุด', 'color: red; font-size: 60px; font-weight: bold;');
+    console.log('%cการแก้ไข script จะทำให้ข้อมูลมีความผิดพลาด ท่านอาจเสียสิทธิการขอบ้านพักอาศัย และสามารถตรวจสอบย้อนกลับหาตัวผู้แก้ไขได้ไม่ยาก', 'color: red; font-size: 20px; font-weight: bold;');
+    console.log('%cหากท่านมีความสามารถ และต้องการมาร่วมงานกับเรา กรุณาติดต่อ 2-8285', 'color: red; font-size: 20px; font-weight: bold;');
+     
+
+</script>
+{% endblock %}
+
+{% block style %}
+<style>
+    select[disabled]{ color:#aaa;  }
+
+    .icon-size {font-size: 20px;}
+
+    .cr-row:hover {
+        background-color: rgb(192,224,192);        
+    }
+    .pointer {cursor: pointer;}
+</style>    
+{% endblock%}
+
+{% block content%}
+<form id="invisible_form" action="{% url 'HomeRequest:ConsentForm' %}" method="post" target="_blank">
+    {% csrf_token %}  
+    <input id="if_spouse_name" name="if_spouse_name" type="hidden">
+    <input id="if_address" name="if_address" type="hidden">
+</form>
+    <!-- 
+    <form method = "POST" id = "hr_form" onsubmit="return false;"  enctype="multipart/form-data" >
+      -->
+    <form method = "POST" id = "hr_form" enctype="multipart/form-data" >
+        
+    {% csrf_token %}  
+    <div class="card shadow">
+        <div class="card-header bg-info">
+            <h5>1. ข้อมูลพื้นฐาน</h5>
+        </div>
+        <div class="card-body" id = "basic_data">
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.FullName |as_crispy_field  }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.Position |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.sub_unit |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.Unit |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.Salary |as_crispy_field }}
+                </div>
+                <div class="col-md-1">
+                    {{ form.AddSalary |as_crispy_field  }}
+                    {{ form.Comment.as_hidden  }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.Status |as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.IsHRISReport |as_crispy_field  }}
+                </div>
+                <div id = "SpouseData" class="col-md-3">
+                    {{ form.SpouseName |as_crispy_field  }}
+                    {{ form.spouse_office |as_crispy_field  }}
+                </div>
+                <div id = "SpouseDataID" class="col-md-2">
+                    {{ form.SpousePID |as_crispy_field  }}
+                    {{ form.SpouseAFID |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.num_children |as_crispy_field  }}
+                    {{ form.num_study_children |as_crispy_field  }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ user_current_data_form.OfficePhone |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.MobilePhone |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.RTAFEMail |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ user_current_data_form.email |as_crispy_field  }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-3">
+        <div class="card-header bg-secondary text-white">
+            <h5>2. ข้อมูลที่พักอาศัยและการเบิกค่าเช่าบ้าน</h5>
+        </div>
+        <div class="card-body" id = "addressData">
+            <div class="row">
+                <div class="col-md-5">
+                    {{ form.Address |as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="id_hr-GooglePlusCodes1" class="form-label" id = "forGooglePlusCodes1">
+                            Google Plus Codes
+                        </label>
+                            <a href = "https://thestandard.co/google-maps-launched-plus-codes/" target = "_blank">คืออะไร</a>, 
+                            <a href="https://plus.codes/map/" target="_blank">หาพิกัด</a>
+                        {% comment %} <input type="text" name="hr-GooglePlusCodes1" maxlength="20" class="textinput textInput form-control" id="id_hr-GooglePlusCodes1"> {% endcomment %}
+                        {{ form.GooglePlusCodes1 | as_crispy_field }}
+                    </div>
+                    <input id="zipcode1" type="hidden">
+                </div>                
+                <div class="col-md-2">
+                    {{ form.work_commute |as_crispy_field }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.distance |as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                     {{ form.TravelDescription |as_crispy_field  }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.RentPermission |as_crispy_field }}
+                </div>
+                <div class="col-md-2"  id = "SelfHomeRent">
+                    {{ form.have_rent |as_crispy_field }}
+                    {{ form.RentalCost |as_crispy_field  }}
+                </div>
+                <div class="col-md-2" id = "HomeRentSpouse">
+                    {{ form.have_rent_spouse |as_crispy_field }}
+                    {{ form.RentalCostSpouse |as_crispy_field  }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.rent_comment |as_crispy_field }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mt-3">
+        <div class="card-header bg-warning">
+            <h5>3. ข้อมูลความจำเป็นและความเดือดร้อน (เลือกได้มากกว่า 1 ข้อ)</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    {{ form.IsNotBuyHome  |as_crispy_field}}
+                    {{ form.ImportanceDuty |as_crispy_field  }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.IsNotOwnHome |as_crispy_field  }}
+                    {{ form.IsMoveFromOtherUnit |as_crispy_field  }}
+                </div>                
+                <div class="col-md-3">
+                    {{ form.ContinueHouse |as_crispy_field }}
+                    {{ form.IsHomelessEvict |as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.IsNotRTAFHome |as_crispy_field  }}
+                    {{ form.IsHomelessDisaster |as_crispy_field  }}
+                </div>
+            </div>        
+            <div class="row">
+                <div class="col-md-3">
+                    {{ form.IsNeverRTAFHome |as_crispy_field  }}                    
+                </div>
+            </div>        
+            <div>
+                <div class="col-md-12">
+                    {{ form.RTAFHomeLeaveReason |as_crispy_field  }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {{ form.OtherTrouble |as_crispy_field  }}    
+                </div>
+            </div>  
+        </div>      
+    </div>
+
+    <div class="card shadow  mt-3" id = "HomeZone">
+        <div class="card-header bg-info pb-0">
+            <h5>4. ข้อมูลการเรียงลำดับความต้องการ  <a href = "#" data-bs-toggle="modal" data-bs-target="#home_zone_modal"><i class="fa fa-question-circle text-success"></i></a></h5>
+        </div>
+        <div class="card-body"  id = "house_type" >
+            <div class="row">
+                <div class="col-md-3">
+                    {{ form.IsHomeNeed |as_crispy_field  }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.IsFlatNeed |as_crispy_field  }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.IsShopHouseNeed |as_crispy_field  }}
+                </div>
+            </div>        
+            <div class="row">
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority1|as_crispy_field   }} 
+                </div>                
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority2|as_crispy_field   }} 
+                </div>                
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority3|as_crispy_field   }} 
+                </div>
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority4|as_crispy_field   }} 
+                </div>
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority5|as_crispy_field   }} 
+                </div>
+                <div class="col-md-2">
+                    {{ form.ZoneRequestPriority6 |as_crispy_field    }} 
+                </div>
+            </div>
+        </div>      
+    </div>
+    <div class="card shadow mt-3" id = "Evidence">
+        <div class="card-header bg-primary text-white">
+            <h5>5. เอกสารประกอบคำร้อง (pdf file ขนาดไม่เกิน 2 MB เท่านั้น) <a href = "#" data-bs-toggle="modal" data-bs-target="#evidence_modal"><i class="fa fa-question-circle text-warning"></i></a></h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">  
+                    {{ form.HouseRegistration.label }}
+                    {{ form.HouseRegistration }}
+                </div> 
+                <div class="col-md-3 SpouseEvidence">                    
+                    หนังสือรับรองของคู่สมรส
+                    <span id = "consent_form" class = "text-success pointer">
+                    [download ฟอร์ม
+                        <img   src = "{% static 'images/word-doc.ico'%}" title = "download แบบฟอร์ม" width = 25>
+                    ]
+                    </span>
+                    {{ form.SpouseApproved }}
+                </div>
+                <div class="col-md-3 SpouseEvidence">
+                    {{ form.MarriageRegistration.label }}
+                    {{ form.MarriageRegistration }}
+                </div>
+                <div class="col-md-3 SpouseEvidence widow_divote">
+                    {{ form.DivorceRegistration.label }}
+                    {{ form.DivorceRegistration }}
+                </div>                
+
+                <div class="col-md-3 SpouseEvidence widow_divote">
+                    {{ form.SpouseDeathRegistration.label }}
+                    {{ form.SpouseDeathRegistration }}
+                </div>                
+            </div>
+        </div>      
+    </div>
+
+    <div class="card mt-3 shadow" id = "CoResidenceData">
+        <div class="card-header  bg-success text-white">
+            <h5>6. ผู้พักอาศัยร่วม (ถ้ามีผู้ที่จะมาพักด้วยกัน)</h5>
+        </div>
+        <div class="card-body p-0">
+        {{ co_resident_formset.management_form }}
+        {{ co_resident_formset.non_form_errors }}
+        {% for formset in co_resident_formset %}
+           
+            <div class=" {{ co_resident_formset.prefix }} cr-row px-2 m-0" id = "co_residence">						
+                <div class="row">
+                    {% for hidden in formset.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    <div class="col-md-4 col-lg-3 col-xl-2 mt-1">
+                        {{ formset.FullName |as_crispy_field}}
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Relation |as_crispy_field}}
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-xl-2">
+                        {{ formset.PersonID |as_crispy_field}}
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-xl-2">
+                        {{ formset.BirthDay |as_crispy_field}}
+                    </div>
+                    <div class="col-md-4 col-lg-3 col-xl-2">
+                        {{ formset.Occupation |as_crispy_field}}
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Salary |as_crispy_field}}
+                    </div>
+                    <div class="col-md-3 col-lg-2 col-xl-1">
+                        {{ formset.Education |as_crispy_field}}
+                    </div>                        
+                    <div class="col-lg-1">
+                        {{ formset.DELETE |as_crispy_field }}                        
+                    </div>
+                </div>	                    				
+            </div>
+        {% endfor %}
+        <p class = "btn btn-info" id = "add_more" style="cursor: pointer;" ><i class="fa fa-plus text-dark"></i> เพิ่มผู้อาศัย</p>
+        </div>
+    </div>
+
+    <div class = "mt-3">    
+        <input class="btn btn-warning" type="submit" name = "save" onclick="return form_validate('save');" value = "บันทึกร่าง">
+        <input class="btn btn-primary" type="submit" name = "send" onclick="return form_validate('send');" value = "บันทึกและส่งรายงาน">
+    </div>
+  
+  </form>
+  
+  <!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="google_help_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body text-center">      
+        <img src = "{% static 'images/google_plus_code.gif'%}" width = 886 height = 634>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="home_zone_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body text-center">      
+        <img src = "{% static 'images/homezone.gif'%}" class = "img-fluid" border = 1>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="evidence_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">      
+        <img src = "{% static 'images/evidence.png'%}" class = "img-fluid" border = 1>
+        <p>กรณีสมรส ต้อง download หนังสือยินยอมให้คู่สมรสเซ็นต์ส่งพร้อมรายงานทาง e-admin ธุรการ ด้วย</p>
+        <p>กรณีรายงานแต่งงานให้ กพ.ทอ.แล้ว ไม่ต้อง upload ทะเบียนสมรส แต่ถ้ายังไม่รายงาน ให้รายงานกับ กพ.ทอ.และ Upload ทะเบียนสมรสด้วย</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
