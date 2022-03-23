@@ -220,14 +220,7 @@
             <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
             <ul class="dropdown-menu" aria-labelledby="dropdown05">
-{% comment %}               
-              <li>
-                <a class="dropdown-item" href="{% url 'HomeRequest:process_flow'%}">
-                  <i class="fas fa-tasks"></i> 
-                  ขั้นตอนการดำเนินการ
-                </a>
-              </li> 
-{% endcomment %}
+
             {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN" %}
               <li>
                 <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
@@ -245,29 +238,40 @@
               <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> คำขอ แยกตาม นขต.ทอ.</a></li>
               <li><a class="dropdown-item" href="{% url 'HomeRequest:manual_list'%}"><i class="fa fa-building"></i> คำขอ รวมทุก นขต.ทอ.</a></li>
             {% endif %}
+            </ul>
+            {% endif %}
+
+          {# เมนูส่วน สน.ผบ.ดม. #}
+          {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN,PERSON_ADMIN" %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-fw fa-edit"></i> รายการคำขอบ้านพัก</a>
+            <ul class="dropdown-menu" aria-labelledby="dropdown05">
+
+            {% if request.user|in_group:"PERSON_SUBUNIT_ADMIN,PERSON_UNIT_ADMIN" %}
+              <li>
+                <a class="dropdown-item" href="{% url 'HomeRequest:list'%}">
+                  <i class="fa fa-fw fa-users"></i> 
+                  {% if request.user|has_group:"PERSON_UNIT_ADMIN" %}
+                    รายการคำขอ {{ request.user.CurrentUnit.ShortName }}
+                  {%elif request.user|has_group:"PERSON_SUBUNIT_ADMIN" %}
+                    รายการคำขอ {{ request.user.sub_unit }}
+                  {% endif %}
+                </a>
+              </li>
+            {% endif %}
+
+            {% if request.user|has_group:"PERSON_ADMIN" %}
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:unitlist'%}"><i class="fa fa-building"></i> คำขอ แยกตาม นขต.ทอ.</a></li>
+              <li><a class="dropdown-item" href="{% url 'HomeRequest:manual_list'%}"><i class="fa fa-building"></i> คำขอ รวมทุก นขต.ทอ.</a></li>
             {% endif %}
             </ul>
-          </li>    
+            {% endif %}
 
-{% comment %} 
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+            
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="dropdown05" data-bs-toggle="dropdown" aria-expanded="false">คำขอบ้านพัก</a>
-            <ul class="dropdown-menu" aria-labelledby="dropdown05">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-{% endcomment %}
         </ul>
-{% comment %} 
-        <form class="ms-auto">
-          <input class="form-control" type="text" placeholder="Search" aria-label="Search">
-        </form>
-{% endcomment %}
+
         <ul class="navbar-nav ms-auto">
         
           {% if user.is_authenticated %}
