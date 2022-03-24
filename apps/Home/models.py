@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
@@ -118,6 +118,8 @@ class CoResident(models.Model):
         constraints = [
                 UniqueConstraint(fields=['home_owner_id', 'person_id'], name='home_owner_id_person_id')
             ]
+        verbose_name_plural = "CoResident : ผู้พักอาศัยร่วม" 
+
     home_owner = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='CoResident')
     person_id = models.CharField(verbose_name="เลขประจำตัวประชาชน", max_length = 13)
     full_name = models.CharField(verbose_name="ยศ - ชื่อ - นามสกุล", max_length = 150, null = False, blank = False, default = '')
@@ -129,11 +131,18 @@ class CoResident(models.Model):
     education = models.IntegerField(verbose_name="การศึกษา", choices=EDUCATION.choices, null = True, blank = True)
 
     def age(self):
-        today = date.today()
-        if  today.year - self.birth_day.year == 0:
+        if not self.birth_day:
+            return "-"
+
+        current_year = datetime.now().year
+        if current_year - self.birth_day.year == 0:
             return 1
         else:
-            return today.year - self.birth_day.year
+            result = current_year - self.birth_day.year
+            if result < 0:
+                return result + 543
+            else:
+                return current_year - self.birth_day.year
 
     def __str__(self):
         return self.full_name
@@ -163,7 +172,8 @@ class VehicalData(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(fields=['plate', 'province'], name='plate_province')
-        ]
+        ]        
+        verbose_name_plural = "VehicalData : ยานพาหนะของผู้พักอาศัย"  
         
     home_parker = models.ForeignKey(HomeOwner, on_delete=models.CASCADE, related_name='HomeParker', null = True)
     plate = models.CharField(verbose_name="เลขทะเบียนรถ", max_length = 10, null = True)

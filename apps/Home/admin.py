@@ -74,7 +74,7 @@ class BuildingFilter(SimpleListFilter):
     parameter_name = "building_number"  # you can put anything here
 
     def lookups(self, request, model_admin):
-        return [(i,i) for i in range(1,11)]
+        return [(i,i) for i in range(1,17)]
 
     def queryset(self, request, queryset):
         if self.value() is None:
@@ -84,6 +84,24 @@ class BuildingFilter(SimpleListFilter):
         if queryset.model is HomeOwner:
             return queryset.filter(home__building_number=self.value())
 
+
+@admin.register(CoResident)
+class CoResidentAdmin(admin.ModelAdmin):
+    search_fields = ['full_name', 'person_id']
+    list_per_page = 30
+    list_display = ['person_id','full_name', 'relation','age','home_owner']
+    
+    list_display_links = ['full_name']
+    # save_as = True
+
+@admin.register(VehicalData)
+class VehicalDataAdmin(admin.ModelAdmin):
+    search_fields = ['plate', 'province']
+    list_per_page = 30
+    list_display = ['plate', 'province','type', 'brand','color','home_parker']
+    
+    list_display_links = ['plate']
+    # save_as = True
 
 @admin.register(HomeData)
 class HomeDataAdmin(admin.ModelAdmin):
